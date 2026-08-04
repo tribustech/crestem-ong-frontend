@@ -1,0 +1,545 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import type { ChangeEvent, ReactNode } from "react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { AlertCircle, CheckCircle, ChevronDown, Loader2 } from "lucide-react";
+import { registerNgo } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/client";
+import { listCities, listCounties } from "@/lib/api/geo";
+import type { City, County } from "@/lib/api/geo";
+import { PasswordInput } from "./PasswordInput";
+
+const registerNgoSchema = z
+  .object({
+    numeOng: z.string().trim().min(1, "Câmp obligatoriu"),
+    cui: z
+      .string()
+      .trim()
+      .min(1, "Câmp obligatoriu")
+      .regex(/^(RO\s?)?\d{2,10}$/i, "Format invalid (ex. RO 12345678)"),
+    judet: z.string().min(1, "Selectează județul"),
+    localitate: z.string().min(1, "Selectează localitatea"),
+    website: z.string().trim(),
+    nume: z.string().trim().min(1, "Câmp obligatoriu"),
+    telefon: z
+      .string()
+      .trim()
+      .min(1, "Câmp obligatoriu")
+      .min(8, "Numărul de telefon este invalid"),
+    email: z.string().trim().min(1, "Câmp obligatoriu").email("Email invalid"),
+    password: z
+      .string()
+      .min(8, "Parola trebuie să aibă minim 8 caractere")
+      .regex(/[A-Z]/, "Parola trebuie să conțină cel puțin o literă mare")
+      .regex(/[0-9]/, "Parola trebuie să conțină cel puțin o cifră")
+      .regex(/[^A-Za-z0-9]/, "Parola trebuie să conțină cel puțin un caracter special"),
+    confirmedPassword: z.string().min(1, "Câmp obligatoriu"),
+    acordTermeniSiConditii: z
+      .boolean()
+      .refine((v) => v === true, { message: "Este necesar acordul tău pentru a continua" }),
+  })
+  .refine((data) => data.password === data.confirmedPassword, {
+    message: "Parolele nu coincid",
+    path: ["confirmedPassword"],
+  });
+
+type RegisterNgoFormValues = z.infer<typeof registerNgoSchema>;
+
+const EMPTY: RegisterNgoFormValues = {
+  numeOng: "",
+  cui: "",
+  judet: "",
+  localitate: "",
+  website: "",
+  nume: "",
+  telefon: "",
+  email: "",
+  password: "",
+  confirmedPassword: "",
+  acordTermeniSiConditii: false,
+};
+
+interface ZodFlattenError {
+  formErrors?: string[];
+  fieldErrors?: Record<string, string[]>;
+}
+
+function isZodFlattenError(details: unknown): details is ZodFlattenError {
+  return (
+    typeof details === "object" &&
+    details !== null &&
+    ("fieldErrors" in details || "formErrors" in details)
+  );
+}
+
+const inputClass =
+  "w-full px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#2dbe8f]/30 focus:border-[#2dbe8f] transition-colors bg-white text-sm disabled:opacity-60 disabled:cursor-not-allowed";
+
+const selectClass = `${inputClass} appearance-none pr-10`;
+
+function Field({
+  label,
+  required,
+  error,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  error?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <label
+        className="block text-sm font-semibold mb-1.5"
+        style={{ color: "#334155" }}
+      >
+        {label} {required && <span style={{ color: "#2dbe8f" }}>*</span>}
+        {!required && (
+          <span className="font-normal text-muted-foreground ml-1">
+            (opțional)
+          </span>
+        )}
+      </label>
+      {children}
+      {error && (
+        <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export function RegisterNgoForm() {
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
+  const [submittedNumeOng, setSubmittedNumeOng] = useState("");
+
+  const [counties, setCounties] = useState<County[]>([]);
+  const [loadingCounties, setLoadingCounties] = useState(true);
+  const [countiesError, setCountiesError] = useState(false);
+
+  const [cities, setCities] = useState<City[]>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
+  const [citiesError, setCitiesError] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    setError,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterNgoFormValues>({
+    resolver: zodResolver(registerNgoSchema),
+    defaultValues: EMPTY,
+  });
+
+  const judet = watch("judet");
+  const acordTermeniSiConditii = watch("acordTermeniSiConditii");
+
+  useEffect(() => {
+    listCounties()
+      .then((res) => setCounties(res.data))
+      .catch(() => setCountiesError(true))
+      .finally(() => setLoadingCounties(false));
+  }, []);
+
+  useEffect(() => {
+    if (!judet) return;
+    listCities(judet)
+      .then((res) => setCities(res.data))
+      .catch(() => setCitiesError(true))
+      .finally(() => setLoadingCities(false));
+  }, [judet]);
+
+  const onSubmit = async (data: RegisterNgoFormValues) => {
+    setApiError(null);
+    try {
+      await registerNgo({
+        nume: data.nume,
+        telefon: data.telefon,
+        email: data.email,
+        password: data.password,
+        cui: data.cui,
+        numeOng: data.numeOng,
+        judet: data.judet,
+        localitate: data.localitate,
+        website: data.website.trim() || undefined,
+        acordTermeniSiConditii: data.acordTermeniSiConditii,
+      });
+      setSubmittedEmail(data.email);
+      setSubmittedNumeOng(data.numeOng);
+      setSubmitted(true);
+    } catch (err) {
+      if (err instanceof ApiError && isZodFlattenError(err.details)) {
+        const unmapped: string[] = [];
+        let mappedAny = false;
+        for (const [field, messages] of Object.entries(
+          err.details.fieldErrors ?? {},
+        )) {
+          const message = messages?.[0];
+          if (!message) continue;
+          if (field in EMPTY) {
+            setError(field as keyof RegisterNgoFormValues, { message });
+            mappedAny = true;
+          } else {
+            unmapped.push(message);
+          }
+        }
+        const bannerMessages = [...(err.details.formErrors ?? []), ...unmapped];
+        if (bannerMessages.length > 0) setApiError(bannerMessages[0]);
+        else if (!mappedAny) setApiError(err.message);
+      } else {
+        setApiError(
+          err instanceof ApiError
+            ? err.message
+            : "Nu am putut trimite înregistrarea. Încearcă din nou.",
+        );
+      }
+    }
+  };
+
+  if (submitted) {
+    return (
+      <div className="bg-white rounded-2xl border border-border shadow-sm p-12 text-center">
+        <div
+          className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
+          style={{ background: "rgba(45,190,143,0.12)" }}
+        >
+          <CheckCircle size={38} style={{ color: "#2dbe8f" }} />
+        </div>
+        <h2
+          className="mb-3 font-heading font-extrabold text-2xl"
+          style={{ color: "#162040" }}
+        >
+          Înregistrare trimisă cu succes!
+        </h2>
+        <p
+          className="text-muted-foreground mb-2"
+          style={{ maxWidth: 420, margin: "0 auto 0.5rem" }}
+        >
+          Am primit cererea de înregistrare pentru{" "}
+          <strong style={{ color: "#162040" }}>{submittedNumeOng}</strong>.
+        </p>
+        <p
+          className="text-muted-foreground mb-8"
+          style={{ maxWidth: 420, marginLeft: "auto", marginRight: "auto" }}
+        >
+          Un consultant Crestem te va contacta la{" "}
+          <strong style={{ color: "#162040" }}>{submittedEmail}</strong> în termen de
+          2–3 zile lucrătoare pentru a stabili detaliile sesiunii de evaluare.
+        </p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: "#162040" }}
+          >
+            Înapoi la pagina principală
+          </Link>
+          <Link
+            href="/programe"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold border border-border transition-colors hover:bg-muted"
+            style={{ color: "#162040" }}
+          >
+            Explorează programele
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="bg-white rounded-2xl border border-border shadow-sm overflow-hidden"
+    >
+      {apiError && (
+        <div
+          role="alert"
+          className="m-8 mb-0 flex items-start gap-2.5 rounded-xl p-4 text-sm"
+          style={{
+            background: "#fff5f5",
+            border: "1.5px solid #fca5a5",
+            color: "#ef4444",
+          }}
+        >
+          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          {apiError}
+        </div>
+      )}
+
+      <div className="px-8 py-7 space-y-5">
+        <Field label="Numele ONG-ului" required error={errors.numeOng?.message}>
+          <input
+            type="text"
+            placeholder="ex. Asociația Crestem Împreună"
+            className={inputClass}
+            {...register("numeOng")}
+          />
+        </Field>
+
+        <Field
+          label="CUI (Cod Unic de Înregistrare)"
+          required
+          error={errors.cui?.message}
+        >
+          <input
+            type="text"
+            placeholder="ex. RO 12345678"
+            className={inputClass}
+            {...register("cui")}
+          />
+        </Field>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <Field label="Județ" required error={errors.judet?.message}>
+            <div className="relative">
+              <select
+                disabled={loadingCounties}
+                className={selectClass}
+                {...register("judet", {
+                  onChange: (e: ChangeEvent<HTMLSelectElement>) => {
+                    setValue("localitate", "");
+                    setCities([]);
+                    setCitiesError(false);
+                    setLoadingCities(!!e.target.value);
+                  },
+                })}
+              >
+                <option value="">
+                  {loadingCounties ? "Se încarcă județele..." : "Selectează județul"}
+                </option>
+                {counties.map((c) => (
+                  <option key={c.documentId} value={c.documentId}>
+                    {c.nume}
+                  </option>
+                ))}
+              </select>
+              {loadingCounties ? (
+                <Loader2
+                  size={16}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 animate-spin pointer-events-none"
+                  style={{ color: "#94a3b8" }}
+                />
+              ) : (
+                <ChevronDown
+                  size={16}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "#94a3b8" }}
+                />
+              )}
+            </div>
+            {countiesError && (
+              <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>
+                Nu am putut încărca lista de județe. Reîncarcă pagina.
+              </p>
+            )}
+          </Field>
+          <Field label="Localitate" required error={errors.localitate?.message}>
+            <div className="relative">
+              <select
+                disabled={!judet || loadingCities}
+                className={selectClass}
+                {...register("localitate")}
+              >
+                <option value="">
+                  {!judet
+                    ? "Selectează județul mai întâi"
+                    : loadingCities
+                      ? "Se încarcă localitățile..."
+                      : "Selectează localitatea"}
+                </option>
+                {cities.map((c) => (
+                  <option key={c.documentId} value={c.documentId}>
+                    {c.nume}
+                  </option>
+                ))}
+              </select>
+              {loadingCities ? (
+                <Loader2
+                  size={16}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 animate-spin pointer-events-none"
+                  style={{ color: "#94a3b8" }}
+                />
+              ) : (
+                <ChevronDown
+                  size={16}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
+                  style={{ color: "#94a3b8" }}
+                />
+              )}
+            </div>
+            {citiesError && (
+              <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>
+                Nu am putut încărca lista de localități.
+              </p>
+            )}
+          </Field>
+        </div>
+
+        <Field label="Website">
+          <input
+            type="text"
+            placeholder="www.organizatia.ro"
+            className={inputClass}
+            {...register("website")}
+          />
+        </Field>
+      </div>
+
+      <div
+        className="px-8 py-5 border-t border-b border-border"
+        style={{ background: "#f8faff" }}
+      >
+        <p
+          className="font-semibold text-sm uppercase tracking-wider"
+          style={{ color: "#162040" }}
+        >
+          Persoana de contact
+        </p>
+      </div>
+
+      <div className="px-8 py-7 space-y-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <Field label="Nume complet" required error={errors.nume?.message}>
+            <input
+              type="text"
+              placeholder="Prenume Nume"
+              className={inputClass}
+              {...register("nume")}
+            />
+          </Field>
+          <Field label="Telefon" required error={errors.telefon?.message}>
+            <input
+              type="tel"
+              placeholder="07XX XXX XXX"
+              className={inputClass}
+              {...register("telefon")}
+            />
+          </Field>
+        </div>
+
+        <Field label="Email" required error={errors.email?.message}>
+          <input
+            type="email"
+            placeholder="email@organizatia.ro"
+            className={inputClass}
+            {...register("email")}
+          />
+        </Field>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <Field label="Parolă" required error={errors.password?.message}>
+            <PasswordInput
+              placeholder="Min. 8 caractere"
+              className={inputClass}
+              {...register("password")}
+            />
+          </Field>
+          <Field label="Confirmă parola" required error={errors.confirmedPassword?.message}>
+            <PasswordInput
+              placeholder="Repetă parola"
+              className={inputClass}
+              {...register("confirmedPassword")}
+            />
+          </Field>
+        </div>
+
+        <div
+          className="mt-2 rounded-xl p-5"
+          style={{
+            background: errors.acordTermeniSiConditii ? "#fff5f5" : "#f8faff",
+            border: `1.5px solid ${errors.acordTermeniSiConditii ? "#fca5a5" : "#e2e8f0"}`,
+          }}
+        >
+          <label className="flex items-start gap-3 cursor-pointer select-none">
+            <div className="relative flex-shrink-0 mt-0.5">
+              <input
+                type="checkbox"
+                className="sr-only"
+                {...register("acordTermeniSiConditii")}
+              />
+              <div
+                className="w-5 h-5 rounded flex items-center justify-center transition-colors"
+                style={{
+                  background: acordTermeniSiConditii ? "#2dbe8f" : "white",
+                  border: `2px solid ${
+                    acordTermeniSiConditii
+                      ? "#2dbe8f"
+                      : errors.acordTermeniSiConditii
+                        ? "#f87171"
+                        : "#cbd5e1"
+                  }`,
+                }}
+              >
+                {acordTermeniSiConditii && (
+                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 12 12">
+                    <path
+                      d="M2 6l3 3 5-5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+              </div>
+            </div>
+            <span
+              className="text-sm leading-relaxed"
+              style={{ color: "#475569" }}
+            >
+              Sunt de acord cu prelucrarea datelor cu caracter personal de către Crestem
+              în scopul procesării cererii de înregistrare, conform{" "}
+              <Link
+                href="#"
+                className="underline font-medium"
+                style={{ color: "#2dbe8f" }}
+              >
+                Politicii de confidențialitate
+              </Link>
+              . Datele nu vor fi partajate cu terțe părți și pot fi șterse oricând la
+              cerere.
+            </span>
+          </label>
+          {errors.acordTermeniSiConditii && (
+            <p className="mt-2 text-xs ml-8" style={{ color: "#ef4444" }}>
+              {errors.acordTermeniSiConditii.message}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <div
+        className="px-8 py-6 border-t border-border flex flex-col sm:flex-row items-center gap-4"
+        style={{ background: "#f8faff" }}
+      >
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full sm:w-auto flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-white transition-all hover:opacity-90 disabled:opacity-60"
+          style={{
+            background: "#2dbe8f",
+            boxShadow: "0 4px 16px rgba(45,190,143,0.3)",
+          }}
+        >
+          {isSubmitting ? (
+            <Loader2 size={18} className="animate-spin" />
+          ) : (
+            <CheckCircle size={18} />
+          )}
+          Trimite înregistrarea
+        </button>
+      </div>
+    </form>
+  );
+}
