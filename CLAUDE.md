@@ -18,6 +18,13 @@
 - If a Figma frame only shows one breakpoint, ask how it should adapt at other sizes rather than guessing responsive behavior.
 - If Figma data is ambiguous, missing, or the MCP call fails, say so explicitly rather than filling in a plausible-looking guess.
 
+## API Reference
+
+- `openapi/crestem-ong-api.yaml` is the OpenAPI spec for the Crestem ONG backend (Strapi) — local-only, gitignored, not committed.
+- Before writing or modifying any API call, data-fetching hook, or request/response type, check this file for the real endpoint path, method, params, and request/response schema. Do not guess endpoint shapes.
+- Some schemas in the spec are incomplete (empty `{}` bodies, blank response descriptions) — if a needed shape isn't defined there, say so explicitly rather than inventing one.
+- The spec hardcodes `http://localhost:1337` as the server URL — use the app's own env-based API base URL instead, not the one in the file.
+
 ## Component Architecture
 
 - Structure:
