@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AlertCircle, CheckCircle, ChevronDown, Loader2 } from "lucide-react";
 import { registerNgo } from "@/lib/api/auth";
-import { ApiError } from "@/lib/api/client";
+import { ApiError, isZodFlattenError } from "@/lib/api/client";
 import { listCities, listCounties } from "@/lib/api/geo";
 import type { City, County } from "@/lib/api/geo";
 import { PasswordInput } from "./PasswordInput";
@@ -62,19 +62,6 @@ const EMPTY: RegisterNgoFormValues = {
   confirmedPassword: "",
   acordTermeniSiConditii: false,
 };
-
-interface ZodFlattenError {
-  formErrors?: string[];
-  fieldErrors?: Record<string, string[]>;
-}
-
-function isZodFlattenError(details: unknown): details is ZodFlattenError {
-  return (
-    typeof details === "object" &&
-    details !== null &&
-    ("fieldErrors" in details || "formErrors" in details)
-  );
-}
 
 const inputClass =
   "w-full px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#2dbe8f]/30 focus:border-[#2dbe8f] transition-colors bg-white text-sm disabled:opacity-60 disabled:cursor-not-allowed";
@@ -153,10 +140,20 @@ export function RegisterNgoForm() {
 
   useEffect(() => {
     if (!judet) return;
+    let active = true;
     listCities(judet)
-      .then((res) => setCities(res.data))
-      .catch(() => setCitiesError(true))
-      .finally(() => setLoadingCities(false));
+      .then((res) => {
+        if (active) setCities(res.data);
+      })
+      .catch(() => {
+        if (active) setCitiesError(true);
+      })
+      .finally(() => {
+        if (active) setLoadingCities(false);
+      });
+    return () => {
+      active = false;
+    };
   }, [judet]);
 
   const onSubmit = async (data: RegisterNgoFormValues) => {

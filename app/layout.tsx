@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
-import { Navbar } from "@/components/features/navigation/Navbar";
+import { SiteChrome } from "@/components/features/navigation/SiteChrome";
 import "./globals.css";
 
 const inter = Inter({
@@ -28,8 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Navbar />
-        <main className="flex-1 pt-16">{children}</main>
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

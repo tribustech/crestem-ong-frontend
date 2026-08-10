@@ -1,0 +1,81 @@
+// components/ui/ConfirmDialog.tsx
+"use client";
+
+export function ConfirmDialog({
+  open,
+  title,
+  description,
+  confirmLabel = "Confirmă",
+  cancelLabel = "Anulează",
+  confirmColor = "#dc2626",
+  loading = false,
+  loadingLabel,
+  error,
+  onConfirm,
+  onCancel,
+}: {
+  open: boolean;
+  title: string;
+  description: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  confirmColor?: string;
+  loading?: boolean;
+  loadingLabel?: string;
+  error?: string | null;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  if (!open) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="confirm-dialog-title"
+    >
+      <div className="bg-white rounded-2xl w-full max-w-sm p-6">
+        <h2 id="confirm-dialog-title" className="font-heading font-extrabold text-lg mb-2" style={{ color: "#162040" }}>
+          {title}
+        </h2>
+        <p className={`text-sm text-muted-foreground ${error ? "mb-4" : "mb-6"}`}>{description}</p>
+        {error && (
+          <p
+            role="alert"
+            className="mb-4 rounded-lg px-3 py-2 text-sm"
+            style={{ background: "#fff5f5", border: "1.5px solid #fca5a5", color: "#ef4444" }}
+          >
+            {error}
+          </p>
+        )}
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
+            className="px-4 py-2 rounded-xl text-sm font-semibold border border-border hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ color: "#475569" }}
+          >
+            {cancelLabel}
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={loading}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-70 disabled:cursor-not-allowed"
+            style={{ background: confirmColor }}
+          >
+            {loading && (
+              <span
+                className="h-3.5 w-3.5 rounded-full border-2 border-white/40 border-t-white animate-spin"
+                aria-hidden="true"
+              />
+            )}
+            {loading ? loadingLabel ?? confirmLabel : confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

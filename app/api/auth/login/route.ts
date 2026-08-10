@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
-import { login } from "@/lib/api/auth";
+import { login, getMe } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
-
-const SESSION_COOKIE = "crestem_session";
+import {
+  SESSION_COOKIE,
+  REFRESH_COOKIE,
+  sessionCookieOptions,
+  refreshCookieOptions,
+} from "@/lib/api/session-cookies";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -14,15 +18,16 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { jwt, user } = await login({ identifier, password });
-    const response = NextResponse.json({ user });
-    response.cookies.set(SESSION_COOKIE, jwt, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24 * 7,
+    const { jwt, user, refreshToken } = await login({ identifier, password });
+    const me = await getMe(jwt).catch(() => null);
+
+    const response = NextResponse.json({
+      user: { id: user.id, username: user.username, email: user.email, role: me?.data.role ?? null },
     });
+    response.cookies.set(SESSION_COOKIE, jwt, sessionCookieOptions);
+    if (refreshToken) {
+      response.cookies.set(REFRESH_COOKIE, refreshToken, refreshCookieOptions);
+    }
     return response;
   } catch (err) {
     const message = err instanceof ApiError ? err.message : "Nu am putut finaliza autentificarea. Încearcă din nou.";

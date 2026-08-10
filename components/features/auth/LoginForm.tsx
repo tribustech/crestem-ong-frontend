@@ -7,7 +7,7 @@ import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { loginSession } from "@/lib/api/session";
-import { ApiError } from "@/lib/api/client";
+import { getApiErrorMessage } from "@/lib/api/client";
 import { PasswordInput } from "./PasswordInput";
 
 const loginSchema = z.object({
@@ -39,12 +39,19 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     setApiError(null);
     try {
-      await loginSession(data);
-      router.push("/");
+      const user = await loginSession(data);
+      const destination =
+        user.role?.type === "super-admin"
+          ? "/dashboard/fdsc/programe"
+          : user.role?.type === "ngo-admin"
+            ? "/dashboard/ong/evaluari"
+            : user.role?.type === "ngo-member"
+              ? "/dashboard/user-ong"
+              : "/";
+      router.push(destination);
+      router.refresh();
     } catch (err) {
-      setApiError(
-        err instanceof ApiError ? err.message : "Nu am putut finaliza autentificarea. Încearcă din nou."
-      );
+      setApiError(getApiErrorMessage(err, "Nu am putut finaliza autentificarea. Încearcă din nou."));
     }
   };
 

@@ -1,9 +1,10 @@
-import { ApiError } from "./client";
+import { localApiFetch } from "./local";
 
 export interface SessionUser {
   id: number;
   username: string;
   email: string;
+  role: { type: string; name: string } | null;
 }
 
 export interface LoginSessionPayload {
@@ -11,18 +12,13 @@ export interface LoginSessionPayload {
   password: string;
 }
 
-export async function loginSession(payload: LoginSessionPayload): Promise<SessionUser> {
-  const res = await fetch("/api/auth/login", {
+export function loginSession(payload: LoginSessionPayload) {
+  return localApiFetch<{ user: SessionUser }>("/api/auth/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
-  });
+  }).then((res) => res.user);
+}
 
-  const data = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    throw new ApiError(data?.message ?? "Nu am putut finaliza autentificarea. Încearcă din nou.", res.status);
-  }
-
-  return data.user as SessionUser;
+export function logoutSession() {
+  return localApiFetch<void>("/api/auth/logout", { method: "POST" });
 }

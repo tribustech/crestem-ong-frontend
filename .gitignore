@@ -42,3 +42,6 @@ next-env.d.ts
 
 # local API reference (contains example/fixture data, kept local-only)
 /openapi
+
+# superpowers subagent-driven-development scratch workspace
+/.superpowers

@@ -14,12 +14,38 @@ export interface AuthUser {
 export interface LoginResponse {
   jwt: string;
   user: AuthUser;
+  refreshToken: string;
 }
 
 export function login(payload: LoginPayload) {
   return apiFetch<LoginResponse>("/api/auth/local", {
     method: "POST",
     body: JSON.stringify(payload),
+  });
+}
+
+export interface CurrentUser {
+  id: number;
+  nume: string;
+  email: string;
+  role: { type: string; name: string } | null;
+}
+
+export function getMe(jwt: string) {
+  return apiFetch<{ data: CurrentUser }>("/api/auth/me", {
+    headers: { Authorization: `Bearer ${jwt}` },
+  });
+}
+
+export interface RefreshResponse {
+  jwt: string;
+  refreshToken: string;
+}
+
+export function refreshSession(refreshToken: string) {
+  return apiFetch<RefreshResponse>("/api/auth/refresh", {
+    method: "POST",
+    body: JSON.stringify({ refreshToken }),
   });
 }
 

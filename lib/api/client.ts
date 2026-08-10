@@ -15,6 +15,38 @@ export class ApiError extends Error {
   }
 }
 
+export interface ZodFlattenError {
+  formErrors?: string[];
+  fieldErrors?: Record<string, string[]>;
+}
+
+export function isZodFlattenError(details: unknown): details is ZodFlattenError {
+  return (
+    typeof details === "object" &&
+    details !== null &&
+    ("fieldErrors" in details || "formErrors" in details)
+  );
+}
+
+/**
+ * Strapi validation errors carry the real reason (e.g. "Cel puțin o fază
+ * trebuie să aibă evaluare") in `details.fieldErrors`/`formErrors`, while
+ * `message` is often just a generic "Date invalide: ". Prefer the details.
+ */
+export function getApiErrorMessage(err: unknown, fallback: string): string {
+  if (!(err instanceof ApiError)) return fallback;
+
+  if (isZodFlattenError(err.details)) {
+    const messages = [
+      ...(err.details.formErrors ?? []),
+      ...Object.values(err.details.fieldErrors ?? {}).flat(),
+    ].filter(Boolean);
+    if (messages.length > 0) return messages.join(" ");
+  }
+
+  return err.message || fallback;
+}
+
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers);
   if (!headers.has("Content-Type")) {

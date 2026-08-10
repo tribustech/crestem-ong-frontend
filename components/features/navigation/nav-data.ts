@@ -9,6 +9,6 @@ export const NAV_LINKS = [
   { label: "Programe", href: "/programe" },
   { label: "LexiXplore", href: "/lexixplore" },
   { label: "Evaluare ONG", href: "/evaluare-ong" },
-  { label: "Mentori", href: "/mentori" },
+  { label: "Persoane resursă", href: "/mentori" },
   { label: "Contact", href: "/contact" },
 ];
