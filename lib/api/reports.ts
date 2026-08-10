@@ -69,7 +69,7 @@ export function getIndependentStartLock(
   standaloneReports: RoundSummary[],
 ): EvaluationLock | null {
   const activePhaseProgram = programRounds.find(({ phases }) =>
-    phases.some((phase) => phase.hasEvaluation && phase.active),
+    phases.some((phase) => phase.hasEvaluation && phase.active && !phase.report?.finished),
   )?.program;
   if (activePhaseProgram) {
     return { reason: "active-phase", programName: activePhaseProgram.name };

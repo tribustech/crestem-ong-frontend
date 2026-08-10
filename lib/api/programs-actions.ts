@@ -2,21 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { serverApiFetch } from "./server";
-import { getCurrentUser } from "./session-server";
 import { getApiErrorMessage } from "./client";
 
-async function requireSuperAdmin(): Promise<string | null> {
-  const user = await getCurrentUser();
-  if (!user || user.role?.type !== "super-admin") {
-    return "Nu ai permisiunea necesară pentru această acțiune.";
-  }
-  return null;
-}
-
 export async function deleteProgramAction(documentId: string): Promise<{ error?: string }> {
-  const authError = await requireSuperAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch(`/api/programs/${documentId}`, { method: "DELETE" });
   } catch (err) {
@@ -32,9 +20,6 @@ export async function assignOngAction(
   ongId: string,
   reportId?: string,
 ): Promise<{ error?: string }> {
-  const authError = await requireSuperAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch("/api/programs/assign-ongs", {
       method: "POST",
@@ -52,9 +37,6 @@ export async function assignOngAction(
 }
 
 export async function removeOngAction(programId: string, ongId: string): Promise<{ error?: string }> {
-  const authError = await requireSuperAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch("/api/programs/remove-ongs", {
       method: "POST",
@@ -69,9 +51,6 @@ export async function removeOngAction(programId: string, ongId: string): Promise
 }
 
 export async function assignMentorAction(programId: string, mentorId: string): Promise<{ error?: string }> {
-  const authError = await requireSuperAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch("/api/programs/assign-mentors", {
       method: "POST",
@@ -86,9 +65,6 @@ export async function assignMentorAction(programId: string, mentorId: string): P
 }
 
 export async function removeMentorAction(programId: string, mentorId: string): Promise<{ error?: string }> {
-  const authError = await requireSuperAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch("/api/programs/remove-mentors", {
       method: "POST",

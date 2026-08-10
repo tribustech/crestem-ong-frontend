@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { serverApiFetch } from "@/lib/api/server";
 import { ApiError } from "@/lib/api/client";
+import { requireSuperAdminRoute } from "@/lib/api/route-auth";
 
 export async function GET() {
   try {
@@ -15,6 +16,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const authError = await requireSuperAdminRoute();
+  if (authError) return authError;
+
   const body = await request.text();
   try {
     const data = await serverApiFetch("/api/programs", { method: "POST", body });

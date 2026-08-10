@@ -7,7 +7,12 @@ export default async function MemberDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  let user;
+  try {
+    user = await getCurrentUser();
+  } catch {
+    redirect("/autentificare");
+  }
   if (!user) {
     redirect("/autentificare");
   }

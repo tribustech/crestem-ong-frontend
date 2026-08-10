@@ -36,6 +36,10 @@ export function isZodFlattenError(details: unknown): details is ZodFlattenError 
 export function getApiErrorMessage(err: unknown, fallback: string): string {
   if (!(err instanceof ApiError)) return fallback;
 
+  if (err.status === 403) {
+    return "Nu ai permisiunea necesară pentru această acțiune.";
+  }
+
   if (isZodFlattenError(err.details)) {
     const messages = [
       ...(err.details.formErrors ?? []),

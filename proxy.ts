@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { refreshSession } from "@/lib/api/auth";
+import type { RefreshResponse } from "@/lib/api/auth";
 import { isJwtExpired } from "@/lib/api/jwt";
 import {
   SESSION_COOKIE,
@@ -17,6 +18,22 @@ function mergedCookieHeader(request: NextRequest, overrides: Record<string, stri
   return [...cookies].map(([name, value]) => `${name}=${value}`).join("; ");
 }
 
+// Coalesces concurrent refresh attempts for the same refresh token (e.g. Link
+// prefetches racing on an expired session) so the backend only rotates it once —
+// the backend invalidates a refresh token on use, so a second concurrent call
+// with the same token would otherwise fail and log the user out.
+const pendingRefreshes = new Map<string, Promise<RefreshResponse>>();
+
+function coalescedRefresh(refreshToken: string) {
+  const existing = pendingRefreshes.get(refreshToken);
+  if (existing) return existing;
+  const promise = refreshSession(refreshToken).finally(() => {
+    pendingRefreshes.delete(refreshToken);
+  });
+  pendingRefreshes.set(refreshToken, promise);
+  return promise;
+}
+
 export async function proxy(request: NextRequest) {
   const jwt = request.cookies.get(SESSION_COOKIE)?.value;
   if (jwt && !isJwtExpired(jwt)) {
@@ -26,7 +43,7 @@ export async function proxy(request: NextRequest) {
   const refreshToken = request.cookies.get(REFRESH_COOKIE)?.value;
   if (refreshToken) {
     try {
-      const fresh = await refreshSession(refreshToken);
+      const fresh = await coalescedRefresh(refreshToken);
 
       // Rewrite the incoming request's cookie header so Server Components /
       // Server Actions further down this same request see the new JWT

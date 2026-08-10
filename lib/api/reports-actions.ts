@@ -3,24 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { serverApiFetch } from "./server";
-import { getCurrentUser } from "./session-server";
 import { getApiErrorMessage } from "./client";
-
-async function requireNgoAdmin(): Promise<string | null> {
-  const user = await getCurrentUser();
-  if (!user || user.role?.type !== "ngo-admin") {
-    return "Nu ai permisiunea necesară pentru această acțiune.";
-  }
-  return null;
-}
 
 export async function startEvaluationAction(
   members: string[],
   program?: string,
 ): Promise<{ error?: string }> {
-  const authError = await requireNgoAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch("/api/reports/start", {
       method: "POST",
@@ -39,9 +27,6 @@ export async function addReportMembersAction(
   reportId: string,
   members: string[],
 ): Promise<{ error?: string }> {
-  const authError = await requireNgoAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch(`/api/reports/${reportId}/members`, {
       method: "POST",
@@ -56,9 +41,6 @@ export async function addReportMembersAction(
 }
 
 export async function finishReportAction(reportId: string): Promise<{ error?: string }> {
-  const authError = await requireNgoAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch(`/api/reports/${reportId}/finish`, { method: "POST" });
   } catch (err) {
@@ -72,9 +54,6 @@ export async function finishReportAction(reportId: string): Promise<{ error?: st
 }
 
 export async function deleteReportAction(reportId: string): Promise<{ error?: string }> {
-  const authError = await requireNgoAdmin();
-  if (authError) return { error: authError };
-
   try {
     await serverApiFetch(`/api/reports/${reportId}`, { method: "DELETE" });
   } catch (err) {

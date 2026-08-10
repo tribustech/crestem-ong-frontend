@@ -71,7 +71,7 @@ export function ReportDetailActions({
         title="Finalizează evaluarea"
         description="Ești sigur că vrei să finalizezi evaluarea? După finalizare nu vei mai putea aduce modificări acestei evaluări, iar membrii invitați care nu au completat chestionarul până acum nu vor mai putea să o facă."
         confirmLabel="Finalizează evaluarea"
-        confirmColor="#2dbe8f"
+        confirmVariant="accent"
         loading={isFinishPending}
         loadingLabel="Se finalizează..."
         error={finishError}

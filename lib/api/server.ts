@@ -1,6 +1,7 @@
 // lib/api/server.ts
 import { cookies } from "next/headers";
 import { ApiError } from "./client";
+import { SESSION_COOKIE } from "./session-cookies";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -10,7 +11,7 @@ interface StrapiErrorResponse {
 
 export async function serverApiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const cookieStore = await cookies();
-  const jwt = cookieStore.get("crestem_session")?.value;
+  const jwt = cookieStore.get(SESSION_COOKIE)?.value;
 
   const headers = new Headers(init?.headers);
   if (!headers.has("Content-Type")) {
