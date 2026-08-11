@@ -9,7 +9,7 @@ import { ReportMembersTable } from "@/components/features/dashboard-ong/ReportMe
 
 function formatDate(iso: string) {
   if (!iso) return "—";
-  const [year, month, day] = iso.split("-");
+  const [year, month, day] = iso.slice(0, 10).split("-");
   return `${day}.${month}.${year}`;
 }
 
@@ -41,6 +41,11 @@ export default async function OngEvaluareDetailPage({
       ? Math.round(
           (new Date(phase.endDate).getTime() - new Date(phase.startDate).getTime()) / 86_400_000,
         ) + 1
+      : null;
+
+  const independentPeriod =
+    phase == null
+      ? `${formatDate(report.createdAt)} - ${report.finished && report.finishedAt ? formatDate(report.finishedAt) : "prezent"}`
       : null;
 
   const completion = report.invitedCount > 0 ? Math.round((report.completedCount / report.invitedCount) * 100) : 0;
@@ -76,7 +81,7 @@ export default async function OngEvaluareDetailPage({
         <div className="bg-white rounded-xl border border-border p-5">
           <p className="text-xs mb-2 text-muted-foreground">Perioadă de completare</p>
           <p className="text-3xl font-extrabold font-heading" style={{ color: "#162040" }}>
-            {periodDays != null ? `${periodDays} ${periodDays === 1 ? "zi" : "zile"}` : "Fără termen"}
+            {periodDays != null ? `${periodDays} ${periodDays === 1 ? "zi" : "zile"}` : independentPeriod}
           </p>
           <p className="text-xs mt-1 text-muted-foreground">
             {phase != null ? `${formatDate(phase.startDate)} – ${formatDate(phase.endDate)}` : "Evaluare independentă"}

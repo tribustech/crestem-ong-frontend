@@ -106,6 +106,7 @@ export interface ReportScores {
 export interface ReportDetail {
   documentId: string;
   name: string;
+  createdAt: string;
   finished: boolean;
   finishedAt: string | null;
   closedBy: "manual" | "auto" | null;
