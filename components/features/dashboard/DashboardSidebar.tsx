@@ -3,39 +3,92 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LogOut, Layers, ClipboardList } from "lucide-react";
+import {
+  LogOut,
+  Layers,
+  ClipboardList,
+  LayoutGrid,
+  FileText,
+  BookOpen,
+  Menu,
+  Workflow,
+  Image as ImageIcon,
+  ListChecks,
+  Plus,
+  Building2,
+  UserCog,
+  Users,
+  Settings,
+  User,
+  GraduationCap,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { logoutSession } from "@/lib/api/session";
 
 export interface DashboardNavSection {
-  label: string;
+  label?: string;
   items: { href: string; label: string; icon: LucideIcon }[];
 }
 
 const FDSC_NAV_SECTIONS: DashboardNavSection[] = [
   {
+    items: [{ href: "/dashboard/fdsc", label: "Panou principal", icon: LayoutGrid }],
+  },
+  {
+    label: "CMS",
+    items: [
+      { href: "/dashboard/fdsc/pagini", label: "Pagini", icon: FileText },
+      { href: "/dashboard/fdsc/biblioteca", label: "Bibliotecă", icon: BookOpen },
+      { href: "/dashboard/fdsc/meniuri", label: "Meniuri", icon: Menu },
+      { href: "/dashboard/fdsc/arbori-decizionali", label: "Arbori decizionali", icon: Workflow },
+      { href: "/dashboard/fdsc/media-library", label: "Media library", icon: ImageIcon },
+    ],
+  },
+  {
+    label: "E-Learning",
+    items: [
+      { href: "/dashboard/fdsc/cursuri", label: "Lista cursuri", icon: ListChecks },
+      { href: "/dashboard/fdsc/cursuri/adauga", label: "Adaugă curs", icon: Plus },
+    ],
+  },
+  {
     label: "Programe",
     items: [
       { href: "/dashboard/fdsc/programe", label: "Management programe", icon: Layers },
+      { href: "/dashboard/fdsc/organizatii", label: "Organizații", icon: Building2 },
+      { href: "/dashboard/fdsc/persoane-resursa", label: "Persoane resursă", icon: UserCog },
+    ],
+  },
+  {
+    label: "Admin",
+    items: [
+      { href: "/dashboard/fdsc/utilizatori", label: "Utilizatori", icon: Users },
+      { href: "/dashboard/fdsc/setari", label: "Setări", icon: Settings },
     ],
   },
 ];
 
 const ONG_NAV_SECTIONS: DashboardNavSection[] = [
   {
-    label: "Cont",
     items: [
+      { href: "/dashboard/ong", label: "Panou principal", icon: LayoutGrid },
+      { href: "/dashboard/ong/profil", label: "Profilul meu", icon: User },
       { href: "/dashboard/ong/evaluari", label: "Evaluările mele", icon: ClipboardList },
       { href: "/dashboard/ong/programe", label: "Programele mele", icon: Layers },
+      { href: "/dashboard/ong/utilizatori", label: "Utilizatori", icon: Users },
+      { href: "/dashboard/ong/e-learning", label: "E-Learning", icon: GraduationCap },
     ],
   },
 ];
 
 const MEMBER_NAV_SECTIONS: DashboardNavSection[] = [
   {
-    label: "Cont",
-    items: [{ href: "/dashboard/user-ong", label: "Evaluările mele", icon: ClipboardList }],
+    items: [
+      { href: "/dashboard/user-ong/profil", label: "Profilul meu", icon: User },
+      { href: "/dashboard/user-ong", label: "Evaluările mele", icon: ClipboardList },
+      { href: "/dashboard/user-ong/e-learning", label: "E-Learning", icon: GraduationCap },
+    ],
   },
 ];
 
@@ -57,6 +110,15 @@ export function DashboardSidebar({
   const sections = NAV_SECTIONS_BY_VARIANT[variant];
   const pathname = usePathname();
   const router = useRouter();
+
+  // Longest-prefix match: a root item like "Panou principal" (href "/dashboard/fdsc")
+  // would otherwise stay highlighted on every nested page, since its href prefixes them all.
+  const activeHref = sections
+    .flatMap((section) => section.items)
+    .map((item) => item.href)
+    .filter((href) => pathname === href || pathname.startsWith(`${href}/`))
+    .sort((a, b) => b.length - a.length)[0];
+
   const [loggingOut, setLoggingOut] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
 
@@ -82,14 +144,16 @@ export function DashboardSidebar({
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-        {sections.map((section) => (
-          <div key={section.label}>
-            <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {section.label}
-            </p>
+        {sections.map((section, index) => (
+          <div key={section.label ?? `section-${index}`}>
+            {section.label && (
+              <p className="px-3 mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {section.label}
+              </p>
+            )}
             <div className="space-y-1">
               {section.items.map((item) => {
-                const active = pathname.startsWith(item.href);
+                const active = item.href === activeHref;
                 const Icon = item.icon;
                 return (
                   <Link

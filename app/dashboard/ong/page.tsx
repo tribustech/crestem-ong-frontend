@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { UnimplementedPage } from "@/components/features/dashboard/UnimplementedPage";
 
 export default function OngDashboardPage() {
-  redirect("/dashboard/ong/evaluari");
+  return <UnimplementedPage title="Panou principal" />;
 }
