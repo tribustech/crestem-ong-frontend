@@ -1,38 +1,76 @@
+import Link from "next/link";
+import { Building2, ExternalLink, Globe, MapPin, Users } from "lucide-react";
 import type { Ong } from "@/lib/api/ongs";
+import { DeleteOngButton } from "./DeleteOngButton";
 
 export function OngCard({ ong }: { ong: Ong }) {
   return (
-    <div className="bg-white rounded-xl border border-border p-5">
-      <h3 className="font-semibold mb-1" style={{ color: "#162040" }}>
-        {ong.name}
-      </h3>
-      <p className="text-sm text-muted-foreground mb-3">
-        {ong.localitate?.nume ?? "—"}, {ong.judet?.nume ?? "—"}
-      </p>
-      <dl className="space-y-1.5 text-sm">
-        <div className="flex justify-between gap-2">
-          <dt className="text-muted-foreground">CUI</dt>
-          <dd style={{ color: "#334155" }}>{ong.cui}</dd>
+    <div className="bg-white rounded-xl border border-border p-5 flex flex-col">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 min-w-0">
+          <div
+            className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center"
+            style={{ background: "#eff6ff" }}
+          >
+            <Building2 size={18} style={{ color: "#2563eb" }} />
+          </div>
+          <h3 className="font-semibold truncate" style={{ color: "#162040" }}>
+            {ong.name}
+          </h3>
         </div>
-        {ong.adresa && (
-          <div className="flex justify-between gap-2">
-            <dt className="text-muted-foreground">Adresă</dt>
-            <dd className="text-right" style={{ color: "#334155" }}>{ong.adresa}</dd>
-          </div>
-        )}
-        {ong.domeniuActivitate && (
-          <div className="flex justify-between gap-2">
-            <dt className="text-muted-foreground">Domeniu</dt>
-            <dd className="text-right" style={{ color: "#334155" }}>{ong.domeniuActivitate}</dd>
-          </div>
-        )}
+        <DeleteOngButton documentId={ong.documentId} ongName={ong.name} />
+      </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <MapPin size={14} />
+          {ong.localitate?.nume ?? "—"}, {ong.judet?.nume ?? "—"}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <Users size={14} />
+          {ong.memberCount} {ong.memberCount === 1 ? "membru" : "membri"}
+        </span>
         {ong.website && (
-          <div className="flex justify-between gap-2">
-            <dt className="text-muted-foreground">Website</dt>
-            <dd className="truncate max-w-[60%]" style={{ color: "#334155" }}>{ong.website}</dd>
-          </div>
+          <a
+            href={ong.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 hover:underline"
+            style={{ color: "#2563eb" }}
+          >
+            <Globe size={14} />
+            {ong.website.replace(/^https?:\/\//, "")}
+          </a>
         )}
-      </dl>
+      </div>
+
+      {ong.programs.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {ong.programs.map((program) => (
+            <span
+              key={program.documentId}
+              className="px-2.5 py-1 rounded-full text-xs font-medium"
+              style={{ background: "#f0faf6", color: "#162040" }}
+            >
+              {program.name}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 pt-4 border-t border-border flex items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground truncate">
+          Admin: <span style={{ color: "#334155" }}>{ong.admin?.nume ?? "—"}</span>
+        </p>
+        <Link
+          href={`/dashboard/fdsc/organizatii/${ong.documentId}`}
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold text-white shrink-0 hover:opacity-90 transition-opacity"
+          style={{ background: "#162040" }}
+        >
+          <ExternalLink size={14} />
+          Vezi ONG
+        </Link>
+      </div>
     </div>
   );
 }
