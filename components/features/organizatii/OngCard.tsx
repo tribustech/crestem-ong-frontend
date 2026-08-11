@@ -28,7 +28,7 @@ export function OngCard({ ong }: { ong: Ong }) {
         </span>
         <span className="inline-flex items-center gap-1.5">
           <Users size={14} />
-          {ong.memberCount} {ong.memberCount === 1 ? "membru" : "membri"}
+          {ong.memberCount ?? 0} {(ong.memberCount ?? 0) === 1 ? "membru" : "membri"}
         </span>
         {ong.website && (
           <a
@@ -44,9 +44,9 @@ export function OngCard({ ong }: { ong: Ong }) {
         )}
       </div>
 
-      {ong.programs.length > 0 && (
+      {(ong.programs ?? []).length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
-          {ong.programs.map((program) => (
+          {(ong.programs ?? []).map((program) => (
             <span
               key={program.documentId}
               className="px-2.5 py-1 rounded-full text-xs font-medium"

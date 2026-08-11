@@ -29,7 +29,7 @@ export function OrganizatiiGrid({ ongs, programs }: { ongs: Ong[]; programs: Pro
         const matchesSearch = ong.name.toLowerCase().includes(search.toLowerCase());
         const matchesJudet = !judetFilter || ong.judet?.documentId === judetFilter;
         const matchesProgram =
-          !programFilter || ong.programs.some((program) => program.documentId === programFilter);
+          !programFilter || (ong.programs ?? []).some((program) => program.documentId === programFilter);
         return matchesSearch && matchesJudet && matchesProgram;
       }),
     [ongs, search, judetFilter, programFilter],

@@ -20,7 +20,7 @@ export default async function OrganizatieEvaluareCurentaPage({
   ]);
 
   const ong = ongRes.data;
-  const current = evaluationsRes.data.find((evaluation) => !evaluation.finished) ?? null;
+  const current = (evaluationsRes.data ?? []).find((evaluation) => !evaluation.finished) ?? null;
 
   const [evaluationDetail, dimensions] = current
     ? await Promise.all([

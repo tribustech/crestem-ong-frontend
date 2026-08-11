@@ -16,7 +16,7 @@ export function EvaluationDetailContent({
   evaluation: OngEvaluationDetail;
   dimensions: Dimension[];
 }) {
-  const phase = evaluation.phases[0] ?? null;
+  const phase = evaluation.phases?.[0] ?? null;
   const programName = phase?.program?.name ?? "Evaluare independentă";
 
   const periodDays =
@@ -124,9 +124,11 @@ export function EvaluationDetailContent({
         </h2>
         <div className="space-y-0">
           {dimensions.map((dimension) => {
-            const score = evaluation.scores.dimensions[dimension.key] ?? null;
+            const score = evaluation.scores?.dimensions?.[dimension.key] ?? null;
             const color = dimensionColor(score);
-            const tags = Array.from(new Set(dimension.quiz.map((q) => q.tag).filter((tag): tag is string => !!tag)));
+            const tags = Array.from(
+              new Set((dimension.quiz ?? []).map((q) => q.tag).filter((tag): tag is string => !!tag)),
+            );
             return (
               <div key={dimension.key} className="py-4 border-b border-border last:border-0">
                 <div className="flex items-center gap-3 mb-2">

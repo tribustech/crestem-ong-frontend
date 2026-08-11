@@ -6,7 +6,7 @@ function formatDate(iso: string) {
 }
 
 function completionPeriod(evaluation: OngEvaluation) {
-  const phase = evaluation.phases[0];
+  const phase = evaluation.phases?.[0];
   if (phase) return `${formatDate(phase.startDate)} – ${formatDate(phase.endDate)}`;
   if (evaluation.finished && evaluation.finishedAt) {
     return `${formatDate(evaluation.createdAt)} – ${formatDate(evaluation.finishedAt)}`;
@@ -21,7 +21,7 @@ export function OngEvaluationsTable({
   ongDocumentId: string;
   evaluations: OngEvaluation[];
 }) {
-  if (evaluations.length === 0) {
+  if (!evaluations || evaluations.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-border p-8 text-center">
         <p className="text-sm text-muted-foreground">Nu există nicio evaluare pentru această organizație.</p>
@@ -72,7 +72,7 @@ export function OngEvaluationsTable({
                 {evaluation.completedCount}/{evaluation.invitedCount}
               </td>
               <td className="px-5 py-3.5 font-semibold" style={{ color: "#162040" }}>
-                {evaluation.scores.overall != null ? `${evaluation.scores.overall}%` : "—"}
+                {evaluation.scores?.overall != null ? `${evaluation.scores.overall}%` : "—"}
               </td>
               <td className="px-5 py-3.5">
                 <span

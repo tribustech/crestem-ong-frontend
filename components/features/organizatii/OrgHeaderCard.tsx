@@ -20,14 +20,14 @@ export function OrgHeaderCard({ ong }: { ong: Ong }) {
             {ong.name}
           </h1>
           <p className="mt-1.5 text-sm text-muted-foreground">
-            {ong.localitate?.nume ?? "—"}, {ong.judet?.nume ?? "—"} · {ong.memberCount}{" "}
-            {ong.memberCount === 1 ? "membru" : "membri"} · Admin: {ong.admin?.nume ?? "—"}
+            {ong.localitate?.nume ?? "—"}, {ong.judet?.nume ?? "—"} · {ong.memberCount ?? 0}{" "}
+            {(ong.memberCount ?? 0) === 1 ? "membru" : "membri"} · Admin: {ong.admin?.nume ?? "—"}
           </p>
         </div>
       </div>
-      {ong.programs.length > 0 && (
+      {(ong.programs ?? []).length > 0 && (
         <div className="flex flex-wrap gap-2 max-w-md">
-          {ong.programs.map((program) => (
+          {(ong.programs ?? []).map((program) => (
             <span
               key={program.documentId}
               className="px-2.5 py-1 rounded-full text-xs font-medium"
