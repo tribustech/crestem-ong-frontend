@@ -13,3 +13,14 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     throw err;
   }
 }
+
+const DASHBOARD_PATH_BY_ROLE: Record<string, string> = {
+  "ngo-admin": "/dashboard/ong",
+  "super-admin": "/dashboard/fdsc",
+  "ngo-member": "/dashboard/user-ong",
+};
+
+export function getDashboardPathForRole(roleType?: string | null): string | null {
+  if (!roleType) return null;
+  return DASHBOARD_PATH_BY_ROLE[roleType] ?? null;
+}

@@ -1,4 +1,8 @@
-import type { EvaluationStatus, ReportPhaseInfo, ReportScores } from "./reports";
+import type {
+  EvaluationStatus,
+  ReportPhaseInfo,
+  ReportScores,
+} from "./reports";
 
 export interface MyOngProgram {
   documentId: string;
@@ -28,7 +32,11 @@ export interface OngEvaluationListItem {
   completedAt: string | null;
   progress: EvaluationProgress;
   scores: ReportScores;
-  report: { documentId: string; finished: boolean; phases: ReportPhaseInfo[] } | null;
+  report: {
+    documentId: string;
+    finished: boolean;
+    phases: ReportPhaseInfo[];
+  } | null;
 }
 
 export interface EvaluationAnswer {
@@ -54,7 +62,14 @@ export interface EvaluationDetail {
   completedAt: string | null;
   scores: ReportScores;
   dimensions: EvaluationDimensionBlock[];
-  report: { documentId: string; name: string; finished: boolean; phases: ReportPhaseInfo[] } | null;
+  report: {
+    documentId: string;
+    name: string;
+    createdAt: string;
+    finished: boolean;
+    finishedAt: string | null;
+    phases: ReportPhaseInfo[];
+  } | null;
 }
 
 /**
@@ -63,9 +78,14 @@ export interface EvaluationDetail {
  * and its CTA point at. Mirrors the ordering the backend already returns
  * (newest first), so the first match is the one to surface.
  */
-export function findActiveEvaluation(evaluations: OngEvaluationListItem[]): OngEvaluationListItem | null {
+export function findActiveEvaluation(
+  evaluations: OngEvaluationListItem[],
+): OngEvaluationListItem | null {
   return (
-    evaluations.find((evaluation) => !evaluation.report?.finished && evaluation.progress.status !== "completat") ??
-    null
+    evaluations.find(
+      (evaluation) =>
+        !evaluation.report?.finished &&
+        evaluation.progress.status !== "completat",
+    ) ?? null
   );
 }

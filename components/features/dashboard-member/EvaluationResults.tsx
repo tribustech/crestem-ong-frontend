@@ -19,6 +19,11 @@ function formatPeriod(startIso: string, endIso: string) {
   return `${startDay} ${MONTHS_RO[startMonth - 1]} ${startYear} – ${endDay} ${MONTHS_RO[endMonth - 1]} ${endYear}`;
 }
 
+function formatIndependentPeriod(createdAt: string, finished: boolean, finishedAt: string | null) {
+  const end = finished && finishedAt ? formatShortDate(finishedAt) : "prezent";
+  return `${formatShortDate(createdAt)} – ${end}`;
+}
+
 export function EvaluationResults({ evaluation, backHref }: { evaluation: EvaluationDetail; backHref: string }) {
   const phase = evaluation.report?.phases[0] ?? null;
   const programName = phase?.program?.name ?? null;
@@ -43,7 +48,15 @@ export function EvaluationResults({ evaluation, backHref }: { evaluation: Evalua
         <div className="bg-white rounded-xl border border-border p-5">
           <p className="text-xs mb-2 text-muted-foreground">Perioadă</p>
           <p className="text-3xl font-extrabold font-heading" style={{ color: "#162040" }}>
-            {phase ? formatPeriod(phase.startDate, phase.endDate) : "Evaluare independentă"}
+            {phase
+              ? formatPeriod(phase.startDate, phase.endDate)
+              : evaluation.report
+                ? formatIndependentPeriod(
+                    evaluation.report.createdAt,
+                    evaluation.report.finished,
+                    evaluation.report.finishedAt,
+                  )
+                : "Evaluare independentă"}
           </p>
         </div>
         <div className="bg-white rounded-xl border border-border p-5">

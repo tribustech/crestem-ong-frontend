@@ -1,3 +1,8 @@
+export interface NavUser {
+  nume: string;
+  dashboardHref: string;
+}
+
 export const DESPRE_SUBMENU = [
   { label: "Despre noi", href: "/despre" },
   { label: "Echipă", href: "/echipa" },
