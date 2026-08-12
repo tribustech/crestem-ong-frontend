@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import type { Dimension } from "@/lib/api/dimensions";
 import type { EvaluationDetail } from "@/lib/api/evaluations";
 import { finalizeEvaluationAction, saveEvaluationDimensionAction } from "@/lib/api/evaluations-actions";
@@ -67,11 +69,13 @@ export function EvaluationWizard({
   dimensions: Dimension[];
   initialEvaluation: EvaluationDetail;
 }) {
+  const router = useRouter();
   const [evaluation, setEvaluation] = useState(initialEvaluation);
   const [wasAlreadyComplete] = useState(initialEvaluation.completedAt != null);
   const [entered, setEntered] = useState(false);
   const [reviewDimensionKey, setReviewDimensionKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [activeAction, setActiveAction] = useState<"dimension" | "draft" | "finalize" | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const backHref = `/dashboard/user-ong/${ongDocumentId}`;
@@ -86,12 +90,14 @@ export function EvaluationWizard({
     onSaved?: () => void,
   ) => {
     setError(null);
+    setActiveAction("dimension");
     startTransition(async () => {
       const result = await saveEvaluationDimensionAction(evaluationDocumentId, {
         dimensionKey,
         submit: true,
         ...input,
       });
+      setActiveAction(null);
       if (result.error) {
         setError(result.error);
         return;
@@ -103,10 +109,35 @@ export function EvaluationWizard({
     });
   };
 
+  const saveDraft = (
+    dimensionKey: string,
+    input: { comment: string; quiz: { questionId: string; answer: number }[] },
+  ) => {
+    setError(null);
+    setActiveAction("draft");
+    startTransition(async () => {
+      const result = await saveEvaluationDimensionAction(evaluationDocumentId, {
+        dimensionKey,
+        submit: false,
+        ...input,
+      });
+      setActiveAction(null);
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Progresul a fost salvat ca draft. Poți continua mai târziu.");
+      router.push(backHref);
+    });
+  };
+
   const finalize = () => {
     setError(null);
+    setActiveAction("finalize");
     startTransition(async () => {
       const result = await finalizeEvaluationAction(evaluationDocumentId);
+      setActiveAction(null);
       if (result.error) {
         setError(result.error);
         return;
@@ -235,7 +266,8 @@ export function EvaluationWizard({
         dimension={reviewDimension}
         dimensionIndex={reviewIndex}
         block={blockByKey.get(reviewDimension.key)}
-        saving={isPending}
+        saving={isPending && activeAction === "dimension"}
+        savingDraft={isPending && activeAction === "draft"}
         error={error}
         backLabel="Înapoi la verificare"
         submitLabel="Salvează modificările"
@@ -243,6 +275,7 @@ export function EvaluationWizard({
         showSubmitIcon={false}
         onBack={() => setReviewDimensionKey(null)}
         onSubmit={(input) => submitDimension(reviewDimension.key, input, () => setReviewDimensionKey(null))}
+        onSaveDraft={(input) => saveDraft(reviewDimension.key, input)}
       />
     );
   }
@@ -252,7 +285,7 @@ export function EvaluationWizard({
       <EvaluationReview
         dimensions={dimensions}
         blockByKey={blockByKey}
-        saving={isPending}
+        saving={isPending && activeAction === "finalize"}
         error={error}
         onEditDimension={setReviewDimensionKey}
         onFinalize={finalize}
@@ -271,12 +304,14 @@ export function EvaluationWizard({
       dimension={currentDimension}
       dimensionIndex={dimensionIndex}
       block={blockByKey.get(currentDimension.key)}
-      saving={isPending}
+      saving={isPending && activeAction === "dimension"}
+      savingDraft={isPending && activeAction === "draft"}
       error={error}
       submitLabel={isLastDimension ? "Finalizează evaluarea" : "Dimensiunea următoare"}
       showSubmitIcon={!isLastDimension}
       onBack={() => setEntered(false)}
       onSubmit={(input) => submitDimension(currentDimension.key, input)}
+      onSaveDraft={(input) => saveDraft(currentDimension.key, input)}
     />
   );
 }

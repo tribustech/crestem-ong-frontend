@@ -13,6 +13,7 @@ export function DimensionStep({
   dimensionIndex,
   block,
   saving,
+  savingDraft = false,
   error,
   backLabel = "Înapoi la instrucțiuni",
   submitLabel = "Dimensiunea următoare",
@@ -20,11 +21,13 @@ export function DimensionStep({
   showSubmitIcon = true,
   onBack,
   onSubmit,
+  onSaveDraft,
 }: {
   dimension: Dimension;
   dimensionIndex: number;
   block?: EvaluationDimensionBlock;
   saving: boolean;
+  savingDraft?: boolean;
   error: string | null;
   backLabel?: string;
   submitLabel?: string;
@@ -32,6 +35,7 @@ export function DimensionStep({
   showSubmitIcon?: boolean;
   onBack: () => void;
   onSubmit: (input: { comment: string; quiz: { questionId: string; answer: number }[] }) => void;
+  onSaveDraft: (input: { comment: string; quiz: { questionId: string; answer: number }[] }) => void;
 }) {
   const [answers, setAnswers] = useState<Record<string, number>>(() =>
     Object.fromEntries(
@@ -68,6 +72,14 @@ export function DimensionStep({
     }
     setValidationError(null);
     onSubmit({
+      comment: comment.trim(),
+      quiz: Object.entries(answers).map(([questionId, answer]) => ({ questionId, answer })),
+    });
+  };
+
+  const handleSaveDraft = () => {
+    setValidationError(null);
+    onSaveDraft({
       comment: comment.trim(),
       quiz: Object.entries(answers).map(([questionId, answer]) => ({ questionId, answer })),
     });
@@ -172,7 +184,16 @@ export function DimensionStep({
           </span>
           <button
             type="button"
-            disabled={!canSubmit || saving}
+            disabled={saving || savingDraft}
+            onClick={handleSaveDraft}
+            className="px-4 py-2 rounded-xl text-sm font-semibold border border-border hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            style={{ color: "#475569" }}
+          >
+            {savingDraft ? "Se salvează..." : "Salvează ca draft"}
+          </button>
+          <button
+            type="button"
+            disabled={!canSubmit || saving || savingDraft}
             onClick={handleSubmit}
             className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: "#162040" }}
