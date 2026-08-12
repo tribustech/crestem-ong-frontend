@@ -3,10 +3,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, User } from "lucide-react";
 import { DESPRE_SUBMENU, NAV_LINKS } from "./nav-data";
+import type { NavUser } from "./nav-data";
 
-export function MobileMenu() {
+export function MobileMenu({ user }: { user: NavUser | null }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [despreOpen, setDespreOpen] = useState(false);
@@ -64,22 +65,44 @@ export function MobileMenu() {
             );
           })}
           <div className="mt-2 border-t border-border pt-3 flex flex-col gap-2">
-            <Link
-              href="/autentificare"
-              onClick={close}
-              className="py-3 text-center rounded-lg text-sm font-medium transition-colors hover:bg-muted"
-              style={{ color: "#162040", border: "1.5px solid #e2e8f0" }}
-            >
-              Intră în cont
-            </Link>
-            <Link
-              href="/inregistrare"
-              onClick={close}
-              className="py-3 text-center rounded-lg text-sm font-semibold text-white"
-              style={{ background: "#2dbe8f" }}
-            >
-              Înregistrează-te
-            </Link>
+            {user ? (
+              <>
+                <p
+                  className="flex items-center gap-1.5 px-3 text-sm font-medium truncate"
+                  style={{ color: "#162040" }}
+                >
+                  <User size={16} className="shrink-0" />
+                  {user.nume}
+                </p>
+                <Link
+                  href={user.dashboardHref}
+                  onClick={close}
+                  className="py-3 text-center rounded-lg text-sm font-semibold text-white"
+                  style={{ background: "#2dbe8f" }}
+                >
+                  Mergi la dashboard
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/autentificare"
+                  onClick={close}
+                  className="py-3 text-center rounded-lg text-sm font-medium transition-colors hover:bg-muted"
+                  style={{ color: "#162040", border: "1.5px solid #e2e8f0" }}
+                >
+                  Intră în cont
+                </Link>
+                <Link
+                  href="/inregistrare"
+                  onClick={close}
+                  className="py-3 text-center rounded-lg text-sm font-semibold text-white"
+                  style={{ background: "#2dbe8f" }}
+                >
+                  Înregistrează-te
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
