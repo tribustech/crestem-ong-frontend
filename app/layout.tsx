@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Toaster } from "sonner";
 import { SiteChrome } from "@/components/features/navigation/SiteChrome";
 import "./globals.css";
 
@@ -28,7 +29,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${plusJakartaSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome user={navUser}>{children}</SiteChrome>
+        <Toaster richColors closeButton position="top-center" />
       </body>
     </html>
   );

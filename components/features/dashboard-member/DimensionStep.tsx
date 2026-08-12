@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
+import { toast } from "sonner";
 import type { Dimension } from "@/lib/api/dimensions";
 import type { EvaluationDimensionBlock } from "@/lib/api/evaluations";
 
@@ -49,11 +50,20 @@ export function DimensionStep({
   const letter = DIMENSION_LETTERS[dimensionIndex] ?? String(dimensionIndex + 1);
   const answeredCount = dimension.quiz.filter((question) => answers[question.id] != null).length;
   const allAnswered = answeredCount === dimension.quiz.length;
+  const hasComment = comment.trim().length > 0;
   const canSubmit = allAnswered;
 
   const handleSubmit = () => {
     if (!allAnswered) {
-      setValidationError("Răspunde la toate întrebările înainte de a trimite.");
+      const message = "Răspunde la toate întrebările înainte de a trimite.";
+      setValidationError(message);
+      toast.error(message);
+      return;
+    }
+    if (!hasComment) {
+      const message = "Adaugă un comentariu înainte de a trimite.";
+      setValidationError(message);
+      toast.error(message);
       return;
     }
     setValidationError(null);
@@ -126,13 +136,17 @@ export function DimensionStep({
       </div>
 
       <div className="bg-white rounded-2xl border border-border p-5 mb-20">
-        <p className="text-sm font-semibold mb-3" style={{ color: "#162040" }}>
+        <label htmlFor="dimension-comment" className="block text-sm font-semibold mb-3" style={{ color: "#162040" }}>
           Te rugăm să argumentezi selecția făcută pentru indicatorul „{dimension.name}”
-        </p>
+          <span style={{ color: "#ef4444" }}> *</span>
+        </label>
         <textarea
+          id="dimension-comment"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           rows={4}
+          required
+          aria-required="true"
           className="w-full px-4 py-3 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-[#2dbe8f]/30 focus:border-[#2dbe8f]"
           placeholder="Descrie pe scurt raționamentul din spatele răspunsurilor tale..."
         />
