@@ -18,6 +18,7 @@ const DASHBOARD_PATH_BY_ROLE: Record<string, string> = {
   "ngo-admin": "/dashboard/ong",
   "super-admin": "/dashboard/fdsc",
   "ngo-member": "/dashboard/user-ong",
+  individual: "/dashboard/individual",
 };
 
 export function getDashboardPathForRole(roleType?: string | null): string | null {

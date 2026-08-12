@@ -47,7 +47,9 @@ export function LoginForm() {
             ? "/dashboard/ong/evaluari"
             : user.role?.type === "ngo-member"
               ? "/dashboard/user-ong"
-              : "/";
+              : user.role?.type === "individual"
+                ? "/dashboard/individual"
+                : "/";
       router.push(destination);
       router.refresh();
     } catch (err) {

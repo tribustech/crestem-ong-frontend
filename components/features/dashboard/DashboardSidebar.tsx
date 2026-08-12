@@ -92,20 +92,33 @@ const MEMBER_NAV_SECTIONS: DashboardNavSection[] = [
   },
 ];
 
-const NAV_SECTIONS_BY_VARIANT: Record<"fdsc" | "ong" | "member", DashboardNavSection[]> = {
+const INDIVIDUAL_NAV_SECTIONS: DashboardNavSection[] = [
+  {
+    items: [
+      { href: "/dashboard/individual", label: "Profilul meu", icon: User },
+      { href: "/dashboard/individual/evaluari", label: "Evaluările mele", icon: ClipboardList },
+      { href: "/dashboard/individual/e-learning", label: "E-Learning", icon: GraduationCap },
+    ],
+  },
+];
+
+const NAV_SECTIONS_BY_VARIANT: Record<"fdsc" | "ong" | "member" | "individual", DashboardNavSection[]> = {
   fdsc: FDSC_NAV_SECTIONS,
   ong: ONG_NAV_SECTIONS,
   member: MEMBER_NAV_SECTIONS,
+  individual: INDIVIDUAL_NAV_SECTIONS,
 };
 
 export function DashboardSidebar({
   userName,
   userEmail,
   variant = "fdsc",
+  accountLabel,
 }: {
   userName: string;
   userEmail: string;
-  variant?: "fdsc" | "ong" | "member";
+  variant?: "fdsc" | "ong" | "member" | "individual";
+  accountLabel?: string;
 }) {
   const sections = NAV_SECTIONS_BY_VARIANT[variant];
   const pathname = usePathname();
@@ -180,7 +193,7 @@ export function DashboardSidebar({
         <div className="flex items-center gap-2.5 px-3">
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold text-white shrink-0"
-            style={{ background: "#2dbe8f" }}
+            style={{ background: variant === "individual" ? "#2563eb" : "#2dbe8f" }}
           >
             {initial}
           </div>
@@ -188,7 +201,7 @@ export function DashboardSidebar({
             <p className="text-sm font-semibold truncate" style={{ color: "#162040" }}>
               {userName}
             </p>
-            <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+            <p className="text-xs text-muted-foreground truncate">{accountLabel ?? userEmail}</p>
           </div>
         </div>
         <Link

@@ -11,8 +11,9 @@ const OPTIONS = [
     desc: "Accesează resurse, ghiduri și instrumente din biblioteca Crestem.ONG. Ideal dacă ești profesionist în sectorul nonprofit sau dorești să explorezi platforma.",
     benefits: ["Acces la biblioteca completă de resurse", "Participare la webinarii și evenimente", "Newsletter săptămânal cu resurse noi"],
     cta: "Creează cont",
-    href: "#",
-    available: false,
+    href: "/inregistrare/utilizator",
+    available: true,
+    recommended: false,
   },
   {
     id: "ong",
@@ -25,6 +26,7 @@ const OPTIONS = [
     cta: "Înregistrează organizația",
     href: "/inregistrare/ong",
     available: true,
+    recommended: true,
   },
 ] as const;
 
@@ -38,11 +40,11 @@ export function AccountTypeCards() {
             key={opt.id}
             className="rounded-2xl border flex flex-col p-8 relative bg-white"
             style={{
-              borderColor: opt.available ? "#2dbe8f" : "#e2e8f0",
-              boxShadow: opt.available ? "0 0 0 2px #2dbe8f22" : undefined,
+              borderColor: opt.recommended ? "#2dbe8f" : "#e2e8f0",
+              boxShadow: opt.recommended ? "0 0 0 2px #2dbe8f22" : undefined,
             }}
           >
-            {opt.available && (
+            {opt.recommended && (
               <div
                 className="absolute -top-3 left-8 px-3 py-1 rounded-full text-xs font-bold"
                 style={{ background: "#2dbe8f", color: "#fff" }}
