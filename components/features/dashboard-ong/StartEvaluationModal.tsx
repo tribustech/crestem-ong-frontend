@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { startEvaluationAction } from "@/lib/api/reports-actions";
 import type { OngMember } from "@/lib/api/reports";
@@ -14,6 +15,7 @@ export function StartEvaluationModal({
   program?: string;
   onClose: () => void;
 }) {
+  const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -34,11 +36,12 @@ export function StartEvaluationModal({
     setError(null);
     startTransition(async () => {
       const result = await startEvaluationAction([...selected], program);
-      if (result.error) {
-        setError(result.error);
+      if (result.error || !result.reportId) {
+        setError(result.error ?? "Nu am putut porni evaluarea.");
         return;
       }
       onClose();
+      router.push(`/dashboard/ong/evaluari/${result.reportId}`);
     });
   };
 

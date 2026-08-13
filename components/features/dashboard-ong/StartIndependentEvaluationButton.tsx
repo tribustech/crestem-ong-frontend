@@ -9,9 +9,11 @@ import type { EvaluationLock, OngMember } from "@/lib/api/reports";
 export function StartIndependentEvaluationButton({
   ongMembers,
   lock,
+  showActivePhaseHint = true,
 }: {
   ongMembers: OngMember[];
   lock: EvaluationLock | null;
+  showActivePhaseHint?: boolean;
 }) {
   const [starting, setStarting] = useState(false);
 
@@ -41,7 +43,8 @@ export function StartIndependentEvaluationButton({
       )}
       {lock?.reason === "active-phase" && (
         <p className="text-xs" style={{ color: "#94a3b8" }}>
-          Ai o fază de evaluare activă în programul {lock.programName}. Pornește evaluarea din pagina programului.
+          Ai o fază de evaluare activă în programul {lock.programName}
+          {showActivePhaseHint ? ". Pornește evaluarea din pagina programului." : "."}
         </p>
       )}
 

@@ -8,19 +8,21 @@ import { getApiErrorMessage } from "./client";
 export async function startEvaluationAction(
   members: string[],
   program?: string,
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; reportId?: string }> {
+  let reportId: string;
   try {
-    await serverApiFetch("/api/reports/start", {
+    const res = await serverApiFetch<{ data: { report: { documentId: string } } }>("/api/reports/start", {
       method: "POST",
       body: JSON.stringify(program ? { program, members } : { members }),
     });
+    reportId = res.data.report.documentId;
   } catch (err) {
     return { error: getApiErrorMessage(err, "Nu am putut porni evaluarea.") };
   }
 
   revalidatePath("/dashboard/ong/programe");
   revalidatePath("/dashboard/ong/evaluari");
-  return {};
+  return { reportId };
 }
 
 export async function addReportMembersAction(

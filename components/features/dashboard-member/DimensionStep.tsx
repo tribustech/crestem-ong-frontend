@@ -22,6 +22,7 @@ export function DimensionStep({
   onBack,
   onSubmit,
   onSaveDraft,
+  onSaveDraftAndBack,
 }: {
   dimension: Dimension;
   dimensionIndex: number;
@@ -36,6 +37,7 @@ export function DimensionStep({
   onBack: () => void;
   onSubmit: (input: { comment: string; quiz: { questionId: string; answer: number }[] }) => void;
   onSaveDraft: (input: { comment: string; quiz: { questionId: string; answer: number }[] }) => void;
+  onSaveDraftAndBack?: (input: { comment: string; quiz: { questionId: string; answer: number }[] }) => void;
 }) {
   const [answers, setAnswers] = useState<Record<string, number>>(() =>
     Object.fromEntries(
@@ -46,6 +48,7 @@ export function DimensionStep({
   );
   const [comment, setComment] = useState(block?.comment ?? "");
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [showBackConfirm, setShowBackConfirm] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -80,6 +83,14 @@ export function DimensionStep({
   const handleSaveDraft = () => {
     setValidationError(null);
     onSaveDraft({
+      comment: comment.trim(),
+      quiz: Object.entries(answers).map(([questionId, answer]) => ({ questionId, answer })),
+    });
+  };
+
+  const handleSaveDraftAndBack = () => {
+    setValidationError(null);
+    onSaveDraftAndBack?.({
       comment: comment.trim(),
       quiz: Object.entries(answers).map(([questionId, answer]) => ({ questionId, answer })),
     });
@@ -172,7 +183,7 @@ export function DimensionStep({
       <div className="sticky bottom-0 bg-white border border-border rounded-2xl px-5 py-4 flex items-center justify-between">
         <button
           type="button"
-          onClick={onBack}
+          onClick={() => setShowBackConfirm(true)}
           className="inline-flex items-center gap-1.5 text-sm font-medium hover:underline"
           style={{ color: "#94a3b8" }}
         >
@@ -202,6 +213,57 @@ export function DimensionStep({
           </button>
         </div>
       </div>
+
+      {showBackConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="back-confirm-title"
+        >
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6">
+            <h2 id="back-confirm-title" className="font-heading font-extrabold text-lg mb-2" style={{ color: "#162040" }}>
+              {onSaveDraftAndBack ? "Salvezi progresul înainte de a pleca?" : "Renunți la modificări?"}
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6">
+              {onSaveDraftAndBack
+                ? "Dacă pleci acum fără să salvezi, răspunsurile completate la această dimensiune se vor pierde."
+                : "Modificările nesalvate pentru această dimensiune vor fi pierdute. Răspunsul salvat anterior rămâne neschimbat."}
+            </p>
+            <div className="flex flex-col gap-2">
+              {onSaveDraftAndBack && (
+                <button
+                  type="button"
+                  disabled={savingDraft}
+                  onClick={handleSaveDraftAndBack}
+                  className="px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:opacity-90"
+                  style={{ background: "#2dbe8f" }}
+                >
+                  {savingDraft ? "Se salvează..." : "Salvează ca draft"}
+                </button>
+              )}
+              <button
+                type="button"
+                disabled={savingDraft}
+                onClick={onBack}
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:underline"
+                style={{ color: "#94a3b8" }}
+              >
+                {onSaveDraftAndBack ? "Renunță la răspunsuri" : "Renunță la modificări"}
+              </button>
+              <button
+                type="button"
+                disabled={savingDraft}
+                onClick={() => setShowBackConfirm(false)}
+                className="px-4 py-2.5 rounded-xl text-sm font-semibold border border-border hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ color: "#475569" }}
+              >
+                Anulează
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

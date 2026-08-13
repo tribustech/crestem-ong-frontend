@@ -132,6 +132,32 @@ export function EvaluationWizard({
     });
   };
 
+  const saveDraftAndReturn = (
+    dimensionKey: string,
+    input: { comment: string; quiz: { questionId: string; answer: number }[] },
+  ) => {
+    setError(null);
+    setActiveAction("draft");
+    startTransition(async () => {
+      const result = await saveEvaluationDimensionAction(evaluationDocumentId, {
+        dimensionKey,
+        submit: false,
+        ...input,
+      });
+      setActiveAction(null);
+      if (result.error) {
+        setError(result.error);
+        toast.error(result.error);
+        return;
+      }
+      if (result.data) {
+        setEvaluation(result.data);
+      }
+      toast.success("Progresul a fost salvat ca draft.");
+      setEntered(false);
+    });
+  };
+
   const finalize = () => {
     setError(null);
     setActiveAction("finalize");
@@ -312,6 +338,7 @@ export function EvaluationWizard({
       onBack={() => setEntered(false)}
       onSubmit={(input) => submitDimension(currentDimension.key, input)}
       onSaveDraft={(input) => saveDraft(currentDimension.key, input)}
+      onSaveDraftAndBack={(input) => saveDraftAndReturn(currentDimension.key, input)}
     />
   );
 }
