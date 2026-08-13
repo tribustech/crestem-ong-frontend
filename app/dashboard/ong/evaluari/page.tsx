@@ -3,6 +3,7 @@ import { serverApiFetch } from "@/lib/api/server";
 import { getIndependentStartLock } from "@/lib/api/reports";
 import type { ReportListItem, ReportsCurrent, OngMember } from "@/lib/api/reports";
 import { StartIndependentEvaluationButton } from "@/components/features/dashboard-ong/StartIndependentEvaluationButton";
+import { EvaluationDetailTabs } from "@/components/features/dashboard-ong/EvaluationDetailTabs";
 
 function formatDate(iso: string) {
   if (!iso) return "—";
@@ -33,6 +34,8 @@ export default async function OngEvaluariPage() {
           Toate rundele de evaluare pornite de organizația ta.
         </p>
       </div>
+
+      <EvaluationDetailTabs active="info" />
 
       <StartIndependentEvaluationButton ongMembers={membersRes.data} lock={independentLock} />
 

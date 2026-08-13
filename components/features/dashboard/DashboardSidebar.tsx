@@ -21,6 +21,8 @@ import {
   Settings,
   User,
   GraduationCap,
+  Calendar,
+  MessageCircle,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
@@ -102,11 +104,24 @@ const INDIVIDUAL_NAV_SECTIONS: DashboardNavSection[] = [
   },
 ];
 
-const NAV_SECTIONS_BY_VARIANT: Record<"fdsc" | "ong" | "member" | "individual", DashboardNavSection[]> = {
+const MENTOR_NAV_SECTIONS: DashboardNavSection[] = [
+  {
+    items: [
+      { href: "/dashboard/mentor", label: "Panou principal", icon: LayoutGrid },
+      { href: "/dashboard/mentor/profil", label: "Profilul meu", icon: User },
+      { href: "/dashboard/mentor/programe", label: "Programele mele", icon: Layers },
+      { href: "/dashboard/mentor/intalniri", label: "Întâlniri", icon: Calendar },
+      { href: "/dashboard/mentor/mesaje", label: "Mesaje", icon: MessageCircle },
+    ],
+  },
+];
+
+const NAV_SECTIONS_BY_VARIANT: Record<"fdsc" | "ong" | "member" | "individual" | "mentor", DashboardNavSection[]> = {
   fdsc: FDSC_NAV_SECTIONS,
   ong: ONG_NAV_SECTIONS,
   member: MEMBER_NAV_SECTIONS,
   individual: INDIVIDUAL_NAV_SECTIONS,
+  mentor: MENTOR_NAV_SECTIONS,
 };
 
 export function DashboardSidebar({
@@ -117,7 +132,7 @@ export function DashboardSidebar({
 }: {
   userName: string;
   userEmail: string;
-  variant?: "fdsc" | "ong" | "member" | "individual";
+  variant?: "fdsc" | "ong" | "member" | "individual" | "mentor";
   accountLabel?: string;
 }) {
   const sections = NAV_SECTIONS_BY_VARIANT[variant];
@@ -166,8 +181,8 @@ export function DashboardSidebar({
             )}
             <div className="space-y-1">
               {section.items.map((item) => {
-                const active = item.href === activeHref;
                 const Icon = item.icon;
+                const active = item.href === activeHref;
                 return (
                   <Link
                     key={item.href}

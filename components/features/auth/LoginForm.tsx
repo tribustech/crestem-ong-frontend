@@ -49,7 +49,9 @@ export function LoginForm() {
               ? "/dashboard/user-ong"
               : user.role?.type === "individual"
                 ? "/dashboard/individual"
-                : "/";
+                : user.role?.type === "mentor"
+                  ? "/dashboard/mentor/mesaje"
+                  : "/";
       router.push(destination);
       router.refresh();
     } catch (err) {
