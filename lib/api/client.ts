@@ -1,5 +1,13 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+/**
+ * Strapi media `url` fields are relative to the backend (e.g. `/uploads/x.png`),
+ * not the frontend origin — prefix them with the API base URL so <img src> resolves.
+ */
+export function getMediaUrl(url: string): string {
+  return /^https?:\/\//.test(url) ? url : `${API_URL}${url}`;
+}
+
 interface StrapiErrorResponse {
   error?: { message?: string; details?: unknown };
 }

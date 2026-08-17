@@ -1,4 +1,5 @@
 import { localApiFetch } from "./local";
+import { apiFetch } from "./client";
 
 export interface ActiveOng {
   documentId: string;
@@ -26,6 +27,31 @@ export interface Ong {
 
 export function listOngs() {
   return localApiFetch<{ data: Ong[] }>("/api/ongs");
+}
+
+export interface Domain {
+  documentId: string;
+  name: string;
+}
+
+export function listDomains() {
+  return apiFetch<{ data: Domain[] }>("/api/domains");
+}
+
+export interface MyOng {
+  documentId: string;
+  name: string;
+  cui: string;
+  judet: { documentId: string; nume: string } | null;
+  localitate: { documentId: string; nume: string } | null;
+  contact: { nume: string; prenume: string; email: string; telefon: string };
+  website: string | null;
+  logo: { url: string } | null;
+  domeniuPrincipal: { documentId: string; name: string } | null;
+  domeniuSecundar: { documentId: string; name: string } | null;
+  socialMedia: string | null;
+  descriere: string | null;
+  cuvinteCheie: string | null;
 }
 
 export interface OngEvaluation {

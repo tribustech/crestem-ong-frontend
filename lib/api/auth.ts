@@ -52,6 +52,7 @@ export function refreshSession(refreshToken: string) {
 
 export interface RegisterNgoPayload {
   nume: string;
+  prenume: string;
   email: string;
   password: string;
   telefon: string;
