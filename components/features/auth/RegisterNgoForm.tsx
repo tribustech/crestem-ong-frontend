@@ -25,7 +25,6 @@ const registerNgoSchema = z
     localitate: z.string().min(1, "Selectează localitatea"),
     website: z.string().trim(),
     nume: z.string().trim().min(1, "Câmp obligatoriu"),
-    prenume: z.string().trim().min(1, "Câmp obligatoriu"),
     telefon: z
       .string()
       .trim()
@@ -57,7 +56,6 @@ const EMPTY: RegisterNgoFormValues = {
   localitate: "",
   website: "",
   nume: "",
-  prenume: "",
   telefon: "",
   email: "",
   password: "",
@@ -163,7 +161,6 @@ export function RegisterNgoForm() {
     try {
       await registerNgo({
         nume: data.nume,
-        prenume: data.prenume,
         telefon: data.telefon,
         email: data.email,
         password: data.password,
@@ -409,21 +406,13 @@ export function RegisterNgoForm() {
       </div>
 
       <div className="px-8 py-7 space-y-5">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <Field label="Nume" required error={errors.nume?.message}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <Field label="Nume complet" required error={errors.nume?.message}>
             <input
               type="text"
-              placeholder="Numele de familie"
+              placeholder="ex. Ion Popescu"
               className={inputClass}
               {...register("nume")}
-            />
-          </Field>
-          <Field label="Prenume" required error={errors.prenume?.message}>
-            <input
-              type="text"
-              placeholder="Prenumele"
-              className={inputClass}
-              {...register("prenume")}
             />
           </Field>
           <Field label="Telefon" required error={errors.telefon?.message}>

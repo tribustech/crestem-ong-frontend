@@ -14,6 +14,9 @@ export interface MyOng {
   documentId: string;
   name: string;
   cui: string;
+  website: string | null;
+  adresa: string | null;
+  dataInfiintare: string | null;
   domeniuActivitate: string | null;
   programs: MyOngProgram[];
 }

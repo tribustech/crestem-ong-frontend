@@ -41,6 +41,61 @@ export async function updateMyOngAction(
   }
 }
 
+export interface InviteOngMemberInput {
+  nume: string;
+  email: string;
+  rolMembruOng?: string;
+}
+
+export async function inviteOngMemberAction(
+  input: InviteOngMemberInput,
+): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch("/api/auth/register/member", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut trimite invitația.") };
+  }
+
+  revalidatePath("/dashboard/ong/utilizatori");
+  return {};
+}
+
+export async function removeOngMemberAction(documentId: string): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch(`/api/ongs/members/${documentId}`, { method: "DELETE" });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut elimina utilizatorul.") };
+  }
+
+  revalidatePath("/dashboard/ong/utilizatori");
+  return {};
+}
+
+export async function acceptJoinRequestAction(documentId: string): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch(`/api/ongs/join-requests/${documentId}/accept`, { method: "POST" });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut confirma cererea.") };
+  }
+
+  revalidatePath("/dashboard/ong/utilizatori");
+  return {};
+}
+
+export async function rejectJoinRequestAction(documentId: string): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch(`/api/ongs/join-requests/${documentId}/reject`, { method: "POST" });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut respinge cererea.") };
+  }
+
+  revalidatePath("/dashboard/ong/utilizatori");
+  return {};
+}
+
 export async function uploadOngLogoAction(
   formData: FormData,
 ): Promise<{ error?: string; id?: number }> {

@@ -1,0 +1,174 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { activateAccount } from "@/lib/api/auth";
+import { ApiError, isZodFlattenError } from "@/lib/api/client";
+import { PasswordInput } from "./PasswordInput";
+
+const activateSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Parola trebuie să aibă minim 8 caractere")
+      .regex(/[A-Z]/, "Parola trebuie să conțină cel puțin o literă mare")
+      .regex(/[0-9]/, "Parola trebuie să conțină cel puțin o cifră")
+      .regex(/[^A-Za-z0-9]/, "Parola trebuie să conțină cel puțin un caracter special"),
+    confirmedPassword: z.string().min(1, "Câmp obligatoriu"),
+  })
+  .refine((data) => data.password === data.confirmedPassword, {
+    message: "Parolele nu coincid",
+    path: ["confirmedPassword"],
+  });
+
+type ActivateFormValues = z.infer<typeof activateSchema>;
+
+const inputClass =
+  "w-full px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#2dbe8f]/30 focus:border-[#2dbe8f] transition-colors bg-white text-sm";
+
+export function ActivateAccountForm() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") ?? "";
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [activated, setActivated] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ActivateFormValues>({
+    resolver: zodResolver(activateSchema),
+    defaultValues: { password: "", confirmedPassword: "" },
+  });
+
+  if (!token) {
+    return (
+      <div className="bg-white rounded-2xl border border-border shadow-sm p-8 text-center">
+        <AlertCircle size={32} className="mx-auto mb-3" style={{ color: "#ef4444" }} />
+        <h2 className="font-heading font-bold text-lg mb-2" style={{ color: "#162040" }}>
+          Link invalid
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Linkul de activare este incomplet sau invalid. Verifică linkul din email sau cere-i
+          administratorului să retrimită invitația.
+        </p>
+      </div>
+    );
+  }
+
+  if (activated) {
+    return (
+      <div className="bg-white rounded-2xl border border-border shadow-sm p-10 text-center">
+        <div
+          className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
+          style={{ background: "rgba(45,190,143,0.12)" }}
+        >
+          <CheckCircle size={32} style={{ color: "#2dbe8f" }} />
+        </div>
+        <h2 className="mb-2 font-heading font-extrabold text-xl" style={{ color: "#162040" }}>
+          Contul a fost activat!
+        </h2>
+        <p className="text-muted-foreground mb-6">Te poți autentifica acum cu noua parolă.</p>
+        <Link
+          href="/autentificare"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
+          style={{ background: "#2dbe8f", boxShadow: "0 4px 16px rgba(45,190,143,0.3)" }}
+        >
+          Mergi la autentificare
+        </Link>
+      </div>
+    );
+  }
+
+  const onSubmit = async (data: ActivateFormValues) => {
+    setApiError(null);
+    try {
+      await activateAccount({
+        token,
+        password: data.password,
+        confirmedPassword: data.confirmedPassword,
+      });
+      setActivated(true);
+    } catch (err) {
+      if (err instanceof ApiError && isZodFlattenError(err.details)) {
+        const messages = [
+          ...(err.details.formErrors ?? []),
+          ...Object.values(err.details.fieldErrors ?? {}).flat(),
+        ].filter(Boolean);
+        setApiError(messages[0] ?? err.message);
+      } else {
+        setApiError(
+          err instanceof ApiError
+            ? err.message
+            : "Nu am putut activa contul. Încearcă din nou.",
+        );
+      }
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="bg-white rounded-2xl border border-border shadow-sm p-8 space-y-5"
+    >
+      {apiError && (
+        <div
+          role="alert"
+          className="flex items-start gap-2.5 rounded-xl p-4 text-sm"
+          style={{ background: "#fff5f5", border: "1.5px solid #fca5a5", color: "#ef4444" }}
+        >
+          <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
+          {apiError}
+        </div>
+      )}
+
+      <div>
+        <label className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
+          Parolă nouă
+        </label>
+        <PasswordInput
+          placeholder="Min. 8 caractere"
+          className={inputClass}
+          {...register("password")}
+        />
+        {errors.password && (
+          <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>
+            {errors.password.message}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
+          Confirmă parola
+        </label>
+        <PasswordInput
+          placeholder="Repetă parola"
+          className={inputClass}
+          {...register("confirmedPassword")}
+        />
+        {errors.confirmedPassword && (
+          <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>
+            {errors.confirmedPassword.message}
+          </p>
+        )}
+      </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-white transition-all hover:opacity-90 disabled:opacity-60"
+        style={{ background: "#2dbe8f", boxShadow: "0 4px 16px rgba(45,190,143,0.3)" }}
+      >
+        {isSubmitting && <Loader2 size={18} className="animate-spin" />}
+        Activează contul
+      </button>
+    </form>
+  );
+}

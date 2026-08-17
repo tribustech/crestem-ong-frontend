@@ -44,7 +44,7 @@ export interface MyOng {
   cui: string;
   judet: { documentId: string; nume: string } | null;
   localitate: { documentId: string; nume: string } | null;
-  contact: { nume: string; prenume: string; email: string; telefon: string };
+  contact: { nume: string; email: string; telefon: string };
   website: string | null;
   logo: { url: string } | null;
   domeniuPrincipal: { documentId: string; name: string } | null;

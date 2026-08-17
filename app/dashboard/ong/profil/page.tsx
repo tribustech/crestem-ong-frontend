@@ -109,7 +109,7 @@ export default async function OngProfilPage() {
               Nume complet
             </dt>
             <dd className="font-semibold" style={{ color: "#162040" }}>
-              {ong.contact.nume} {ong.contact.prenume}
+              {ong.contact.nume}
             </dd>
           </div>
           <div>

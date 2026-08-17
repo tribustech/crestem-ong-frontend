@@ -136,4 +136,6 @@ export interface OngMember {
   nume: string;
   email: string;
   accountStatus: "pending" | "active";
+  rolMembruOng: string | null;
+  createdAt: string;
 }

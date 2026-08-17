@@ -52,7 +52,6 @@ export function refreshSession(refreshToken: string) {
 
 export interface RegisterNgoPayload {
   nume: string;
-  prenume: string;
   email: string;
   password: string;
   telefon: string;
@@ -81,6 +80,19 @@ export interface RegisterIndividualPayload {
 
 export function registerIndividual(payload: RegisterIndividualPayload) {
   return apiFetch<unknown>("/api/auth/register/individual", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export interface ActivateAccountPayload {
+  token: string;
+  password: string;
+  confirmedPassword: string;
+}
+
+export function activateAccount(payload: ActivateAccountPayload) {
+  return apiFetch<{ message: string }>("/api/auth/activate", {
     method: "POST",
     body: JSON.stringify(payload),
   });
