@@ -66,12 +66,6 @@ export function updateProgram(documentId: string, payload: UpdateProgramPayload)
   });
 }
 
-export interface AssignedOng {
-  documentId: string;
-  name: string;
-  evaluation: { documentId: string; name: string } | null;
-}
-
 export interface AssignedMentor {
   documentId: string;
   nume: string;
@@ -79,6 +73,13 @@ export interface AssignedMentor {
   mentorJobTitle: string | null;
   mentorOrganization: string | null;
   avatar: { documentId: string; name: string; url: string } | null;
+}
+
+export interface AssignedOng {
+  documentId: string;
+  name: string;
+  evaluation: { documentId: string; name: string } | null;
+  mentors: AssignedMentor[];
 }
 
 export function getProgramOngs(documentId: string) {

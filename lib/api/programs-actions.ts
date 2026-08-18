@@ -77,3 +77,39 @@ export async function removeMentorAction(programId: string, mentorId: string): P
   revalidatePath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }
+
+export async function assignOngMentorAction(
+  programId: string,
+  ongId: string,
+  mentorId: string,
+): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch("/api/programs/assign-ong-mentors", {
+      method: "POST",
+      body: JSON.stringify({ program: programId, ong: ongId, mentors: [mentorId] }),
+    });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut adăuga persoana resursă.") };
+  }
+
+  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  return {};
+}
+
+export async function removeOngMentorAction(
+  programId: string,
+  ongId: string,
+  mentorId: string,
+): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch("/api/programs/remove-ong-mentors", {
+      method: "POST",
+      body: JSON.stringify({ program: programId, ong: ongId, mentors: [mentorId] }),
+    });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut elimina persoana resursă.") };
+  }
+
+  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  return {};
+}

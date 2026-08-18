@@ -27,6 +27,7 @@ export function ProgramAssignments({
         assigned={assignedOngs}
         activeOngs={activeOngs}
         entryPhaseTitle={entryPhaseTitle}
+        assignedMentors={assignedMentors}
       />
       <AssignMentorsSection programId={programId} assigned={assignedMentors} activeMentors={activeMentors} />
     </div>

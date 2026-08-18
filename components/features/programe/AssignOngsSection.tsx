@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
-import { ArrowLeft, Building2, Plus, Search, Trash2, X } from "lucide-react";
-import { assignOngAction, removeOngAction } from "@/lib/api/programs-actions";
+import { ArrowLeft, Building2, ChevronDown, ChevronUp, Plus, Search, Trash2, Users, X } from "lucide-react";
+import {
+  assignOngAction,
+  assignOngMentorAction,
+  removeOngAction,
+  removeOngMentorAction,
+} from "@/lib/api/programs-actions";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { listOngEvaluations, type OngEvaluation } from "@/lib/api/ongs";
-import type { AssignedOng } from "@/lib/api/programs";
+import type { AssignedMentor, AssignedOng } from "@/lib/api/programs";
 import type { ActiveOng } from "@/lib/api/ongs";
 
 function formatEvalPeriod(evaluation: OngEvaluation) {
@@ -28,11 +33,13 @@ export function AssignOngsSection({
   assigned,
   activeOngs,
   entryPhaseTitle,
+  assignedMentors,
 }: {
   programId: string;
   assigned: AssignedOng[];
   activeOngs: ActiveOng[];
   entryPhaseTitle: string | null;
+  assignedMentors: AssignedMentor[];
 }) {
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
@@ -40,6 +47,11 @@ export function AssignOngsSection({
   const [removeError, setRemoveError] = useState<string | null>(null);
   const [pendingRemove, setPendingRemove] = useState<AssignedOng | null>(null);
   const [isPending, startTransition] = useTransition();
+
+  const [expandedOngId, setExpandedOngId] = useState<string | null>(null);
+  const [mentorSearch, setMentorSearch] = useState("");
+  const [mentorError, setMentorError] = useState<string | null>(null);
+  const [mentorPending, startMentorTransition] = useTransition();
 
   const [pendingOng, setPendingOng] = useState<ActiveOng | null>(null);
   const [evalSearch, setEvalSearch] = useState("");
@@ -63,6 +75,29 @@ export function AssignOngsSection({
     () => evaluations.filter((evaluation) => evaluation.name.toLowerCase().includes(evalSearch.toLowerCase())),
     [evaluations, evalSearch],
   );
+
+  const mentorCandidates = useMemo(
+    () =>
+      assignedMentors.filter(
+        (mentor) =>
+          mentor.nume.toLowerCase().includes(mentorSearch.toLowerCase()) ||
+          mentor.email.toLowerCase().includes(mentorSearch.toLowerCase()),
+      ),
+    [assignedMentors, mentorSearch],
+  );
+
+  const handleToggleOngMentor = (ong: AssignedOng, mentor: AssignedMentor) => {
+    const isAssigned = (ong.mentors ?? []).some((m) => m.documentId === mentor.documentId);
+    setMentorError(null);
+    startMentorTransition(async () => {
+      const result = isAssigned
+        ? await removeOngMentorAction(programId, ong.documentId, mentor.documentId)
+        : await assignOngMentorAction(programId, ong.documentId, mentor.documentId);
+      if (result.error) {
+        setMentorError(result.error);
+      }
+    });
+  };
 
   useEffect(() => {
     if (!pendingOng) return;
@@ -307,39 +342,124 @@ export function AssignOngsSection({
         </div>
       ) : (
         <div className="divide-y divide-border">
-          {assigned.map((ong) => (
-            <div key={ong.documentId} className="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50 transition-colors">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#eff6ff" }}>
-                  <Building2 size={14} style={{ color: "#2563eb" }} />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-sm font-medium block truncate" style={{ color: "#162040" }}>{ong.name}</span>
-                  {ong.evaluation && (
-                    <span
-                      className="inline-block mt-0.5 text-xs px-2 py-0.5 rounded-full truncate max-w-full"
-                      style={{ background: "#eff6ff", color: "#2563eb" }}
+          {assigned.map((ong) => {
+            const isExpanded = expandedOngId === ong.documentId;
+            const ongMentors = ong.mentors ?? [];
+            return (
+              <div key={ong.documentId}>
+                <div className="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50 transition-colors gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: "#eff6ff" }}>
+                      <Building2 size={14} style={{ color: "#2563eb" }} />
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-sm font-medium block truncate" style={{ color: "#162040" }}>{ong.name}</span>
+                      <span className="text-xs text-muted-foreground block mt-0.5">
+                        {ongMentors.length} {ongMentors.length === 1 ? "persoană resursă" : "persoane resursă"}
+                      </span>
+                      {ong.evaluation && (
+                        <span
+                          className="inline-block mt-0.5 text-xs px-2 py-0.5 rounded-full truncate max-w-full"
+                          style={{ background: "#eff6ff", color: "#2563eb" }}
+                        >
+                          Eval: {ong.evaluation.name}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMentorError(null);
+                        setMentorSearch("");
+                        setExpandedOngId(isExpanded ? null : ong.documentId);
+                      }}
+                      aria-expanded={isExpanded}
+                      aria-controls={`ong-mentors-panel-${ong.documentId}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-semibold hover:bg-slate-50 transition-colors"
+                      style={{ color: "#475569" }}
                     >
-                      Eval: {ong.evaluation.name}
-                    </span>
-                  )}
+                      <Users size={13} />
+                      Persoane resursă
+                      {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={isPending}
+                      onClick={() => {
+                        setRemoveError(null);
+                        setPendingRemove(ong);
+                      }}
+                      aria-label={`Elimină ${ong.name}`}
+                      className="p-1.5 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60 shrink-0"
+                      style={{ color: "#94a3b8" }}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
                 </div>
+
+                {isExpanded && (
+                  <div id={`ong-mentors-panel-${ong.documentId}`} className="px-6 pb-5" style={{ background: "#f8fafc" }}>
+                    <p className="text-xs font-semibold uppercase tracking-wide pt-4 pb-3" style={{ color: "#64748b" }}>
+                      Persoane resursă alocate pentru {ong.name}
+                    </p>
+                    <div className="relative mb-3">
+                      <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color: "#94a3b8" }} />
+                      <input
+                        type="text"
+                        placeholder="Caută persoană resursă..."
+                        value={mentorSearch}
+                        onChange={(e) => setMentorSearch(e.target.value)}
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:border-accent transition-colors bg-white"
+                      />
+                    </div>
+                    {mentorError && (
+                      <p className="text-xs pb-2" style={{ color: "#ef4444" }}>
+                        {mentorError}
+                      </p>
+                    )}
+                    <div className="divide-y divide-border max-h-64 overflow-y-auto rounded-xl border border-border bg-white">
+                      {mentorCandidates.length === 0 ? (
+                        <p className="px-4 py-4 text-sm text-muted-foreground">
+                          {mentorSearch
+                            ? "Nicio persoană găsită."
+                            : "Nicio persoană resursă alocată acestui program încă."}
+                        </p>
+                      ) : (
+                        mentorCandidates.map((mentor) => {
+                          const checked = ongMentors.some((m) => m.documentId === mentor.documentId);
+                          return (
+                            <label
+                              key={mentor.documentId}
+                              className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                disabled={mentorPending}
+                                onChange={() => handleToggleOngMentor(ong, mentor)}
+                                className="h-4 w-4 rounded border-border shrink-0"
+                              />
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium truncate" style={{ color: "#162040" }}>{mentor.nume}</p>
+                                <p className="text-xs text-muted-foreground truncate">{mentor.email}</p>
+                              </div>
+                            </label>
+                          );
+                        })
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground pt-3">
+                      {ongMentors.length}{" "}
+                      {ongMentors.length === 1 ? "persoană resursă selectată" : "persoane resursă selectate"}
+                    </p>
+                  </div>
+                )}
               </div>
-              <button
-                type="button"
-                disabled={isPending}
-                onClick={() => {
-                  setRemoveError(null);
-                  setPendingRemove(ong);
-                }}
-                aria-label={`Elimină ${ong.name}`}
-                className="p-1.5 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60 shrink-0"
-                style={{ color: "#94a3b8" }}
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
