@@ -69,6 +69,14 @@ export function ConversationList({
                       </span>
                     )}
                   </div>
+                  {(ong.admin || conversation.program) && (
+                    <p
+                      className="text-xs truncate"
+                      style={{ color: isSelected ? "#2dbe8f" : "#94a3b8", fontWeight: isSelected ? 600 : 400 }}
+                    >
+                      {[ong.admin?.nume, conversation.program?.name].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
                   <div className="flex items-center gap-1.5 mt-0.5">
                     {conversation.unread && (
                       <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: "#2dbe8f" }} />

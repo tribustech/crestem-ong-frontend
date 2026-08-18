@@ -69,13 +69,13 @@ export function ConversationList({
                       </span>
                     )}
                   </div>
-                  {mentor.mentorOrganization && (
+                  {conversation.program && (
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <p
                         className="text-xs truncate"
                         style={{ color: isSelected ? "#2dbe8f" : "#94a3b8", fontWeight: isSelected ? 600 : 400 }}
                       >
-                        {mentor.mentorOrganization}
+                        {conversation.program.name}
                       </p>
                       {isSelected && (
                         <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#2dbe8f" }} />
