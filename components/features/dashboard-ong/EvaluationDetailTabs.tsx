@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const DISABLED_TABS = ["Overview", "Evaluare curentă", "Comparație"];
 
-export function EvaluationDetailTabs({ active }: { active: "info" | "mesaje" }) {
+export function EvaluationDetailTabs({ active }: { active: "info" }) {
   const tabClass = (isActive: boolean) =>
     isActive ? "pb-3 text-sm font-semibold border-b-2" : "pb-3 text-sm font-medium hover:text-slate-700 transition-colors";
   const tabStyle = (isActive: boolean) =>
@@ -23,13 +23,6 @@ export function EvaluationDetailTabs({ active }: { active: "info" | "mesaje" }) 
       <span className="pb-3 text-sm font-medium cursor-not-allowed opacity-40" title="Disponibil în curând">
         {DISABLED_TABS[1]}
       </span>
-      <Link
-        href="/dashboard/ong/evaluari/mesaje"
-        className={tabClass(active === "mesaje")}
-        style={tabStyle(active === "mesaje")}
-      >
-        Mesaje
-      </Link>
       <span className="pb-3 text-sm font-medium cursor-not-allowed opacity-40" title="Disponibil în curând">
         {DISABLED_TABS[2]}
       </span>

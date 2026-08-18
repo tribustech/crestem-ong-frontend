@@ -80,6 +80,7 @@ const ONG_NAV_SECTIONS: DashboardNavSection[] = [
       { href: "/dashboard/ong/programe", label: "Programele mele", icon: Layers },
       { href: "/dashboard/ong/utilizatori", label: "Utilizatori", icon: Users },
       { href: "/dashboard/ong/e-learning", label: "E-Learning", icon: GraduationCap },
+      { href: "/dashboard/ong/mesaje", label: "Mesaje", icon: MessageCircle },
     ],
   },
 ];
