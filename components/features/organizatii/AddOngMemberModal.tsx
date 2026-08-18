@@ -10,20 +10,21 @@ const inputClass =
 export function AddOngMemberModal({ onClose }: { onClose: () => void }) {
   const [nume, setNume] = useState("");
   const [email, setEmail] = useState("");
-  const [rolMembruOng, setRolMembruOng] = useState("");
+  const [rol, setRol] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = () => {
     setError(null);
+    setFieldErrors({});
     startTransition(async () => {
-      const result = await inviteOngMemberAction({
-        nume,
-        email,
-        ...(rolMembruOng.trim() ? { rolMembruOng: rolMembruOng.trim() } : {}),
-      });
-      if (result.error) {
-        setError(result.error);
+      const result = await inviteOngMemberAction({ nume, email, rol });
+      if (result.error || result.fieldErrors) {
+        setFieldErrors(result.fieldErrors ?? {});
+        setError(result.error ?? null);
+      }
+      if (result.error || Object.keys(result.fieldErrors ?? {}).length > 0) {
         return;
       }
       onClose();
@@ -71,6 +72,11 @@ export function AddOngMemberModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setNume(e.target.value)}
               placeholder="ex. Ion Popescu"
             />
+            {fieldErrors.nume && (
+              <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>
+                {fieldErrors.nume}
+              </p>
+            )}
           </div>
 
           <div>
@@ -85,24 +91,36 @@ export function AddOngMemberModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="ion.popescu@ong.ro"
             />
+            {fieldErrors.email && (
+              <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>
+                {fieldErrors.email}
+              </p>
+            )}
           </div>
 
           <div>
             <label htmlFor="member-rol" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
-              Rol în ONG
+              Rol în organizație <span style={{ color: "#2dbe8f" }}>*</span>
             </label>
             <input
               id="member-rol"
               type="text"
               className={inputClass}
-              value={rolMembruOng}
-              onChange={(e) => setRolMembruOng(e.target.value)}
-              placeholder="ex. Coordonator, Voluntar, Manager..."
+              value={rol}
+              onChange={(e) => setRol(e.target.value)}
+              placeholder="ex. Coordonator de programe"
+              maxLength={100}
             />
-            <p className="mt-1.5 text-xs text-muted-foreground">
-              Utilizatorul va primi o invitație pe email pentru a se alătura ONG-ului tău.
-            </p>
+            {fieldErrors.rol && (
+              <p className="mt-1 text-xs" style={{ color: "#ef4444" }}>
+                {fieldErrors.rol}
+              </p>
+            )}
           </div>
+
+          <p className="text-xs text-muted-foreground">
+            Utilizatorul va primi o invitație pe email pentru a se alătura ONG-ului tău.
+          </p>
         </div>
 
         <div className="px-6 py-4 border-t border-border flex justify-end gap-3">
@@ -112,7 +130,7 @@ export function AddOngMemberModal({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={isPending || !nume.trim() || !email.trim()}
+            disabled={isPending || !nume.trim() || !email.trim() || rol.trim().length < 2}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-70"
             style={{ background: "#2dbe8f" }}
           >

@@ -26,10 +26,16 @@ export function login(payload: LoginPayload) {
 
 export interface CurrentUser {
   id: number;
-  nume: string;
+  /** Accounts created by an admin (e.g. invited mentors) come back without a name. */
+  nume: string | null;
   email: string;
   createdAt: string;
   role: { type: string; name: string } | null;
+}
+
+/** Name to show in the UI, falling back to the email local part when no name is set. */
+export function userDisplayName(user: { nume: string | null; email: string }): string {
+  return user.nume?.trim() || user.email.split("@")[0];
 }
 
 export function getMe(jwt: string) {

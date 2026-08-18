@@ -12,6 +12,12 @@ import { ApiError, isZodFlattenError } from "@/lib/api/client";
 import { listCities, listCounties } from "@/lib/api/geo";
 import type { City, County } from "@/lib/api/geo";
 import { PasswordInput } from "./PasswordInput";
+import {
+  PASSWORDS_MATCH_ERROR,
+  confirmedPasswordSchema,
+  passwordSchema,
+  passwordsMatch,
+} from "@/lib/validation/password";
 
 const registerNgoSchema = z
   .object({
@@ -31,21 +37,13 @@ const registerNgoSchema = z
       .min(1, "Câmp obligatoriu")
       .min(8, "Numărul de telefon este invalid"),
     email: z.string().trim().min(1, "Câmp obligatoriu").email("Email invalid"),
-    password: z
-      .string()
-      .min(8, "Parola trebuie să aibă minim 8 caractere")
-      .regex(/[A-Z]/, "Parola trebuie să conțină cel puțin o literă mare")
-      .regex(/[0-9]/, "Parola trebuie să conțină cel puțin o cifră")
-      .regex(/[^A-Za-z0-9]/, "Parola trebuie să conțină cel puțin un caracter special"),
-    confirmedPassword: z.string().min(1, "Câmp obligatoriu"),
+    password: passwordSchema,
+    confirmedPassword: confirmedPasswordSchema,
     acordTermeniSiConditii: z
       .boolean()
       .refine((v) => v === true, { message: "Este necesar acordul tău pentru a continua" }),
   })
-  .refine((data) => data.password === data.confirmedPassword, {
-    message: "Parolele nu coincid",
-    path: ["confirmedPassword"],
-  });
+  .refine(passwordsMatch, PASSWORDS_MATCH_ERROR);
 
 type RegisterNgoFormValues = z.infer<typeof registerNgoSchema>;
 

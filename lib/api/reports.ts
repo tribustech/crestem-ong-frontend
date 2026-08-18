@@ -132,10 +132,21 @@ export interface ReportMembers {
 }
 
 export interface OngMember {
+  /** Numeric id — required by the resend-invitation endpoint. */
+  id: number;
+  /** String id — required by the remove-member endpoint. */
   documentId: string;
   nume: string;
   email: string;
+  /** Function inside the organization, set by the admin. Null for members added before roles existed. */
+  rol: string | null;
   accountStatus: "pending" | "active";
-  rolMembruOng: string | null;
   createdAt: string;
+  /**
+   * Temporary: the API returns the raw activation URL only while invitation
+   * emails are not wired up yet, and omits the key entirely otherwise. Guard on
+   * the field being present, never on `accountStatus`, so the UI degrades
+   * cleanly the day the backend stops sending it.
+   */
+  activationLink?: string;
 }

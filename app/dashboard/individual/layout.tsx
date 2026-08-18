@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/session-server";
+import { userDisplayName } from "@/lib/api/auth";
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
 
 export default async function IndividualDashboardLayout({
@@ -23,7 +24,7 @@ export default async function IndividualDashboardLayout({
   return (
     <div className="flex min-h-screen">
       <DashboardSidebar
-        userName={user.nume}
+        userName={userDisplayName(user)}
         userEmail={user.email}
         variant="individual"
         accountLabel="Cont individual"

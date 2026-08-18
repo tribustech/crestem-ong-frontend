@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/session-server";
+import { userDisplayName } from "@/lib/api/auth";
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
 
 export default async function MentorDashboardLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,7 @@ export default async function MentorDashboardLayout({ children }: { children: Re
 
   return (
     <div className="flex min-h-screen">
-      <DashboardSidebar userName={user.nume} userEmail={user.email} variant="mentor" />
+      <DashboardSidebar userName={userDisplayName(user)} userEmail={user.email} variant="mentor" />
       <main className="flex-1 overflow-y-auto p-8" style={{ background: "#f8fafc" }}>
         {children}
       </main>

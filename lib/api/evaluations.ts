@@ -18,6 +18,8 @@ export interface MyOng {
   adresa: string | null;
   dataInfiintare: string | null;
   domeniuActivitate: string | null;
+  /** The member's own function in this organization. Null for memberships created before roles existed. */
+  rol: string | null;
   programs: MyOngProgram[];
 }
 

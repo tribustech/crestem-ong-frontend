@@ -4,6 +4,8 @@ export interface JoinableOng {
   domeniu: string | null;
   localitate: string | null;
   memberCount: number;
+  /** True when the current user already has a pending affiliation request for this ONG. */
+  hasPendingRequest: boolean;
 }
 
 export interface OngJoinRequest {
