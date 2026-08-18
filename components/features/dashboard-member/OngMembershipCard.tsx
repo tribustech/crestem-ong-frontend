@@ -71,6 +71,12 @@ export function OngMembershipCard({ ong }: { ong: MyOng }) {
           </p>
           <p style={{ color: "#334155" }}>{ong.domeniuActivitate ?? "—"}</p>
         </div>
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider mb-1" style={{ color: "#94a3b8" }}>
+            Rolul tău
+          </p>
+          <p style={{ color: "#334155" }}>{ong.rol ?? "—"}</p>
+        </div>
       </div>
 
       <div className="mt-auto pt-4 border-t border-border">

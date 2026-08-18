@@ -1,4 +1,5 @@
 import { getCurrentUser } from "@/lib/api/session-server";
+import { userDisplayName } from "@/lib/api/auth";
 import { serverApiFetch } from "@/lib/api/server";
 import type { MyOng } from "@/lib/api/evaluations";
 import { ProfileHeaderCard } from "@/components/features/dashboard/ProfileHeaderCard";
@@ -24,7 +25,7 @@ export default async function MemberProfilePage() {
         <ProfileActionsMenu />
       </div>
 
-      <ProfileHeaderCard nume={user!.nume} email={user!.email} createdAt={user!.createdAt} />
+      <ProfileHeaderCard nume={userDisplayName(user!)} email={user!.email} createdAt={user!.createdAt} />
 
       {ongs.length === 0 ? (
         <div className="bg-white rounded-xl border border-border p-8 text-center mb-6">

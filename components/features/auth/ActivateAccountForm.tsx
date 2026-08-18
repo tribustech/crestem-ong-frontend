@@ -8,23 +8,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { activateAccount } from "@/lib/api/auth";
-import { ApiError, isZodFlattenError } from "@/lib/api/client";
+import { parseApiError } from "@/lib/api/client";
 import { PasswordInput } from "./PasswordInput";
+import {
+  PASSWORDS_MATCH_ERROR,
+  PASSWORD_RULES_HINT,
+  confirmedPasswordSchema,
+  passwordSchema,
+  passwordsMatch,
+} from "@/lib/validation/password";
 
 const activateSchema = z
   .object({
-    password: z
-      .string()
-      .min(8, "Parola trebuie să aibă minim 8 caractere")
-      .regex(/[A-Z]/, "Parola trebuie să conțină cel puțin o literă mare")
-      .regex(/[0-9]/, "Parola trebuie să conțină cel puțin o cifră")
-      .regex(/[^A-Za-z0-9]/, "Parola trebuie să conțină cel puțin un caracter special"),
-    confirmedPassword: z.string().min(1, "Câmp obligatoriu"),
+    password: passwordSchema,
+    confirmedPassword: confirmedPasswordSchema,
   })
-  .refine((data) => data.password === data.confirmedPassword, {
-    message: "Parolele nu coincid",
-    path: ["confirmedPassword"],
-  });
+  .refine(passwordsMatch, PASSWORDS_MATCH_ERROR);
 
 type ActivateFormValues = z.infer<typeof activateSchema>;
 
@@ -40,6 +39,7 @@ export function ActivateAccountForm() {
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<ActivateFormValues>({
     resolver: zodResolver(activateSchema),
@@ -95,19 +95,14 @@ export function ActivateAccountForm() {
       });
       setActivated(true);
     } catch (err) {
-      if (err instanceof ApiError && isZodFlattenError(err.details)) {
-        const messages = [
-          ...(err.details.formErrors ?? []),
-          ...Object.values(err.details.fieldErrors ?? {}).flat(),
-        ].filter(Boolean);
-        setApiError(messages[0] ?? err.message);
-      } else {
-        setApiError(
-          err instanceof ApiError
-            ? err.message
-            : "Nu am putut activa contul. Încearcă din nou.",
-        );
+      const { message, fieldErrors } = parseApiError(err, "Nu am putut activa contul. Încearcă din nou.");
+      for (const [field, fieldMessage] of Object.entries(fieldErrors)) {
+        if (field === "password" || field === "confirmedPassword") {
+          setError(field, { message: fieldMessage });
+        }
       }
+      // A bad or expired token has no input to attach to — it stays form-level.
+      setApiError(message || fieldErrors.token || null);
     }
   };
 
@@ -142,6 +137,7 @@ export function ActivateAccountForm() {
             {errors.password.message}
           </p>
         )}
+        <p className="mt-1.5 text-xs text-muted-foreground">{PASSWORD_RULES_HINT}</p>
       </div>
 
       <div>

@@ -6,6 +6,7 @@ import {
   getCurrentUser,
   getDashboardPathForRole,
 } from "@/lib/api/session-server";
+import { userDisplayName } from "@/lib/api/auth";
 import type { NavUser } from "@/components/features/navigation/nav-data";
 import "./globals.css";
 
@@ -35,7 +36,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       ? getDashboardPathForRole(currentUser.role?.type)
       : null;
     if (currentUser && dashboardHref) {
-      navUser = { nume: currentUser.nume, dashboardHref };
+      navUser = { nume: userDisplayName(currentUser), dashboardHref };
     }
   } catch {
     navUser = null;

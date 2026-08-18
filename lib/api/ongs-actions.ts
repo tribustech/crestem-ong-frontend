@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { serverApiFetch } from "./server";
-import { getApiErrorMessage } from "./client";
+import { getApiErrorMessage, parseApiError } from "./client";
 import type { MyOng } from "./ongs";
 
 export async function deleteOngAction(documentId: string): Promise<{ error?: string }> {
@@ -44,19 +44,39 @@ export async function updateMyOngAction(
 export interface InviteOngMemberInput {
   nume: string;
   email: string;
-  rolMembruOng?: string;
+  rol: string;
 }
 
 export async function inviteOngMemberAction(
   input: InviteOngMemberInput,
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; fieldErrors?: Record<string, string> }> {
   try {
     await serverApiFetch("/api/auth/register/member", {
       method: "POST",
       body: JSON.stringify(input),
     });
   } catch (err) {
-    return { error: getApiErrorMessage(err, "Nu am putut trimite invitația.") };
+    const parsed = parseApiError(err, "Nu am putut trimite invitația.");
+    return { error: parsed.message || undefined, fieldErrors: parsed.fieldErrors };
+  }
+
+  revalidatePath("/dashboard/ong/utilizatori");
+  return {};
+}
+
+/**
+ * Resend keys off the numeric `id`, not `documentId` — the two identifiers are
+ * not interchangeable and the remove endpoint takes the other one.
+ *
+ * The backend signs a fresh token and overwrites `resetPasswordToken`, so every
+ * activation link already on screen dies here. The caller must re-render the
+ * table afterwards or the admin copies a URL that now 400s.
+ */
+export async function resendMemberInvitationAction(id: number): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch(`/api/auth/register/member/${id}/resend`, { method: "POST" });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut retrimite invitația.") };
   }
 
   revalidatePath("/dashboard/ong/utilizatori");
@@ -74,9 +94,15 @@ export async function removeOngMemberAction(documentId: string): Promise<{ error
   return {};
 }
 
-export async function acceptJoinRequestAction(documentId: string): Promise<{ error?: string }> {
+export async function acceptJoinRequestAction(
+  documentId: string,
+  rol: string,
+): Promise<{ error?: string }> {
   try {
-    await serverApiFetch(`/api/ongs/join-requests/${documentId}/accept`, { method: "POST" });
+    await serverApiFetch(`/api/ongs/join-requests/${documentId}/accept`, {
+      method: "POST",
+      body: JSON.stringify({ rol }),
+    });
   } catch (err) {
     return { error: getApiErrorMessage(err, "Nu am putut confirma cererea.") };
   }

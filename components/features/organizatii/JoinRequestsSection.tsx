@@ -2,31 +2,29 @@
 
 import { useState, useTransition } from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
-import { acceptJoinRequestAction, rejectJoinRequestAction } from "@/lib/api/ongs-actions";
+import { rejectJoinRequestAction } from "@/lib/api/ongs-actions";
 import type { OngJoinRequest } from "@/lib/api/membership";
+import { AcceptJoinRequestModal } from "./AcceptJoinRequestModal";
+import { JoinRequestMessageModal } from "./JoinRequestMessageModal";
 
 const dateFormatter = new Intl.DateTimeFormat("ro-RO", { day: "numeric", month: "short", year: "numeric" });
+
+/** Above this length the 2-line cell is likely truncated, so offer the full-text modal. */
+const MESSAGE_PREVIEW_LENGTH = 120;
 
 export function JoinRequestsSection({ initialRequests }: { initialRequests: OngJoinRequest[] }) {
   const [requests, setRequests] = useState(initialRequests);
   const [pendingId, setPendingId] = useState<string | null>(null);
+  const [acceptTarget, setAcceptTarget] = useState<OngJoinRequest | null>(null);
+  const [messageTarget, setMessageTarget] = useState<OngJoinRequest | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   if (requests.length === 0) return null;
 
-  const handleAccept = (documentId: string) => {
-    setError(null);
-    setPendingId(documentId);
-    startTransition(async () => {
-      const result = await acceptJoinRequestAction(documentId);
-      setPendingId(null);
-      if (result.error) {
-        setError(result.error);
-        return;
-      }
-      setRequests((prev) => prev.filter((r) => r.documentId !== documentId));
-    });
+  const handleAccepted = (documentId: string) => {
+    setAcceptTarget(null);
+    setRequests((prev) => prev.filter((r) => r.documentId !== documentId));
   };
 
   const handleReject = (documentId: string) => {
@@ -80,9 +78,10 @@ export function JoinRequestsSection({ initialRequests }: { initialRequests: OngJ
             {requests.map((request) => {
               const initials = request.user.nume.trim().slice(0, 2).toUpperCase();
               const rowPending = isPending && pendingId === request.documentId;
+              const message = request.message?.trim() ?? "";
               return (
                 <tr key={request.documentId} className="border-b last:border-0" style={{ borderColor: "#fecaca", background: "#fffbfb" }}>
-                  <td className="px-4 py-3.5 align-top">
+                  <td className="px-4 py-3.5 align-middle">
                     <div className="flex items-center gap-3">
                       <div
                         className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0"
@@ -96,17 +95,36 @@ export function JoinRequestsSection({ initialRequests }: { initialRequests: OngJ
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 align-top whitespace-nowrap" style={{ color: "#475569" }}>
+                  <td className="px-4 py-3.5 align-middle whitespace-nowrap" style={{ color: "#475569" }}>
                     {dateFormatter.format(new Date(request.createdAt))}
                   </td>
-                  <td className="px-4 py-3.5 align-top max-w-xs" style={{ color: "#334155" }}>
-                    {request.message ?? <span className="text-muted-foreground">Fără mesaj</span>}
+                  <td className="px-4 py-3.5 align-middle max-w-xs" style={{ color: "#334155" }}>
+                    {message ? (
+                      <>
+                        <p className="line-clamp-2 whitespace-pre-wrap break-words">{message}</p>
+                        {message.length > MESSAGE_PREVIEW_LENGTH && (
+                          <button
+                            type="button"
+                            onClick={() => setMessageTarget(request)}
+                            className="mt-1 text-xs font-semibold underline hover:opacity-80"
+                            style={{ color: "#2dbe8f" }}
+                          >
+                            Vezi mesajul
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <span className="text-muted-foreground">Fără mesaj</span>
+                    )}
                   </td>
-                  <td className="px-4 py-3.5 align-top">
+                  <td className="px-4 py-3.5 align-middle">
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => handleAccept(request.documentId)}
+                        onClick={() => {
+                          setError(null);
+                          setAcceptTarget(request);
+                        }}
                         disabled={rowPending}
                         className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-60"
                         style={{ background: "#2dbe8f" }}
@@ -132,6 +150,22 @@ export function JoinRequestsSection({ initialRequests }: { initialRequests: OngJ
           </tbody>
         </table>
       </div>
+
+      {acceptTarget && (
+        <AcceptJoinRequestModal
+          request={acceptTarget}
+          onClose={() => setAcceptTarget(null)}
+          onAccepted={handleAccepted}
+        />
+      )}
+
+      {messageTarget && messageTarget.message && (
+        <JoinRequestMessageModal
+          authorName={messageTarget.user.nume}
+          message={messageTarget.message}
+          onClose={() => setMessageTarget(null)}
+        />
+      )}
     </div>
   );
 }

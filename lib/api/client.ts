@@ -82,3 +82,42 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
   return data as T;
 }
+
+export interface ParsedApiError {
+  /** Form-level message: `formErrors`, else `error.message`, else the fallback. */
+  message: string;
+  /** `details.fieldErrors` flattened to one message per field, for `setError`. */
+  fieldErrors: Record<string, string>;
+}
+
+/**
+ * Splits a Strapi error into what belongs on individual inputs and what belongs
+ * in the form-level alert. Use when the caller renders per-field errors;
+ * `getApiErrorMessage` stays the right call for a single inline message.
+ */
+export function parseApiError(err: unknown, fallback: string): ParsedApiError {
+  if (!(err instanceof ApiError)) return { message: fallback, fieldErrors: {} };
+
+  if (err.status === 403) {
+    return { message: "Nu ai permisiunea necesară pentru această acțiune.", fieldErrors: {} };
+  }
+
+  const fieldErrors: Record<string, string> = {};
+  let formMessage = "";
+
+  if (isZodFlattenError(err.details)) {
+    for (const [field, messages] of Object.entries(err.details.fieldErrors ?? {})) {
+      const first = messages?.find(Boolean);
+      if (first) fieldErrors[field] = first;
+    }
+    formMessage = (err.details.formErrors ?? []).filter(Boolean).join(" ");
+  }
+
+  // Only fall back to `error.message` when nothing landed on a field — Strapi's
+  // top-level message is often just a generic "Date invalide: ".
+  if (!formMessage && Object.keys(fieldErrors).length === 0) {
+    formMessage = err.message || fallback;
+  }
+
+  return { message: formMessage, fieldErrors };
+}
