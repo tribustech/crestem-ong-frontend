@@ -12,7 +12,7 @@ export default function ActivareMembruPage() {
       <AuthPageHeader
         eyebrow="Activare cont"
         title="Setează-ți parola"
-        subtitle="Ai fost invitat într-o organizație pe platforma Creștem ONG. Alege o parolă pentru a-ți activa contul."
+        subtitle="Ai fost invitat pe platforma Creștem ONG. Alege o parolă pentru a-ți activa contul."
       />
       <section className="py-16 bg-white">
         <div className="max-w-md mx-auto px-6">
