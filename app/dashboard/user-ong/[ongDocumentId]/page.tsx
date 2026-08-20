@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Layers, Rows3 } from "lucide-react";
+import { ArrowLeft, Rows3 } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
 import { findActiveEvaluation } from "@/lib/api/evaluations";
 import type { MyOng, OngEvaluationListItem } from "@/lib/api/evaluations";
+import type { Dimension } from "@/lib/api/dimensions";
 import { OrgEvaluationsTable } from "@/components/features/dashboard-member/OrgEvaluationsTable";
+import { MatrixModelButton } from "@/components/features/evaluari/MatrixModelButton";
 
 export default async function MemberOngPage({
   params,
@@ -13,9 +15,10 @@ export default async function MemberOngPage({
 }) {
   const { ongDocumentId } = await params;
 
-  const [ongsRes, evaluationsRes] = await Promise.all([
+  const [ongsRes, evaluationsRes, dimensionsRes] = await Promise.all([
     serverApiFetch<{ data: MyOng[] }>("/api/me/ongs"),
     serverApiFetch<{ data: OngEvaluationListItem[] }>(`/api/evaluations/ong/${ongDocumentId}`),
+    serverApiFetch<Dimension[]>("/api/dimensions"),
   ]);
 
   const ong = ongsRes.data.find((entry) => entry.documentId === ongDocumentId);
@@ -89,15 +92,7 @@ export default async function MemberOngPage({
       <div className="flex items-center justify-between mb-4">
         <p className="text-sm text-muted-foreground">Evaluările la care ai participat personal ca membru al ONG-ului.</p>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled
-            title="Disponibil în curând"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border opacity-40 cursor-not-allowed"
-            style={{ color: "#475569" }}
-          >
-            <Layers size={13} /> Vezi modelul matricei
-          </button>
+          <MatrixModelButton dimensions={dimensionsRes} />
           <button
             type="button"
             disabled

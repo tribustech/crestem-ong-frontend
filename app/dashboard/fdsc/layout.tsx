@@ -24,7 +24,10 @@ export default async function FdscDashboardLayout({
   return (
     <div className="flex min-h-screen">
       <DashboardSidebar userName={userDisplayName(user)} userEmail={user.email} />
-      <main className="flex-1 overflow-y-auto p-8" style={{ background: "#f8fafc" }}>
+      <main
+        className="flex-1 overflow-y-auto p-8 print:p-0 print:overflow-visible"
+        style={{ background: "#f8fafc" }}
+      >
         {children}
       </main>
     </div>

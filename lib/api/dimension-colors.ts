@@ -11,3 +11,10 @@ export function dimensionPillStyle(score: number | null) {
   if (score >= 35) return { background: "#fffbeb", color: "#92400e", border: "1px solid #fde68a" };
   return { background: "#fef2f2", color: "#991b1b", border: "1px solid #fecaca" };
 }
+
+export function dimensionLabel(score: number | null) {
+  if (score == null) return "—";
+  if (score >= 60) return "Ridicat";
+  if (score >= 35) return "Mediu";
+  return "Scăzut";
+}
