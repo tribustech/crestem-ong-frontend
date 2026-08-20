@@ -5,7 +5,7 @@ export function OrgDetailTabs({
   active,
 }: {
   documentId: string;
-  active: "overview" | "info" | "evaluare-curenta" | "comparatie";
+  active: "overview" | "info" | "evaluare-curenta" | "comparatie" | "rapoarte";
 }) {
   const tabClass = (isActive: boolean) =>
     isActive
@@ -45,6 +45,13 @@ export function OrgDetailTabs({
         style={tabStyle(active === "comparatie")}
       >
         Comparație
+      </Link>
+      <Link
+        href={`/dashboard/fdsc/organizatii/${documentId}/rapoarte`}
+        className={tabClass(active === "rapoarte")}
+        style={tabStyle(active === "rapoarte")}
+      >
+        Rapoarte
       </Link>
     </div>
   );

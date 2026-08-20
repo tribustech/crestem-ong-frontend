@@ -5,7 +5,7 @@ import type { ChangeEvent, DragEvent, MouseEvent } from "react";
 import { ChevronDown, Loader2, Upload, X } from "lucide-react";
 import { getMediaUrl } from "@/lib/api/client";
 import { listDomains, type Domain, type MyOng } from "@/lib/api/ongs";
-import { updateMyOngAction, uploadOngLogoAction } from "@/lib/api/ongs-actions";
+import { updateMyOngAction, uploadFileAction } from "@/lib/api/ongs-actions";
 
 const ACCEPTED_LOGO_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
@@ -92,7 +92,7 @@ export function EditOngNivel2Modal({ ong, onClose }: { ong: MyOng; onClose: () =
       if (logoFile) {
         const form = new FormData();
         form.append("files", logoFile);
-        const uploadResult = await uploadOngLogoAction(form);
+        const uploadResult = await uploadFileAction(form);
         if (uploadResult.error) {
           setError(uploadResult.error);
           return;

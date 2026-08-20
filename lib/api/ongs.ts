@@ -97,6 +97,14 @@ export interface OngOverview {
   lastFinalizedDate: string | null;
 }
 
+export interface OngFdscReport {
+  documentId: string;
+  name: string;
+  uploadedAt: string;
+  program: { documentId: string; name: string } | null;
+  file: { url: string; name: string; ext: string } | null;
+}
+
 export interface OngEvaluationDetail {
   documentId: string;
   name: string;

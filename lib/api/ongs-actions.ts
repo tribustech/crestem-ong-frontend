@@ -122,7 +122,7 @@ export async function rejectJoinRequestAction(documentId: string): Promise<{ err
   return {};
 }
 
-export async function uploadOngLogoAction(
+export async function uploadFileAction(
   formData: FormData,
 ): Promise<{ error?: string; id?: number }> {
   const { cookies } = await import("next/headers");
@@ -150,4 +150,27 @@ export async function uploadOngLogoAction(
   } catch (err) {
     return { error: getApiErrorMessage(err, "Nu am putut încărca fișierul.") };
   }
+}
+
+export interface CreateFdscReportInput {
+  name: string;
+  program: string;
+  file: number;
+}
+
+export async function createFdscReportAction(
+  ongDocumentId: string,
+  input: CreateFdscReportInput,
+): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch(`/api/ongs/${ongDocumentId}/fdsc-reports`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut încărca raportul.") };
+  }
+
+  revalidatePath(`/dashboard/fdsc/organizatii/${ongDocumentId}/rapoarte`);
+  return {};
 }
