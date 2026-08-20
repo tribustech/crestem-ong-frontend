@@ -22,11 +22,11 @@ export default async function OrganizatieEvaluareDetailPage({
   return (
     <div>
       <Link
-        href={`/dashboard/fdsc/organizatii/${documentId}`}
+        href={`/dashboard/fdsc/organizatii/${documentId}/evaluari`}
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
         style={{ color: "#94a3b8" }}
       >
-        <ArrowLeft size={14} /> Înapoi la organizație
+        <ArrowLeft size={14} /> Înapoi la evaluări
       </Link>
 
       <EvaluationDetailContent evaluation={evaluationRes.data} dimensions={dimensionsRes} />

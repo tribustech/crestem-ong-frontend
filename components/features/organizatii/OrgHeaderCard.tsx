@@ -19,6 +19,11 @@ export function OrgHeaderCard({ ong }: { ong: Ong }) {
           <h1 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
             {ong.name}
           </h1>
+          {ong.descriere && (
+            <p className="mt-1 text-sm max-w-2xl" style={{ color: "#334155" }}>
+              {ong.descriere}
+            </p>
+          )}
           <p className="mt-1.5 text-sm text-muted-foreground">
             {ong.localitate?.nume ?? "—"}, {ong.judet?.nume ?? "—"} · {ong.memberCount ?? 0}{" "}
             {(ong.memberCount ?? 0) === 1 ? "membru" : "membri"} · Admin: {ong.admin?.nume ?? "—"}

@@ -167,7 +167,7 @@ export function DashboardSidebar({
   const initial = userName.trim().charAt(0).toUpperCase() || "?";
 
   return (
-    <aside className="w-60 shrink-0 h-screen sticky top-0 flex flex-col bg-white border-r border-border">
+    <aside className="w-60 shrink-0 h-screen sticky top-0 flex flex-col bg-white border-r border-border print:hidden">
       <div className="px-6 py-5 border-b border-border">
         <Logo variant="dark" height={24} />
       </div>

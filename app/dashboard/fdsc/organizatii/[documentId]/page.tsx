@@ -1,21 +1,25 @@
 import Link from "next/link";
-import { ArrowLeft, Layers } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
-import type { Ong, OngEvaluation } from "@/lib/api/ongs";
+import type { Ong, OngOverview } from "@/lib/api/ongs";
 import { OrgDetailTabs } from "@/components/features/organizatii/OrgDetailTabs";
 import { OrgHeaderCard } from "@/components/features/organizatii/OrgHeaderCard";
-import { OngEvaluationsTable } from "@/components/features/organizatii/OngEvaluationsTable";
+import { OrgOverviewStats } from "@/components/features/organizatii/OrgOverviewStats";
+import { OrgDetailsCard } from "@/components/features/organizatii/OrgDetailsCard";
+import { OrgContactCard } from "@/components/features/organizatii/OrgContactCard";
+import { OrgLibraryActivityCard } from "@/components/features/organizatii/OrgLibraryActivityCard";
+import { OrgCoursesCard } from "@/components/features/organizatii/OrgCoursesCard";
 
-export default async function OrganizatieDetailPage({
+export default async function OrganizatieOverviewPage({
   params,
 }: {
   params: Promise<{ documentId: string }>;
 }) {
   const { documentId } = await params;
 
-  const [ongRes, evaluationsRes] = await Promise.all([
+  const [ongRes, overviewRes] = await Promise.all([
     serverApiFetch<{ data: Ong }>(`/api/ongs/${documentId}`),
-    serverApiFetch<{ data: OngEvaluation[] }>(`/api/ongs/${documentId}/evaluations`),
+    serverApiFetch<{ data: OngOverview }>(`/api/ongs/${documentId}/overview`),
   ]);
 
   const ong = ongRes.data;
@@ -32,24 +36,16 @@ export default async function OrganizatieDetailPage({
 
       <OrgHeaderCard ong={ong} />
 
-      <OrgDetailTabs documentId={documentId} active="info" />
+      <OrgDetailTabs documentId={documentId} active="overview" />
 
-      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-        <h2 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
-          Evaluare organizațională
-        </h2>
-        <button
-          type="button"
-          disabled
-          title="Disponibil în curând"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border opacity-40 cursor-not-allowed"
-          style={{ color: "#475569" }}
-        >
-          <Layers size={13} /> Vezi modelul matricei
-        </button>
+      <OrgOverviewStats documentId={documentId} overview={overviewRes.data} programs={ong.programs} />
+
+      <div className="mt-6 flex flex-col gap-6">
+        <OrgDetailsCard ong={ong} />
+        <OrgContactCard ong={ong} />
+        <OrgLibraryActivityCard />
+        <OrgCoursesCard />
       </div>
-
-      <OngEvaluationsTable ongDocumentId={documentId} evaluations={evaluationsRes.data} />
     </div>
   );
 }

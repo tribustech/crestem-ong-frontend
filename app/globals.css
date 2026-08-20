@@ -37,3 +37,12 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+@media print {
+  main {
+    background: #ffffff !important;
+  }
+  tr {
+    break-inside: avoid;
+  }
+}

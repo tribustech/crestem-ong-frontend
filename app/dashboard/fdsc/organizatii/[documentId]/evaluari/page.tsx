@@ -1,0 +1,50 @@
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+import { serverApiFetch } from "@/lib/api/server";
+import type { Ong, OngEvaluation } from "@/lib/api/ongs";
+import type { Dimension } from "@/lib/api/dimensions";
+import { OrgDetailTabs } from "@/components/features/organizatii/OrgDetailTabs";
+import { OrgHeaderCard } from "@/components/features/organizatii/OrgHeaderCard";
+import { OngEvaluationsTable } from "@/components/features/organizatii/OngEvaluationsTable";
+import { MatrixModelButton } from "@/components/features/evaluari/MatrixModelButton";
+
+export default async function OrganizatieDetailPage({
+  params,
+}: {
+  params: Promise<{ documentId: string }>;
+}) {
+  const { documentId } = await params;
+
+  const [ongRes, evaluationsRes, dimensionsRes] = await Promise.all([
+    serverApiFetch<{ data: Ong }>(`/api/ongs/${documentId}`),
+    serverApiFetch<{ data: OngEvaluation[] }>(`/api/ongs/${documentId}/evaluations`),
+    serverApiFetch<Dimension[]>("/api/dimensions"),
+  ]);
+
+  const ong = ongRes.data;
+
+  return (
+    <div>
+      <Link
+        href="/dashboard/fdsc/organizatii"
+        className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
+        style={{ color: "#94a3b8" }}
+      >
+        <ArrowLeft size={14} /> Înapoi la organizații
+      </Link>
+
+      <OrgHeaderCard ong={ong} />
+
+      <OrgDetailTabs documentId={documentId} active="info" />
+
+      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <h2 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
+          Evaluare organizațională
+        </h2>
+        <MatrixModelButton dimensions={dimensionsRes} />
+      </div>
+
+      <OngEvaluationsTable ongDocumentId={documentId} evaluations={evaluationsRes.data} />
+    </div>
+  );
+}

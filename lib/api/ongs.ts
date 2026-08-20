@@ -18,8 +18,17 @@ export interface Ong {
   adresa: string;
   dataInfiintare: string;
   domeniuActivitate: string;
+  domeniuSecundar: string | null;
+  socialMedia: string | null;
+  descriere: string | null;
   memberCount: number;
-  admin: { nume: string } | null;
+  admin: {
+    nume: string;
+    email?: string;
+    telefon?: string | null;
+    createdAt?: string;
+    lastLogin?: string | null;
+  } | null;
   programs: { documentId: string; name: string }[];
   judet: { documentId: string; nume: string } | null;
   localitate: { documentId: string; nume: string } | null;
@@ -62,7 +71,7 @@ export interface OngEvaluation {
   finishedAt: string | null;
   invitedCount: number;
   completedCount: number;
-  scores: { overall: number | null };
+  scores: { dimensions: Record<string, number | null>; overall: number | null };
   phases: {
     documentId: string;
     title: string;
@@ -75,6 +84,25 @@ export interface OngEvaluation {
 export function listOngEvaluations(ongDocumentId: string, programDocumentId?: string) {
   const query = programDocumentId ? `?${new URLSearchParams({ program: programDocumentId })}` : "";
   return localApiFetch<{ data: OngEvaluation[] }>(`/api/ongs/${ongDocumentId}/evaluations${query}`);
+}
+
+export interface OngOverview {
+  totalEvaluations: number;
+  currentEvaluation: {
+    documentId: string;
+    invitedCount: number;
+    completedCount: number;
+    program: { documentId: string; name: string } | null;
+  } | null;
+  lastFinalizedDate: string | null;
+}
+
+export interface OngFdscReport {
+  documentId: string;
+  name: string;
+  uploadedAt: string;
+  program: { documentId: string; name: string } | null;
+  file: { url: string; name: string; ext: string } | null;
 }
 
 export interface OngEvaluationDetail {

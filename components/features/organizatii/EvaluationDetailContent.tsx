@@ -1,4 +1,4 @@
-import { CheckCircle2, Circle, UserPlus } from "lucide-react";
+import { CheckCircle2, Circle } from "lucide-react";
 import type { OngEvaluationDetail } from "@/lib/api/ongs";
 import type { Dimension } from "@/lib/api/dimensions";
 import { dimensionColor, dimensionPillStyle } from "@/lib/api/dimension-colors";
@@ -38,35 +38,13 @@ export function EvaluationDetailContent({
 
   return (
     <>
-      <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
-            {evaluation.name}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {programName} · {evaluation.finished ? "Finalizată" : "În desfășurare"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled
-            title="Disponibil în curând"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold border border-border opacity-40 cursor-not-allowed"
-            style={{ color: "#475569" }}
-          >
-            <UserPlus size={14} /> Adaugă utilizatori
-          </button>
-          <button
-            type="button"
-            disabled
-            title="Disponibil în curând"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white opacity-40 cursor-not-allowed"
-            style={{ background: "#2dbe8f" }}
-          >
-            <CheckCircle2 size={14} /> Finalizează evaluare
-          </button>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
+          {evaluation.name}
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {programName} · {evaluation.finished ? "Finalizată" : "În desfășurare"}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
