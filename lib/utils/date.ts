@@ -5,3 +5,20 @@ export function formatDate(iso?: string | null) {
   if (!year || !month || !day) return "—";
   return `${day}.${month}.${year}`;
 }
+
+export function formatMeetingDateTime(iso: string) {
+  const date = new Date(iso);
+  const datePart = new Intl.DateTimeFormat("ro-RO", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Europe/Bucharest",
+  }).format(date);
+  const timePart = new Intl.DateTimeFormat("ro-RO", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Europe/Bucharest",
+  }).format(date);
+  return `${datePart} · ${timePart}`;
+}

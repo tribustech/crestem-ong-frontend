@@ -105,6 +105,17 @@ export interface OngFdscReport {
   file: { url: string; name: string; ext: string } | null;
 }
 
+export interface OngMentor {
+  documentId: string;
+  nume: string;
+  email: string;
+  mentorJobTitle: string | null;
+  mentorOrganization: string | null;
+  ariiDeExpertiza: string[];
+  avatar: { documentId: string; name: string; url: string } | null;
+  programs: { documentId: string; name: string }[];
+}
+
 export interface OngEvaluationDetail {
   documentId: string;
   name: string;

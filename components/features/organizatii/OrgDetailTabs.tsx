@@ -5,7 +5,7 @@ export function OrgDetailTabs({
   active,
 }: {
   documentId: string;
-  active: "overview" | "info" | "evaluare-curenta" | "comparatie" | "rapoarte";
+  active: "overview" | "info" | "evaluare-curenta" | "comparatie" | "rapoarte" | "persoane-resursa";
 }) {
   const tabClass = (isActive: boolean) =>
     isActive
@@ -52,6 +52,13 @@ export function OrgDetailTabs({
         style={tabStyle(active === "rapoarte")}
       >
         Rapoarte
+      </Link>
+      <Link
+        href={`/dashboard/fdsc/organizatii/${documentId}/persoane-resursa`}
+        className={tabClass(active === "persoane-resursa")}
+        style={tabStyle(active === "persoane-resursa")}
+      >
+        Persoane resursă
       </Link>
     </div>
   );
