@@ -39,6 +39,7 @@ export async function createFdscUserAction(
   }
 
   revalidatePath("/dashboard/fdsc/utilizatori");
+  revalidatePath("/dashboard/fdsc/persoane-resursa");
   return {};
 }
 
@@ -84,6 +85,8 @@ export async function updateFdscUserAction(
   }
 
   revalidatePath("/dashboard/fdsc/utilizatori");
+  revalidatePath("/dashboard/fdsc/persoane-resursa");
+  revalidatePath("/dashboard/fdsc/persoane-resursa/[documentId]", "page");
   return {};
 }
 
