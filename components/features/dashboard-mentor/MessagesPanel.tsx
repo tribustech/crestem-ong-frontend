@@ -6,7 +6,7 @@ import type { ConversationListItem } from "@/lib/api/mentor-conversations";
 import { ConversationList } from "./ConversationList";
 import { ConversationThread } from "./ConversationThread";
 
-const POLL_INTERVAL_MS = 5000;
+const POLL_INTERVAL_MS = 30000;
 
 export function MessagesPanel({ initialConversations }: { initialConversations: ConversationListItem[] }) {
   const [conversations, setConversations] = useState(initialConversations);

@@ -11,6 +11,7 @@ export interface OngMeeting {
   program: { documentId: string; name: string } | null;
   activityType: { documentId: string; name: string } | null;
   dimensiuni: string[];
+  comentarii: string | null;
   report: { url: string; name: string; ext: string } | null;
 }
 

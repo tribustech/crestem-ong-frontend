@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Info } from "lucide-react";
+import { Download, Info, Pencil } from "lucide-react";
 import { getMediaUrl } from "@/lib/api/client";
 import { formatMeetingDateTime } from "@/lib/utils/date";
 import type { OngMeeting } from "@/lib/api/meetings";
 import type { Dimension } from "@/lib/api/dimensions";
 import { MeetingDetailsModal } from "./MeetingDetailsModal";
+import { MeetingFormModal } from "./MeetingFormModal";
 
 const STATUS_BADGES: Record<OngMeeting["status"], { label: string; bg: string; color: string }> = {
   programata: { label: "Programată", bg: "#eff6ff", color: "#2563eb" },
@@ -19,17 +20,45 @@ const FORMAT_LABELS: Record<OngMeeting["format"], string> = {
   fata_in_fata: "Față în față",
 };
 
+interface MentorOption {
+  documentId: string;
+  nume: string;
+}
+
+interface ProgramOption {
+  documentId: string;
+  name: string;
+}
+
+interface ActivityTypeOption {
+  documentId: string;
+  name: string;
+}
+
+/** Present only on the ngo-admin's own Întâlniri page — the FDSC read-only
+ * view doesn't pass this, so no edit affordance renders there. */
+export interface MeetingsTableEditing {
+  ongDocumentId: string;
+  mentors: MentorOption[];
+  programs: ProgramOption[];
+  activityTypes: ActivityTypeOption[];
+}
+
 export function MeetingsTable({
   meetings,
   ongName,
   dimensions,
+  editing,
 }: {
   meetings: OngMeeting[];
   ongName: string;
   dimensions: Dimension[];
+  editing?: MeetingsTableEditing;
 }) {
   const [openMeetingId, setOpenMeetingId] = useState<string | null>(null);
+  const [editMeetingId, setEditMeetingId] = useState<string | null>(null);
   const openMeeting = meetings.find((meeting) => meeting.documentId === openMeetingId) ?? null;
+  const editMeeting = meetings.find((meeting) => meeting.documentId === editMeetingId) ?? null;
 
   if (meetings.length === 0) {
     return (
@@ -105,14 +134,26 @@ export function MeetingsTable({
                   )}
                 </td>
                 <td className="px-5 py-3.5 whitespace-nowrap">
-                  <button
-                    type="button"
-                    onClick={() => setOpenMeetingId(meeting.documentId)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
-                    style={{ color: "#334155" }}
-                  >
-                    <Info size={13} /> Detalii
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setOpenMeetingId(meeting.documentId)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
+                      style={{ color: "#334155" }}
+                    >
+                      <Info size={13} /> Detalii
+                    </button>
+                    {editing && meeting.status === "programata" && (
+                      <button
+                        type="button"
+                        onClick={() => setEditMeetingId(meeting.documentId)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
+                        style={{ color: "#334155" }}
+                      >
+                        <Pencil size={13} /> Editează
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             );
@@ -125,6 +166,26 @@ export function MeetingsTable({
           ongName={ongName}
           dimensions={dimensions}
           onClose={() => setOpenMeetingId(null)}
+          onEdit={
+            editing
+              ? () => {
+                  setOpenMeetingId(null);
+                  setEditMeetingId(openMeeting.documentId);
+                }
+              : undefined
+          }
+        />
+      )}
+      {editing && (
+        <MeetingFormModal
+          open={editMeeting !== null}
+          onClose={() => setEditMeetingId(null)}
+          ongDocumentId={editing.ongDocumentId}
+          mentors={editing.mentors}
+          programs={editing.programs}
+          activityTypes={editing.activityTypes}
+          dimensions={dimensions}
+          meeting={editMeeting ?? undefined}
         />
       )}
     </div>

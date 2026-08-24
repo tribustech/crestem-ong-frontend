@@ -54,7 +54,7 @@ export function OverviewMentorCard({
 
       {showMessage && (
         <Link
-          href="/dashboard/ong/mesaje"
+          href="/dashboard/ong/persoane-resursa"
           className="mt-4 flex items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-sm font-semibold text-primary hover:bg-muted transition-colors"
         >
           <Mail size={16} /> Mesaje

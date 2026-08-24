@@ -35,11 +35,13 @@ export function MeetingDetailsModal({
   ongName,
   dimensions,
   onClose,
+  onEdit,
 }: {
   meeting: OngMeeting;
   ongName: string;
   dimensions: Dimension[];
   onClose: () => void;
+  onEdit?: () => void;
 }) {
   const dimensionNames = meeting.dimensiuni.map(
     (key) => dimensions.find((dimension) => dimension.key === key)?.name ?? key,
@@ -112,7 +114,22 @@ export function MeetingDetailsModal({
               </div>
             </Field>
           )}
+
+          {meeting.comentarii && <Field label="Comentarii adiționale">{meeting.comentarii}</Field>}
         </div>
+
+        {onEdit && meeting.status === "programata" && (
+          <div className="px-6 py-4 border-t border-border flex justify-end">
+            <button
+              type="button"
+              onClick={onEdit}
+              className="px-4 py-2 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity"
+              style={{ background: "#162040" }}
+            >
+              Editează
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
