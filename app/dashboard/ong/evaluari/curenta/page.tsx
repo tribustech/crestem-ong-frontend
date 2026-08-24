@@ -21,7 +21,12 @@ export default async function OngEvaluareCurentaPage() {
 
   return (
     <div>
-      <EvaluationTabs active="current" basePath={BASE_PATH} currentEvaluationHref={CURRENT_PATH} />
+      <EvaluationTabs
+        active="current"
+        basePath={BASE_PATH}
+        currentEvaluationHref={CURRENT_PATH}
+        comparisonHref={`${BASE_PATH}/comparatie`}
+      />
 
       <div className="bg-white rounded-xl border border-border p-8 text-center">
         <p className="text-sm text-muted-foreground">

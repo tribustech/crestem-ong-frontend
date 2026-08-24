@@ -6,6 +6,7 @@ import { ChevronDown, Loader2, Upload, X } from "lucide-react";
 import { getMediaUrl } from "@/lib/api/client";
 import { listDomains, type Domain, type MyOng } from "@/lib/api/ongs";
 import { updateMyOngAction, uploadFileAction } from "@/lib/api/ongs-actions";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const ACCEPTED_LOGO_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
 const MAX_LOGO_BYTES = 2 * 1024 * 1024;
@@ -120,12 +121,7 @@ export function EditOngNivel2Modal({ ong, onClose }: { ong: MyOng; onClose: () =
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="edit-ong-nivel2-title"
-    >
+    <ModalOverlay labelledBy="edit-ong-nivel2-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <h2 id="edit-ong-nivel2-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
@@ -332,6 +328,6 @@ export function EditOngNivel2Modal({ ong, onClose }: { ong: MyOng; onClose: () =
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

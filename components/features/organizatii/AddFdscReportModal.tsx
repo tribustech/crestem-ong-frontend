@@ -3,7 +3,11 @@
 import { useRef, useState, useTransition } from "react";
 import type { ChangeEvent, DragEvent, MouseEvent } from "react";
 import { ChevronDown, Loader2, Plus, Upload, X } from "lucide-react";
-import { createFdscReportAction } from "@/lib/api/ongs-actions";
+import {
+  createFdscReportAction,
+  uploadFileAction,
+} from "@/lib/api/ongs-actions";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const ACCEPTED_FILE_TYPES = [
   "application/pdf",
@@ -35,7 +39,8 @@ export function AddFdscReportModal({
   const [isPending, startTransition] = useTransition();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const canSubmit = program.trim() !== "" && name.trim() !== "" && file !== null;
+  const canSubmit =
+    program.trim() !== "" && name.trim() !== "" && file !== null;
 
   const reset = () => {
     setProgram("");
@@ -58,7 +63,9 @@ export function AddFdscReportModal({
       return;
     }
     if (!ACCEPTED_FILE_TYPES.includes(candidate.type)) {
-      setFileError("Format neacceptat. Folosește PDF, DOC, DOCX, XLS sau XLSX.");
+      setFileError(
+        "Format neacceptat. Folosește PDF, DOC, DOCX, XLS sau XLSX.",
+      );
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
@@ -112,15 +119,14 @@ export function AddFdscReportModal({
       </button>
 
       {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="add-fdsc-report-title"
-        >
+        <ModalOverlay labelledBy="add-fdsc-report-title">
           <div className="bg-white rounded-2xl w-full max-w-md flex flex-col">
             <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
-              <h2 id="add-fdsc-report-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
+              <h2
+                id="add-fdsc-report-title"
+                className="font-heading font-extrabold text-lg"
+                style={{ color: "#162040" }}
+              >
                 Încarcă raport
               </h2>
               <button
@@ -136,13 +142,20 @@ export function AddFdscReportModal({
 
             <div className="px-6 py-5 space-y-4">
               {error && (
-                <p role="alert" className="rounded-lg px-3 py-2 text-sm bg-[#fff5f5] border-[1.5px] border-[#fca5a5] text-[#ef4444]">
+                <p
+                  role="alert"
+                  className="rounded-lg px-3 py-2 text-sm bg-[#fff5f5] border-[1.5px] border-[#fca5a5] text-[#ef4444]"
+                >
                   {error}
                 </p>
               )}
 
               <div>
-                <label htmlFor="fdsc-report-program" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
+                <label
+                  htmlFor="fdsc-report-program"
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: "#334155" }}
+                >
                   Program <span style={{ color: "#ef4444" }}>*</span>
                 </label>
                 <div className="relative">
@@ -167,7 +180,11 @@ export function AddFdscReportModal({
               </div>
 
               <div>
-                <label htmlFor="fdsc-report-name" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
+                <label
+                  htmlFor="fdsc-report-name"
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: "#334155" }}
+                >
                   Denumire raport <span style={{ color: "#ef4444" }}>*</span>
                 </label>
                 <input
@@ -181,7 +198,10 @@ export function AddFdscReportModal({
               </div>
 
               <div>
-                <p className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
+                <p
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: "#334155" }}
+                >
                   Fișier <span style={{ color: "#ef4444" }}>*</span>
                 </p>
                 <div className="relative">
@@ -197,8 +217,14 @@ export function AddFdscReportModal({
                       file ? "pr-10" : ""
                     } ${isDragging ? "border-[#2dbe8f] bg-[#2dbe8f]/5" : "border-border bg-slate-50 hover:bg-slate-100"}`}
                   >
-                    <Upload size={16} className="text-muted-foreground shrink-0" />
-                    <span className="truncate" style={{ color: file ? "#162040" : "#64748b" }}>
+                    <Upload
+                      size={16}
+                      className="text-muted-foreground shrink-0"
+                    />
+                    <span
+                      className="truncate"
+                      style={{ color: file ? "#162040" : "#64748b" }}
+                    >
                       {file ? file.name : "Selectează fișierul (PDF, DOC, XLS)"}
                     </span>
                     <input
@@ -221,7 +247,11 @@ export function AddFdscReportModal({
                     </button>
                   )}
                 </div>
-                {fileError && <p className="mt-1.5 text-xs" style={{ color: "#ef4444" }}>{fileError}</p>}
+                {fileError && (
+                  <p className="mt-1.5 text-xs" style={{ color: "#ef4444" }}>
+                    {fileError}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -247,7 +277,7 @@ export function AddFdscReportModal({
               </button>
             </div>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </>
   );

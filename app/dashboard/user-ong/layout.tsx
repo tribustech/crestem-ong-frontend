@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/session-server";
 import { userDisplayName } from "@/lib/api/auth";
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
+import { PageTransition } from "@/components/ui/PageTransition";
 
 export default async function MemberDashboardLayout({
   children,
@@ -25,7 +26,7 @@ export default async function MemberDashboardLayout({
     <div className="flex min-h-screen">
       <DashboardSidebar userName={userDisplayName(user)} userEmail={user.email} variant="member" />
       <main className="flex-1 overflow-y-auto p-8" style={{ background: "#f8fafc" }}>
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );

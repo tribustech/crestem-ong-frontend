@@ -36,6 +36,7 @@ export default async function OngEvaluariPage() {
             ? `/dashboard/ong/evaluari/${activeReport.documentId}`
             : "/dashboard/ong/evaluari/curenta"
         }
+        comparisonHref="/dashboard/ong/evaluari/comparatie"
       />
 
       <div className="mb-6 flex items-start justify-between gap-4">

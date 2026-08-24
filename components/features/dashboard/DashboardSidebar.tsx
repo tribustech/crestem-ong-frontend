@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LogOut,
@@ -23,9 +23,11 @@ import {
   GraduationCap,
   Calendar,
   MessageCircle,
+  Loader2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { LinkPendingIndicator } from "@/components/ui/LinkPendingIndicator";
 import { logoutSession } from "@/lib/api/session";
 
 export interface DashboardNavSection {
@@ -194,8 +196,7 @@ export function DashboardSidebar({
                         : { color: "#334155" }
                     }
                   >
-                    <Icon size={16} />
-                    {item.label}
+                    <NavItemContent icon={Icon} label={item.label} />
                   </Link>
                 );
               })}
@@ -221,10 +222,11 @@ export function DashboardSidebar({
         </div>
         <Link
           href="/"
-          className="block px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-muted"
+          className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-muted"
           style={{ color: "#334155" }}
         >
           Înapoi la site
+          <LinkPendingIndicator />
         </Link>
         <button
           type="button"
@@ -243,5 +245,26 @@ export function DashboardSidebar({
         )}
       </div>
     </aside>
+  );
+}
+
+/**
+ * Rendered inside a <Link> so `useLinkStatus` can report that navigation. The
+ * icon swaps for a spinner the moment the link is clicked, which covers the gap
+ * before the route's loading skeleton takes over.
+ */
+function NavItemContent({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
+  const { pending } = useLinkStatus();
+
+  return (
+    <>
+      {pending ? (
+        <Loader2 size={16} className="animate-spin" aria-hidden />
+      ) : (
+        <Icon size={16} aria-hidden />
+      )}
+      {label}
+      {pending && <span className="sr-only">Se încarcă…</span>}
+    </>
   );
 }

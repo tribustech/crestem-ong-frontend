@@ -2,16 +2,24 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ChevronDown } from "lucide-react";
+import { LinkPendingIndicator } from "@/components/ui/LinkPendingIndicator";
 import { DESPRE_SUBMENU } from "./nav-data";
 
 export function DespreDropdown() {
-  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const ref = useRef<HTMLDivElement>(null);
+
+  // Storing the pathname the menu was opened on (instead of a boolean) closes
+  // it automatically once navigation completes — so a clicked item keeps
+  // showing its pending spinner until the new page is actually there.
+  const [openedAt, setOpenedAt] = useState<string | null>(null);
+  const open = openedAt !== null && openedAt === pathname;
 
   useEffect(() => {
     function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpenedAt(null);
     }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
@@ -20,7 +28,7 @@ export function DespreDropdown() {
   return (
     <div ref={ref} className="relative">
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => setOpenedAt(open ? null : pathname)}
         className={`inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm transition-colors ${open ? "text-foreground bg-muted font-semibold" : "text-muted-foreground font-medium hover:text-foreground hover:bg-muted"}`}
       >
         Despre noi
@@ -36,10 +44,13 @@ export function DespreDropdown() {
             <Link
               key={item.label}
               href={item.href}
-              onClick={() => setOpen(false)}
-              className="block px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
+              onClick={() => {
+                if (item.href === pathname) setOpenedAt(null);
+              }}
+              className="flex items-center justify-between gap-2 px-4 py-3 text-sm text-foreground hover:bg-muted transition-colors"
             >
               {item.label}
+              <LinkPendingIndicator />
             </Link>
           ))}
         </div>

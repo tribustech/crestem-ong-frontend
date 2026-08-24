@@ -15,6 +15,9 @@ export interface DimensionQuestion {
 export interface Dimension {
   key: string;
   name: string;
+  description: string;
+  tips: string;
+  action: string;
   quiz: DimensionQuestion[];
 }
 

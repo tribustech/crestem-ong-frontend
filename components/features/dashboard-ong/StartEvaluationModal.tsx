@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { startEvaluationAction } from "@/lib/api/reports-actions";
 import type { OngMember } from "@/lib/api/reports";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 export function StartEvaluationModal({
   members,
@@ -46,11 +47,11 @@ export function StartEvaluationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
+    <ModalOverlay labelledBy="start-evaluation-title">
       <div className="bg-white rounded-2xl w-full max-w-md max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <div>
-            <h2 className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
+            <h2 id="start-evaluation-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
               Adaugă utilizatori la evaluare
             </h2>
             <p className="text-sm text-muted-foreground mt-1">
@@ -128,6 +129,6 @@ export function StartEvaluationModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

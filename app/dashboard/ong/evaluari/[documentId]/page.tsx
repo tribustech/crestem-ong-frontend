@@ -63,6 +63,7 @@ export default async function OngEvaluareDetailPage({
         currentEvaluationHref={
           activeReport ? `${BASE_PATH}/${activeReport.documentId}` : `${BASE_PATH}/curenta`
         }
+        comparisonHref={`${BASE_PATH}/comparatie`}
       />
 
       <div className="mb-6 flex items-start justify-between gap-4">

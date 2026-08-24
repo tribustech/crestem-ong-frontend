@@ -5,6 +5,7 @@ import { ArrowLeft, Loader2, PenSquare, ShieldCheck, UserCog, X } from "lucide-r
 import { createFdscUserAction, uploadUserAvatarAction } from "@/lib/api/users-actions";
 import type { Dimension } from "@/lib/api/dimensions";
 import { MentorProfileFields, type MentorProfileFieldsValue } from "./MentorProfileFields";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 type StaffRole = "super-admin" | "editor-fdsc";
 type PickableRole = "mentor" | StaffRole;
@@ -112,12 +113,7 @@ export function AddFdscUserModal({ dimensions, onClose }: { dimensions: Dimensio
   const roleLabel = ROLE_CARDS.find((c) => c.role === role)?.label ?? "";
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="add-fdsc-user-title"
-    >
+    <ModalOverlay labelledBy="add-fdsc-user-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -244,6 +240,6 @@ export function AddFdscUserModal({ dimensions, onClose }: { dimensions: Dimensio
           </div>
         )}
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

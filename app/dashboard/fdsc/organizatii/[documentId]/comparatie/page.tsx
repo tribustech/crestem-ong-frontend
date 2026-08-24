@@ -5,8 +5,8 @@ import type { Ong, OngEvaluation } from "@/lib/api/ongs";
 import type { Dimension } from "@/lib/api/dimensions";
 import { OrgDetailTabs } from "@/components/features/organizatii/OrgDetailTabs";
 import { OrgHeaderCard } from "@/components/features/organizatii/OrgHeaderCard";
-import { EvaluationComparisonTable } from "@/components/features/organizatii/EvaluationComparisonTable";
-import { ExportPdfButton } from "@/components/features/organizatii/ExportPdfButton";
+import { EvaluationComparisonTable } from "@/components/features/overview/EvaluationComparisonTable";
+import { ExportPdfButton } from "@/components/features/overview/ExportPdfButton";
 
 export default async function OrganizatieComparatiePage({
   params,

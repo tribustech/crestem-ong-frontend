@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import { formatMeetingDateTime } from "@/lib/utils/date";
 import type { OngMeeting } from "@/lib/api/meetings";
 import type { Dimension } from "@/lib/api/dimensions";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const STATUS_LABELS: Record<OngMeeting["status"], string> = {
   programata: "Programată",
@@ -48,12 +49,7 @@ export function MeetingDetailsModal({
   );
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="meeting-details-title"
-    >
+    <ModalOverlay labelledBy="meeting-details-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <h2
@@ -131,6 +127,6 @@ export function MeetingDetailsModal({
           </div>
         )}
       </div>
-    </div>
+    </ModalOverlay>
   );
 }
