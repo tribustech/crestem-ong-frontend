@@ -4,6 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import type { ChangeEvent, DragEvent, MouseEvent } from "react";
 import { ChevronDown, Loader2, Plus, Upload, X } from "lucide-react";
 import { createFdscReportAction, uploadFileAction } from "@/lib/api/ongs-actions";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const ACCEPTED_FILE_TYPES = [
   "application/pdf",
@@ -120,12 +121,7 @@ export function AddFdscReportModal({
       </button>
 
       {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="add-fdsc-report-title"
-        >
+        <ModalOverlay labelledBy="add-fdsc-report-title">
           <div className="bg-white rounded-2xl w-full max-w-md flex flex-col">
             <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
               <h2 id="add-fdsc-report-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
@@ -255,7 +251,7 @@ export function AddFdscReportModal({
               </button>
             </div>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </>
   );

@@ -8,6 +8,7 @@ import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { changePasswordAction } from "@/lib/api/auth-actions";
 import { PasswordInput } from "@/components/features/auth/PasswordInput";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 /** Mirrors `changePasswordSchema` in the backend's auth validation. */
 const changePasswordSchema = z
@@ -55,12 +56,7 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="change-password-title"
-    >
+    <ModalOverlay labelledBy="change-password-title">
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
@@ -158,6 +154,6 @@ export function ChangePasswordModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
       </form>
-    </div>
+    </ModalOverlay>
   );
 }

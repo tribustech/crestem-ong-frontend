@@ -133,6 +133,11 @@ export interface ReportPhaseInfo {
   program: { documentId: string; name: string } | null;
 }
 
+export interface ReportScores {
+  dimensions: Record<string, number | null>;
+  overall: number | null;
+}
+
 export interface ReportListItem {
   documentId: string;
   name: string;
@@ -143,11 +148,13 @@ export interface ReportListItem {
   phases: ReportPhaseInfo[];
   invitedCount: number;
   completedCount: number;
-}
-
-export interface ReportScores {
-  dimensions: Record<string, number | null>;
-  overall: number | null;
+  /**
+   * Report-level averages, the same numbers `/api/reports/:documentId` returns.
+   * They ride along on the list so the Comparație tab can chart every finished
+   * evaluation from one request. Dimensions with no complete respondent are
+   * `null`, and `overall` is `null` unless every dimension has a score.
+   */
+  scores: ReportScores;
 }
 
 export interface ReportDetail {

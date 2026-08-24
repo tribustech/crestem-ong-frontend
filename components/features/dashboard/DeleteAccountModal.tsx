@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { deleteAccountAction } from "@/lib/api/account-actions";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const DELETE_CONFIRMATION_WORD = "STERGE";
 
@@ -31,12 +32,7 @@ export function DeleteAccountModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="delete-account-title"
-    >
+    <ModalOverlay labelledBy="delete-account-title">
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl w-full max-w-md p-6">
         <h2
           id="delete-account-title"
@@ -119,6 +115,6 @@ export function DeleteAccountModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
       </form>
-    </div>
+    </ModalOverlay>
   );
 }

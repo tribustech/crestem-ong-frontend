@@ -30,6 +30,7 @@ export default async function OngEvaluariOverviewPage() {
         currentEvaluationHref={
           activeReport ? `${BASE_PATH}/${activeReport.documentId}` : `${BASE_PATH}/curenta`
         }
+        comparisonHref={`${BASE_PATH}/comparatie`}
       />
 
       <OverviewSections

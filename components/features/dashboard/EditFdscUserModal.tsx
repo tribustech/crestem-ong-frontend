@@ -8,6 +8,7 @@ import type { Dimension } from "@/lib/api/dimensions";
 import type { AdminUser } from "@/lib/api/users";
 import { ROLE_BADGES } from "@/lib/roles";
 import { MentorProfileFields, type MentorProfileFieldsValue } from "./MentorProfileFields";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const inputClass =
   "w-full px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#2563eb]/30 focus:border-[#2563eb] transition-colors bg-white text-sm";
@@ -102,12 +103,7 @@ export function EditFdscUserModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="edit-fdsc-user-title"
-    >
+    <ModalOverlay labelledBy="edit-fdsc-user-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <h2 id="edit-fdsc-user-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
@@ -181,6 +177,6 @@ export function EditFdscUserModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

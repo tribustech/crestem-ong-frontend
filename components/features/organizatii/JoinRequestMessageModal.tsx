@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 /** Read-only view of an affiliation request message, opened from the requests table. */
 export function JoinRequestMessageModal({
@@ -13,12 +14,7 @@ export function JoinRequestMessageModal({
   onClose: () => void;
 }) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="join-request-message-title"
-    >
+    <ModalOverlay labelledBy="join-request-message-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -57,6 +53,6 @@ export function JoinRequestMessageModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

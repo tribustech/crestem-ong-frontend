@@ -3,19 +3,12 @@ import Link from "next/link";
 import { Calendar, Edit2, Settings } from "lucide-react";
 import type { Program } from "@/lib/api/programs";
 import { formatDate } from "@/lib/utils/date";
+import {
+  isProgramFinished,
+  PROGRAM_STATUS_CLASSES,
+  PROGRAM_STATUS_LABELS,
+} from "@/lib/utils/program-status";
 import { DeleteProgramButton } from "./DeleteProgramButton";
-
-const STATUS_LABELS: Record<Program["programStatus"], string> = {
-  Upcoming: "Viitor",
-  Active: "Activ",
-  Finished: "Finalizat",
-};
-
-const STATUS_COLORS: Record<Program["programStatus"], { bg: string; color: string }> = {
-  Upcoming: { bg: "#fffbeb", color: "#92400e" },
-  Active: { bg: "#eff6ff", color: "#2563eb" },
-  Finished: { bg: "#f0fdf4", color: "#16a34a" },
-};
 
 const PHASE_COLORS = [
   { bg: "#eff6ff", text: "#1d4ed8" },
@@ -27,7 +20,7 @@ const PHASE_COLORS = [
 ];
 
 export function ProgrammeRow({ program }: { program: Program }) {
-  const statusStyle = STATUS_COLORS[program.programStatus];
+  const finished = isProgramFinished(program);
 
   return (
     <div className="bg-white rounded-xl border border-border px-5 py-4 hover:shadow-sm transition-shadow">
@@ -38,10 +31,9 @@ export function ProgrammeRow({ program }: { program: Program }) {
               {program.name}
             </span>
             <span
-              className="px-2.5 py-0.5 rounded-full text-xs font-semibold shrink-0"
-              style={{ background: statusStyle.bg, color: statusStyle.color }}
+              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold shrink-0 ${PROGRAM_STATUS_CLASSES[program.programStatus]}`}
             >
-              {STATUS_LABELS[program.programStatus]}
+              {PROGRAM_STATUS_LABELS[program.programStatus]}
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -50,21 +42,25 @@ export function ProgrammeRow({ program }: { program: Program }) {
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <Link
-            href={`/dashboard/fdsc/programe/${program.documentId}/editeaza`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border hover:bg-slate-50 transition-colors"
-            style={{ color: "#475569" }}
-          >
-            <Edit2 size={12} /> Editează
-          </Link>
+          {!finished && (
+            <Link
+              href={`/dashboard/fdsc/programe/${program.documentId}/editeaza`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border hover:bg-slate-50 transition-colors"
+              style={{ color: "#475569" }}
+            >
+              <Edit2 size={12} /> Editează
+            </Link>
+          )}
           <Link
             href={`/dashboard/fdsc/programe/${program.documentId}`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90"
             style={{ background: "#7c3aed" }}
           >
-            <Settings size={12} /> Gestionează
+            <Settings size={12} /> {finished ? "Vizualizează" : "Gestionează"}
           </Link>
-          <DeleteProgramButton documentId={program.documentId} programName={program.name} />
+          {!finished && (
+            <DeleteProgramButton documentId={program.documentId} programName={program.name} />
+          )}
         </div>
       </div>
       {program.phases.length > 0 && (

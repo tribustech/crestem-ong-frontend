@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { requestEmailChangeAction } from "@/lib/api/auth-actions";
 import { PasswordInput } from "@/components/features/auth/PasswordInput";
 import { CopyableLink } from "@/components/ui/CopyableLink";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 /** Mirrors `requestEmailChangeSchema` in the backend's auth validation. */
 const changeEmailSchema = z.object({
@@ -47,12 +48,7 @@ export function ChangeEmailModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="change-email-title"
-    >
+    <ModalOverlay labelledBy="change-email-title">
       <div className="bg-white rounded-2xl w-full max-w-md max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -179,6 +175,6 @@ export function ChangeEmailModal({ onClose }: { onClose: () => void }) {
           </form>
         )}
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

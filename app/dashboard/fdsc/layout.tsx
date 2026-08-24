@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/session-server";
 import { userDisplayName } from "@/lib/api/auth";
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
+import { PageTransition } from "@/components/ui/PageTransition";
 
 export default async function FdscDashboardLayout({
   children,
@@ -28,7 +29,7 @@ export default async function FdscDashboardLayout({
         className="flex-1 overflow-y-auto p-8 print:p-0 print:overflow-visible"
         style={{ background: "#f8fafc" }}
       >
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
     </div>
   );

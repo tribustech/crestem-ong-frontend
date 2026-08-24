@@ -13,6 +13,47 @@
   --accent-foreground: #ffffff;
   --border: #e2e8f0;
   --radius: 0.75rem;
+
+  /* Surfaces ------------------------------------------------------------- */
+  /* Table headers and other panels that sit a step back from a white card. */
+  --surface-subtle: #f8fafc;
+  /* The icon chip on a "coming soon" placeholder. */
+  --surface-placeholder: #eef2f7;
+
+  /* Stat card tints ------------------------------------------------------ */
+  /* Backgrounds and matching borders for the tinted counters on the mentor
+     dashboard. Each pairs a tint with a border one step darker. */
+  --tint-violet: #faf5ff;
+  --tint-violet-border: #f0e4fe;
+  --tint-amber: #fefce8;
+  --tint-amber-border: #fbf1c6;
+  --tint-teal: #f0fdfa;
+  --tint-teal-border: #d5f5ec;
+
+  /* Counter values ------------------------------------------------------- */
+  /* The headline number of a stat card. Distinct hues rather than semantic
+     states — they separate adjacent counters at a glance. */
+  --value-teal: #0f9d76;
+  --value-blue: #2563eb;
+  --value-violet: #7c3aed;
+  --value-red: #dc2626;
+  --value-orange: #ea580c;
+  --value-green: #16a34a;
+
+  /* Warning callout ------------------------------------------------------ */
+  --warning-surface: #fffdf2;
+  --warning-border: #fbe6a2;
+  --warning-icon: #d97706;
+  --warning-strong: #b45309;
+  --warning-muted: #a16207;
+
+  /* Program status badges ------------------------------------------------ */
+  --status-upcoming: #fffbeb;
+  --status-upcoming-foreground: #92400e;
+  --status-active: #eff6ff;
+  --status-active-foreground: #2563eb;
+  --status-finished: #f0fdf4;
+  --status-finished-foreground: #16a34a;
 }
 
 @theme inline {
@@ -27,6 +68,37 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-border: var(--border);
+
+  --color-surface-subtle: var(--surface-subtle);
+  --color-surface-placeholder: var(--surface-placeholder);
+
+  --color-tint-violet: var(--tint-violet);
+  --color-tint-violet-border: var(--tint-violet-border);
+  --color-tint-amber: var(--tint-amber);
+  --color-tint-amber-border: var(--tint-amber-border);
+  --color-tint-teal: var(--tint-teal);
+  --color-tint-teal-border: var(--tint-teal-border);
+
+  --color-value-teal: var(--value-teal);
+  --color-value-blue: var(--value-blue);
+  --color-value-violet: var(--value-violet);
+  --color-value-red: var(--value-red);
+  --color-value-orange: var(--value-orange);
+  --color-value-green: var(--value-green);
+
+  --color-warning-surface: var(--warning-surface);
+  --color-warning-border: var(--warning-border);
+  --color-warning-icon: var(--warning-icon);
+  --color-warning-strong: var(--warning-strong);
+  --color-warning-muted: var(--warning-muted);
+
+  --color-status-upcoming: var(--status-upcoming);
+  --color-status-upcoming-foreground: var(--status-upcoming-foreground);
+  --color-status-active: var(--status-active);
+  --color-status-active-foreground: var(--status-active-foreground);
+  --color-status-finished: var(--status-finished);
+  --color-status-finished-foreground: var(--status-finished-foreground);
+
   --radius-lg: var(--radius);
   --font-sans: var(--font-inter);
   --font-heading: var(--font-plus-jakarta-sans);
@@ -44,5 +116,46 @@ body {
   }
   tr {
     break-inside: avoid;
+  }
+}
+
+/* Route transitions ------------------------------------------------------ */
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Applied by <PageTransition> to the new route's content, so a navigation
+   reads as a deliberate swap instead of an abrupt repaint.
+
+   Fill mode is `backwards`, not `both`: a forwards-filling transform animation
+   keeps the element flagged as transformed after it ends, which permanently
+   turns it into a containing block for `position: fixed` descendants. The last
+   keyframe is `transform: none` / `opacity: 1` — the element's natural state —
+   so dropping the forwards fill changes nothing visually. */
+.animate-page-enter {
+  animation: page-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-page-enter {
+    animation: none;
+  }
+  .animate-pulse,
+  .animate-spin {
+    animation: none;
+  }
+}
+
+@media print {
+  .animate-page-enter {
+    animation: none;
   }
 }

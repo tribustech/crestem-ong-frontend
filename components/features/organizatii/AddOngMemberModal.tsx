@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Loader2, X } from "lucide-react";
 import { inviteOngMemberAction } from "@/lib/api/ongs-actions";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const inputClass =
   "w-full px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#2dbe8f]/30 focus:border-[#2dbe8f] transition-colors bg-white text-sm";
@@ -32,12 +33,7 @@ export function AddOngMemberModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="add-ong-member-title"
-    >
+    <ModalOverlay labelledBy="add-ong-member-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <h2 id="add-ong-member-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
@@ -139,6 +135,6 @@ export function AddOngMemberModal({ onClose }: { onClose: () => void }) {
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

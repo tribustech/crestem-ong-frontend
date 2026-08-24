@@ -2,12 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Plus } from "lucide-react";
-import type { OngEvaluation } from "@/lib/api/ongs";
 import type { Dimension } from "@/lib/api/dimensions";
 import { dimensionColor, dimensionLabel, dimensionPillStyle } from "@/lib/api/dimension-colors";
 
 const MAX_SELECTED = 5;
 const COLUMN_COLORS = ["#162040", "#2dbe8f", "#2563eb", "#c2410c", "#7c3aed"];
+
+/**
+ * The columns are fed by two endpoints that describe the same reports for
+ * different roles — `/api/ongs/:id/evaluations` (`OngEvaluation`, super admin)
+ * and `/api/reports` (`ReportListItem`, ngo admin). Only these four fields are
+ * ever read, so the prop is typed on them rather than on either role's DTO.
+ */
+export interface ComparableEvaluation {
+  documentId: string;
+  createdAt: string;
+  finishedAt: string | null;
+  scores: { dimensions: Record<string, number | null>; overall: number | null };
+}
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("ro-RO", { day: "numeric", month: "long", year: "numeric" }).format(
@@ -15,7 +27,7 @@ function formatDate(iso: string) {
   );
 }
 
-function evaluationDate(evaluation: OngEvaluation) {
+function evaluationDate(evaluation: ComparableEvaluation) {
   return evaluation.finishedAt ?? evaluation.createdAt;
 }
 
@@ -23,7 +35,7 @@ export function EvaluationComparisonTable({
   evaluations,
   dimensions,
 }: {
-  evaluations: OngEvaluation[];
+  evaluations: ComparableEvaluation[];
   dimensions: Dimension[];
 }) {
   const sortedByDateDesc = [...evaluations].sort(
@@ -48,7 +60,7 @@ export function EvaluationComparisonTable({
 
   const selected = selectedIds
     .map((id) => evaluations.find((evaluation) => evaluation.documentId === id))
-    .filter((evaluation): evaluation is OngEvaluation => !!evaluation)
+    .filter((evaluation): evaluation is ComparableEvaluation => !!evaluation)
     .sort((a, b) => new Date(evaluationDate(a)).getTime() - new Date(evaluationDate(b)).getTime());
 
   const available = sortedByDateDesc.filter((evaluation) => !selectedIds.includes(evaluation.documentId));

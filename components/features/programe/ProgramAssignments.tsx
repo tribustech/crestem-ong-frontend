@@ -12,6 +12,7 @@ export function ProgramAssignments({
   activeOngs,
   activeMentors,
   entryPhaseTitle,
+  readOnly = false,
 }: {
   programId: string;
   assignedOngs: AssignedOng[];
@@ -19,6 +20,7 @@ export function ProgramAssignments({
   activeOngs: ActiveOng[];
   activeMentors: ActiveMentor[];
   entryPhaseTitle: string | null;
+  readOnly?: boolean;
 }) {
   return (
     <div>
@@ -28,8 +30,14 @@ export function ProgramAssignments({
         activeOngs={activeOngs}
         entryPhaseTitle={entryPhaseTitle}
         assignedMentors={assignedMentors}
+        readOnly={readOnly}
       />
-      <AssignMentorsSection programId={programId} assigned={assignedMentors} activeMentors={activeMentors} />
+      <AssignMentorsSection
+        programId={programId}
+        assigned={assignedMentors}
+        activeMentors={activeMentors}
+        readOnly={readOnly}
+      />
     </div>
   );
 }

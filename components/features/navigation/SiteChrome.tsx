@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Navbar } from "./Navbar";
 import type { NavUser } from "./nav-data";
+import { PageTransition } from "@/components/ui/PageTransition";
 
 export function SiteChrome({
   children,
@@ -21,7 +22,9 @@ export function SiteChrome({
   return (
     <>
       <Navbar user={user} />
-      <main className="flex-1 pt-16">{children}</main>
+      <main className="flex-1 pt-16">
+        <PageTransition>{children}</PageTransition>
+      </main>
     </>
   );
 }

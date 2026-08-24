@@ -36,3 +36,15 @@ export function formatMeetingDateTime(iso: string) {
   }).format(date);
   return `${datePart} · ${timePart}`;
 }
+
+export function formatLongDate(iso?: string | null) {
+  if (!iso) return "—";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "—";
+  return new Intl.DateTimeFormat("ro-RO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Europe/Bucharest",
+  }).format(date);
+}

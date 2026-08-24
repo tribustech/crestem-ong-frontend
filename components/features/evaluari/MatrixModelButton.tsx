@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Layers, X } from "lucide-react";
 import type { Dimension } from "@/lib/api/dimensions";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const DIMENSION_LETTERS = "ABCDEFGHIJ";
 
@@ -21,12 +22,7 @@ export function MatrixModelButton({ dimensions }: { dimensions: Dimension[] }) {
       </button>
 
       {open && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="matrix-model-title"
-        >
+        <ModalOverlay labelledBy="matrix-model-title">
           <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-border">
               <h2 id="matrix-model-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
@@ -72,7 +68,7 @@ export function MatrixModelButton({ dimensions }: { dimensions: Dimension[] }) {
               </div>
             </div>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </>
   );
