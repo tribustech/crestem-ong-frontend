@@ -3,7 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import type { ChangeEvent, DragEvent, MouseEvent } from "react";
 import { ChevronDown, Loader2, Plus, Upload, X } from "lucide-react";
-import { createFdscReportAction, uploadFileAction } from "@/lib/api/ongs-actions";
+import { createFdscReportAction } from "@/lib/api/ongs-actions";
 
 const ACCEPTED_FILE_TYPES = [
   "application/pdf",
@@ -88,18 +88,10 @@ export function AddFdscReportModal({
     setError(null);
     startTransition(async () => {
       const form = new FormData();
+      form.append("name", name.trim());
+      form.append("program", program);
       form.append("files", file);
-      const uploadResult = await uploadFileAction(form);
-      if (uploadResult.error || !uploadResult.id) {
-        setError(uploadResult.error ?? "Nu am putut încărca fișierul.");
-        return;
-      }
-
-      const result = await createFdscReportAction(ongDocumentId, {
-        name: name.trim(),
-        program,
-        file: uploadResult.id,
-      });
+      const result = await createFdscReportAction(ongDocumentId, form);
       if (result.error) {
         setError(result.error);
         return;

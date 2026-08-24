@@ -186,21 +186,35 @@ export async function uploadFileAction(
   }
 }
 
-export interface CreateFdscReportInput {
-  name: string;
-  program: string;
-  file: number;
-}
-
+/**
+ * Sends `name`/`program`/`file` in one multipart request — the backend
+ * validates the program/ONG relationship first and only creates the upload
+ * once that passes, so a rejected request never leaves an orphaned file
+ * behind the way the old upload-then-create flow could.
+ */
 export async function createFdscReportAction(
   ongDocumentId: string,
-  input: CreateFdscReportInput,
+  formData: FormData,
 ): Promise<{ error?: string }> {
+  const { cookies } = await import("next/headers");
+  const { SESSION_COOKIE } = await import("./session-cookies");
+  const { ApiError } = await import("./client");
+
+  const cookieStore = await cookies();
+  const jwt = cookieStore.get(SESSION_COOKIE)?.value;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
   try {
-    await serverApiFetch(`/api/ongs/${ongDocumentId}/fdsc-reports`, {
+    const res = await fetch(`${API_URL}/api/ongs/${ongDocumentId}/fdsc-reports`, {
       method: "POST",
-      body: JSON.stringify(input),
+      headers: jwt ? { Authorization: `Bearer ${jwt}` } : undefined,
+      body: formData,
     });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      const message = data?.error?.message ?? "Nu am putut încărca raportul.";
+      throw new ApiError(message, res.status, data?.error?.details);
+    }
   } catch (err) {
     return { error: getApiErrorMessage(err, "Nu am putut încărca raportul.") };
   }

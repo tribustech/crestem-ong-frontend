@@ -2,9 +2,11 @@ import { serverApiFetch } from "@/lib/api/server";
 import { listOngMeetings } from "@/lib/api/meetings";
 import type { Ong, MyOng, OngMentor } from "@/lib/api/ongs";
 import { listDimensions } from "@/lib/api/dimensions";
+import { pickNextMeeting } from "@/lib/utils/meetings";
 import { PersoaneResursaTabs } from "@/components/features/dashboard-ong/PersoaneResursaTabs";
 import { MeetingsFilters } from "@/components/features/organizatii/MeetingsFilters";
 import { MeetingsTable } from "@/components/features/organizatii/MeetingsTable";
+import { NextMeetingBanner } from "@/components/features/organizatii/NextMeetingBanner";
 
 type QueryValue = string | string[] | undefined;
 
@@ -25,7 +27,7 @@ export default async function OngPersoaneResursaIntalniriPage({ searchParams }: 
 
   const { data: myOng } = await serverApiFetch<{ data: MyOng }>("/api/ongs/me");
 
-  const [ongRes, mentorsRes, meetingsRes, dimensions] = await Promise.all([
+  const [ongRes, mentorsRes, meetingsRes, { data: upcomingMeetings }, dimensions] = await Promise.all([
     serverApiFetch<{ data: Ong }>(`/api/ongs/${myOng.documentId}`),
     serverApiFetch<{ data: OngMentor[] }>(`/api/ongs/${myOng.documentId}/mentors`),
     listOngMeetings(myOng.documentId, {
@@ -34,11 +36,13 @@ export default async function OngPersoaneResursaIntalniriPage({ searchParams }: 
       status: statusFilter,
       format: formatFilter,
     }),
+    listOngMeetings(myOng.documentId, { status: "programata" }),
     listDimensions(),
   ]);
 
   const ong = ongRes.data;
   const mentors = mentorsRes.data;
+  const nextMeeting = pickNextMeeting(upcomingMeetings);
 
   return (
     <div>
@@ -47,6 +51,10 @@ export default async function OngPersoaneResursaIntalniriPage({ searchParams }: 
       <h1 className="text-2xl font-heading font-extrabold mb-4" style={{ color: "#162040" }}>
         Toate întâlnirile
       </h1>
+
+      {nextMeeting && (
+        <NextMeetingBanner meeting={nextMeeting} primaryLabel={nextMeeting.mentor?.nume ?? "—"} />
+      )}
 
       <MeetingsFilters
         mentors={mentors}

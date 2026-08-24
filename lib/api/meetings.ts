@@ -7,6 +7,8 @@ export interface OngMeeting {
   status: "programata" | "efectuata" | "anulata";
   subiect: string;
   linkIntalnire: string | null;
+  /** Only populated on the mentor's own meetings list — a mentor's meetings span multiple ONGs. */
+  ong?: { documentId: string; name: string } | null;
   mentor: { documentId: string; nume: string } | null;
   program: { documentId: string; name: string } | null;
   activityType: { documentId: string; name: string } | null;
@@ -32,4 +34,31 @@ export function listOngMeetings(documentId: string, params: ListOngMeetingsParam
   return serverApiFetch<{ data: OngMeeting[] }>(
     `/api/ongs/${documentId}/meetings${qs ? `?${qs}` : ""}`,
   );
+}
+
+export interface MentorOng {
+  documentId: string;
+  name: string;
+  programs: { documentId: string; name: string }[];
+}
+
+export function listMentorOngs() {
+  return serverApiFetch<{ data: MentorOng[] }>("/api/mentor/ongs");
+}
+
+export interface ListMentorMeetingsParams {
+  ong?: string;
+  program?: string;
+  status?: string;
+  format?: string;
+}
+
+export function listMentorMeetings(params: ListMentorMeetingsParams = {}) {
+  const query = new URLSearchParams();
+  if (params.ong) query.set("ong", params.ong);
+  if (params.program) query.set("program", params.program);
+  if (params.status) query.set("status", params.status);
+  if (params.format) query.set("format", params.format);
+  const qs = query.toString();
+  return serverApiFetch<{ data: OngMeeting[] }>(`/api/mentor/meetings${qs ? `?${qs}` : ""}`);
 }
