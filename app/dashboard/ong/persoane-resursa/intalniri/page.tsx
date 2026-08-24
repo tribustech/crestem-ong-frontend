@@ -2,11 +2,9 @@ import { serverApiFetch } from "@/lib/api/server";
 import { listOngMeetings } from "@/lib/api/meetings";
 import type { Ong, MyOng, OngMentor } from "@/lib/api/ongs";
 import { listDimensions } from "@/lib/api/dimensions";
-import { listActivityTypes } from "@/lib/api/activity-types";
 import { PersoaneResursaTabs } from "@/components/features/dashboard-ong/PersoaneResursaTabs";
 import { MeetingsFilters } from "@/components/features/organizatii/MeetingsFilters";
 import { MeetingsTable } from "@/components/features/organizatii/MeetingsTable";
-import { AddMeetingModal } from "@/components/features/organizatii/AddMeetingModal";
 
 type QueryValue = string | string[] | undefined;
 
@@ -27,7 +25,7 @@ export default async function OngPersoaneResursaIntalniriPage({ searchParams }: 
 
   const { data: myOng } = await serverApiFetch<{ data: MyOng }>("/api/ongs/me");
 
-  const [ongRes, mentorsRes, meetingsRes, dimensions, activityTypesRes] = await Promise.all([
+  const [ongRes, mentorsRes, meetingsRes, dimensions] = await Promise.all([
     serverApiFetch<{ data: Ong }>(`/api/ongs/${myOng.documentId}`),
     serverApiFetch<{ data: OngMentor[] }>(`/api/ongs/${myOng.documentId}/mentors`),
     listOngMeetings(myOng.documentId, {
@@ -37,7 +35,6 @@ export default async function OngPersoaneResursaIntalniriPage({ searchParams }: 
       format: formatFilter,
     }),
     listDimensions(),
-    listActivityTypes(),
   ]);
 
   const ong = ongRes.data;
@@ -47,18 +44,9 @@ export default async function OngPersoaneResursaIntalniriPage({ searchParams }: 
     <div>
       <PersoaneResursaTabs active="intalniri" />
 
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
-          Toate întâlnirile
-        </h1>
-        <AddMeetingModal
-          ongDocumentId={ong.documentId}
-          mentors={mentors}
-          programs={ong.programs}
-          activityTypes={activityTypesRes.data}
-          dimensions={dimensions}
-        />
-      </div>
+      <h1 className="text-2xl font-heading font-extrabold mb-4" style={{ color: "#162040" }}>
+        Toate întâlnirile
+      </h1>
 
       <MeetingsFilters
         mentors={mentors}
@@ -69,17 +57,7 @@ export default async function OngPersoaneResursaIntalniriPage({ searchParams }: 
         initialFormat={formatFilter}
       />
 
-      <MeetingsTable
-        meetings={meetingsRes.data}
-        ongName={ong.name}
-        dimensions={dimensions}
-        editing={{
-          ongDocumentId: ong.documentId,
-          mentors,
-          programs: ong.programs,
-          activityTypes: activityTypesRes.data,
-        }}
-      />
+      <MeetingsTable meetings={meetingsRes.data} ongName={ong.name} dimensions={dimensions} />
     </div>
   );
 }
