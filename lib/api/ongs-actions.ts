@@ -16,6 +16,40 @@ export async function deleteOngAction(documentId: string): Promise<{ error?: str
   return {};
 }
 
+/**
+ * `Șterge ONG` from the Admin ONG's own Acțiuni menu.
+ *
+ * Same endpoint as `deleteOngAction` — the backend decides ownership, this only
+ * differs in what happens afterwards. Deleting the organization ends the
+ * caller's membership, so an admin with no other affiliation is demoted to
+ * `individual` on the spot and `/dashboard/ong/*` starts redirecting them away.
+ * The destination is therefore read back from `/api/auth/me` *after* the
+ * deletion rather than guessed: an admin who still runs another organization
+ * stays `ngo-admin` and belongs back on the ONG dashboard.
+ */
+export async function deleteMyOngAction(
+  documentId: string,
+): Promise<{ error?: string; redirectTo?: string }> {
+  try {
+    await serverApiFetch(`/api/ongs/${documentId}`, { method: "DELETE" });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut șterge organizația.") };
+  }
+
+  revalidatePath("/dashboard", "layout");
+
+  const { getCurrentUser, getDashboardPathForRole } = await import("./session-server");
+  let redirectTo = "/dashboard/individual";
+  try {
+    const user = await getCurrentUser();
+    redirectTo = getDashboardPathForRole(user?.role?.type) ?? redirectTo;
+  } catch {
+    // The organization is gone either way; fall back to the individual
+    // dashboard, which is where a demoted admin belongs.
+  }
+  return { redirectTo };
+}
+
 export interface UpdateMyOngInput {
   logo?: number | null;
   domeniuPrincipal?: string;

@@ -78,6 +78,7 @@ export interface AssignedMentor {
 export interface AssignedOng {
   documentId: string;
   name: string;
+  ngoStatus?: string;
   evaluation: { documentId: string; name: string } | null;
   mentors: AssignedMentor[];
 }

@@ -38,7 +38,11 @@ export default async function OrganizatieOverviewPage({
 
       <OrgDetailTabs documentId={documentId} active="overview" />
 
-      <OrgOverviewStats documentId={documentId} overview={overviewRes.data} programs={ong.programs} />
+      <OrgOverviewStats
+        documentId={documentId}
+        overview={overviewRes.data}
+        programs={ong.programs}
+      />
 
       <div className="mt-6 flex flex-col gap-6">
         <OrgDetailsCard ong={ong} />

@@ -11,6 +11,7 @@ import {
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { listOngEvaluations, type OngEvaluation } from "@/lib/api/ongs";
 import type { AssignedMentor, AssignedOng } from "@/lib/api/programs";
+import { isRetras } from "@/lib/api/ongs";
 import type { ActiveOng } from "@/lib/api/ongs";
 
 function formatEvalPeriod(evaluation: OngEvaluation) {
@@ -353,7 +354,16 @@ export function AssignOngsSection({
                       <Building2 size={14} style={{ color: "#2563eb" }} />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-sm font-medium block truncate" style={{ color: "#162040" }}>{ong.name}</span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-sm font-medium truncate min-w-0 flex-1" style={{ color: "#162040" }}>
+                          {ong.name}
+                        </span>
+                        {isRetras(ong) && (
+                          <span className="shrink-0 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                            Retras
+                          </span>
+                        )}
+                      </div>
                       <span className="text-xs text-muted-foreground block mt-0.5">
                         {ongMentors.length} {ongMentors.length === 1 ? "persoană resursă" : "persoane resursă"}
                       </span>

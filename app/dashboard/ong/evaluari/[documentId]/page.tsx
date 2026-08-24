@@ -1,11 +1,14 @@
-import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
-import type { ReportDetail, ReportMembers, OngMember } from "@/lib/api/reports";
+import { EvaluationTabs } from "@/components/features/overview/EvaluationTabs";
+import { findActiveReport } from "@/lib/api/reports";
+import type { ReportDetail, ReportMembers, OngMember, ReportsCurrent } from "@/lib/api/reports";
 import type { Dimension } from "@/lib/api/dimensions";
 import { dimensionColor, dimensionPillStyle } from "@/lib/api/dimension-colors";
 import { ReportDetailActions } from "@/components/features/dashboard-ong/ReportDetailActions";
 import { ReportMembersTable } from "@/components/features/dashboard-ong/ReportMembersTable";
+
+const BASE_PATH = "/dashboard/ong/evaluari";
 
 function formatDate(iso: string) {
   if (!iso) return "—";
@@ -20,14 +23,16 @@ export default async function OngEvaluareDetailPage({
 }) {
   const { documentId } = await params;
 
-  const [reportRes, membersRes, ongMembersRes, dimensionsRes] = await Promise.all([
+  const [reportRes, membersRes, ongMembersRes, dimensionsRes, currentRes] = await Promise.all([
     serverApiFetch<{ data: ReportDetail }>(`/api/reports/${documentId}`),
     serverApiFetch<{ data: ReportMembers }>(`/api/reports/${documentId}/members`),
     serverApiFetch<{ data: OngMember[] }>("/api/ongs/members"),
     serverApiFetch<Dimension[]>("/api/dimensions"),
+    serverApiFetch<{ data: ReportsCurrent }>("/api/reports/current"),
   ]);
 
   const report = reportRes.data;
+  const activeReport = findActiveReport(currentRes.data.programRounds, currentRes.data.standaloneReports);
   const invitedIds = new Set(membersRes.data.invited.map((entry) => entry.user?.documentId).filter(Boolean));
   const candidates = ongMembersRes.data.filter(
     (member) => member.accountStatus === "active" && !invitedIds.has(member.documentId),
@@ -52,13 +57,13 @@ export default async function OngEvaluareDetailPage({
 
   return (
     <div>
-      <Link
-        href="/dashboard/ong/evaluari"
-        className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
-        style={{ color: "#94a3b8" }}
-      >
-        <ArrowLeft size={14} /> Înapoi la evaluări
-      </Link>
+      <EvaluationTabs
+        active={report.finished ? "evaluations" : "current"}
+        basePath={BASE_PATH}
+        currentEvaluationHref={
+          activeReport ? `${BASE_PATH}/${activeReport.documentId}` : `${BASE_PATH}/curenta`
+        }
+      />
 
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>

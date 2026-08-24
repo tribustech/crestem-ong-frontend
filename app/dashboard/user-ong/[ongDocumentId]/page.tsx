@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Rows3 } from "lucide-react";
+import { Rows3 } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
 import { findActiveEvaluation } from "@/lib/api/evaluations";
 import type { MyOng, OngEvaluationListItem } from "@/lib/api/evaluations";
 import type { Dimension } from "@/lib/api/dimensions";
 import { OrgEvaluationsTable } from "@/components/features/dashboard-member/OrgEvaluationsTable";
 import { MatrixModelButton } from "@/components/features/evaluari/MatrixModelButton";
+import { MemberOngHeader } from "@/components/features/dashboard-member/MemberOngHeader";
+import { EvaluationTabs } from "@/components/features/overview/EvaluationTabs";
 
 export default async function MemberOngPage({
   params,
@@ -17,7 +19,9 @@ export default async function MemberOngPage({
 
   const [ongsRes, evaluationsRes, dimensionsRes] = await Promise.all([
     serverApiFetch<{ data: MyOng[] }>("/api/me/ongs"),
-    serverApiFetch<{ data: OngEvaluationListItem[] }>(`/api/evaluations/ong/${ongDocumentId}`),
+    serverApiFetch<{ data: OngEvaluationListItem[] }>(
+      `/api/evaluations/ong/${ongDocumentId}`,
+    ),
     serverApiFetch<Dimension[]>("/api/dimensions"),
   ]);
 
@@ -28,42 +32,15 @@ export default async function MemberOngPage({
 
   const evaluations = evaluationsRes.data;
   const activeEvaluation = findActiveEvaluation(evaluations);
-  const initial = ong.name.trim().charAt(0).toUpperCase() || "?";
 
   return (
     <div>
-      <div className="mb-6 flex items-center gap-2 text-sm">
-        <Link href="/dashboard/user-ong" className="font-medium" style={{ color: "#94a3b8" }}>
-          <span className="inline-flex items-center gap-1.5">
-            <ArrowLeft size={14} /> Toate ONG-urile
-          </span>
-        </Link>
-        <span style={{ color: "#cbd5e1" }}>|</span>
-        <span className="inline-flex items-center gap-2 font-semibold" style={{ color: "#162040" }}>
-          <span
-            className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold text-white"
-            style={{ background: "#2dbe8f" }}
-          >
-            {initial}
-          </span>
-          {ong.name}
-        </span>
-      </div>
+      <MemberOngHeader ongName={ong.name} />
 
-      <div className="mb-6 flex items-center gap-6 border-b border-border">
-        <span
-          className="pb-3 text-sm font-medium cursor-not-allowed opacity-40"
-          title="Disponibil în curând"
-        >
-          Informații organizație
-        </span>
-        <span
-          className="pb-3 text-sm font-semibold border-b-2"
-          style={{ color: "#2dbe8f", borderColor: "#2dbe8f" }}
-        >
-          Evaluările mele
-        </span>
-      </div>
+      <EvaluationTabs
+        active="evaluations"
+        basePath={`/dashboard/user-ong/${ongDocumentId}`}
+      />
 
       {activeEvaluation && (
         <div
@@ -71,28 +48,44 @@ export default async function MemberOngPage({
           style={{ background: "#162040" }}
         >
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: "#2dbe8f" }}>
+            <p
+              className="text-xs font-semibold uppercase tracking-wider mb-2"
+              style={{ color: "#2dbe8f" }}
+            >
               Evaluare în așteptare
             </p>
             <p className="text-sm text-white/80 max-w-xl">
-              Ai fost adăugat de organizație în procesul de evaluare organizațională. Dă click pe butonul de
-              pornire pentru a începe.
+              Ai fost adăugat de organizație în procesul de evaluare
+              organizațională. Dă click pe butonul de pornire pentru a începe.
             </p>
           </div>
           <Link
             href={`/dashboard/user-ong/${ongDocumentId}/evaluari/${activeEvaluation.documentId}`}
             className="shrink-0 inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-            style={{ background: "#2dbe8f", boxShadow: "0 4px 16px rgba(45,190,143,0.3)" }}
+            style={{
+              background: "#2dbe8f",
+              boxShadow: "0 4px 16px rgba(45,190,143,0.3)",
+            }}
           >
-            {activeEvaluation.progress.status === "neinceput" ? "Pornește evaluarea" : "Continuă evaluarea"}
+            {activeEvaluation.progress.status === "neinceput"
+              ? "Pornește evaluarea"
+              : "Continuă evaluarea"}
           </Link>
         </div>
       )}
 
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm text-muted-foreground">Evaluările la care ai participat personal ca membru al ONG-ului.</p>
+        <p className="text-sm text-muted-foreground">
+          Evaluările la care ai participat personal ca membru al ONG-ului.
+        </p>
         <div className="flex items-center gap-2">
-          <MatrixModelButton dimensions={dimensionsRes} />
+          <Link
+            href={`/dashboard/user-ong/${ongDocumentId}/model`}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border hover:bg-slate-50 transition-colors"
+            style={{ color: "#475569" }}
+          >
+            <Layers size={13} /> Vezi modelul matricei
+          </Link>
           <button
             type="button"
             disabled
@@ -105,7 +98,10 @@ export default async function MemberOngPage({
         </div>
       </div>
 
-      <OrgEvaluationsTable ongDocumentId={ongDocumentId} evaluations={evaluations} />
+      <OrgEvaluationsTable
+        ongDocumentId={ongDocumentId}
+        evaluations={evaluations}
+      />
     </div>
   );
 }

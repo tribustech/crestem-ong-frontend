@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Building2, Calendar, Play, Users, ExternalLink } from "lucide-react";
+import { Building2, Calendar, Play, Users, ExternalLink, FileText } from "lucide-react";
 import { StartEvaluationModal } from "./StartEvaluationModal";
 import { findActiveReport } from "@/lib/api/reports";
 import type { ProgramRound, RoundPhase, RoundSummary, OngMember } from "@/lib/api/reports";
@@ -18,6 +18,23 @@ function formatDate(iso: string) {
   const [year, month, day] = iso.split("-");
   return `${day}.${month}.${year}`;
 }
+
+const RO_SHORT_MONTHS = ["ian", "feb", "mar", "apr", "mai", "iun", "iul", "aug", "sep", "oct", "nov", "dec"];
+
+/** "2025-01-15" → "15 ian 2025" — the long-form date used by the phase timeline. */
+function formatDateLong(iso: string) {
+  if (!iso) return "—";
+  const [year, month, day] = iso.split("-");
+  const monthLabel = RO_SHORT_MONTHS[Number(month) - 1] ?? month;
+  return `${Number(day)} ${monthLabel} ${year}`;
+}
+
+// Phase accents cycle so consecutive phases stay visually distinct.
+const PHASE_ACCENTS = [
+  { solid: "#2563eb", bg: "#eff6ff", color: "#2563eb" },
+  { solid: "#16a34a", bg: "#f0fdf4", color: "#16a34a" },
+  { solid: "#9333ea", bg: "#faf5ff", color: "#9333ea" },
+];
 
 function StatusBadge({ status }: { status: "Viitor" | "Activ" | "Finalizat" | "În desfășurare" | "Neînceput" }) {
   const map: Record<string, { bg: string; color: string }> = {
@@ -173,6 +190,46 @@ export function ProgramRoundsSection({
 
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#94a3b8" }}>
+                    Fazele programului
+                  </p>
+                  {phases.length === 0 ? (
+                    <p className="text-sm text-muted-foreground">Programul nu are faze definite încă.</p>
+                  ) : (
+                    <div className="bg-white rounded-xl border border-border overflow-hidden">
+                      {phases.map((phase, index) => {
+                        const accent = PHASE_ACCENTS[index % PHASE_ACCENTS.length];
+                        return (
+                          <div
+                            key={phase.documentId}
+                            className="flex items-center gap-4 px-5 py-3 border-b border-border last:border-0"
+                          >
+                            <span
+                              className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                              style={{ background: accent.solid }}
+                            >
+                              {index + 1}
+                            </span>
+                            <span className="flex-1 min-w-0 text-sm font-medium truncate" style={{ color: "#162040" }}>
+                              {phase.title}
+                            </span>
+                            <span className="flex items-center gap-1.5 text-xs flex-shrink-0" style={{ color: "#94a3b8" }}>
+                              <Calendar size={12} /> {formatDateLong(phase.startDate)} — {formatDateLong(phase.endDate)}
+                            </span>
+                            <span
+                              className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0"
+                              style={{ background: accent.bg, color: accent.color }}
+                            >
+                              Faza {index + 1}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#94a3b8" }}>
                     Evaluări asociate programului
                   </p>
                   <div className="bg-white rounded-xl border border-border overflow-hidden">
@@ -236,6 +293,36 @@ export function ProgramRoundsSection({
                             );
                           })
                         )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#94a3b8" }}>
+                    Rapoarte disponibile (FDSC)
+                  </p>
+                  <div className="bg-white rounded-xl border border-border overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                          {["Titlu raport", "Tip", "Data", "Mărime", ""].map((h) => (
+                            <th key={h} className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "#94a3b8" }}>
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* FDSC report uploads are not implemented yet — empty state only. */}
+                        <tr>
+                          <td colSpan={5} className="px-5 py-8 text-center">
+                            <FileText size={20} className="mx-auto mb-2" style={{ color: "#cbd5e1" }} />
+                            <p className="text-sm text-muted-foreground">
+                              Nu există rapoarte disponibile pentru acest program încă.
+                            </p>
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                   </div>
