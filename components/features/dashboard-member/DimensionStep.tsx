@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { AlertTriangle, ArrowLeft, ChevronRight, Play } from "lucide-react";
 import { toast } from "sonner";
 import type { Dimension } from "@/lib/api/dimensions";
 import type { EvaluationDimensionBlock } from "@/lib/api/evaluations";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const DIMENSION_LETTERS = "ABCDEFGHIJ";
 
 export function DimensionStep({
   dimension,
   dimensionIndex,
+  totalDimensions,
   block,
   saving,
   savingDraft = false,
@@ -26,6 +28,7 @@ export function DimensionStep({
 }: {
   dimension: Dimension;
   dimensionIndex: number;
+  totalDimensions: number;
   block?: EvaluationDimensionBlock;
   saving: boolean;
   savingDraft?: boolean;
@@ -55,6 +58,8 @@ export function DimensionStep({
   }, []);
 
   const letter = DIMENSION_LETTERS[dimensionIndex] ?? String(dimensionIndex + 1);
+  const stepNumber = dimensionIndex + 1;
+  const progressPercent = Math.min(100, (stepNumber / Math.max(totalDimensions, 1)) * 100);
   const answeredCount = dimension.quiz.filter((question) => answers[question.id] != null).length;
   const allAnswered = answeredCount === dimension.quiz.length;
   const hasComment = comment.trim().length > 0;
@@ -98,12 +103,69 @@ export function DimensionStep({
 
   return (
     <div>
+      <div className="flex items-center gap-3 mb-6">
+        <div
+          className="flex-1 h-2 rounded-full overflow-hidden"
+          style={{ background: "#e2e8f0" }}
+          role="progressbar"
+          aria-valuenow={stepNumber}
+          aria-valuemin={1}
+          aria-valuemax={totalDimensions}
+          aria-label={`Dimensiunea ${stepNumber} din ${totalDimensions}`}
+        >
+          <div
+            className="h-full rounded-full transition-[width] duration-300"
+            style={{ width: `${progressPercent}%`, background: "#2dbe8f" }}
+          />
+        </div>
+        <span className="text-xs shrink-0" style={{ color: "#94a3b8" }}>
+          {stepNumber}/{totalDimensions} dimensiuni
+        </span>
+      </div>
+
       <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#2dbe8f" }}>
         Dimensiunea {letter}
       </p>
       <h1 className="text-2xl font-heading font-extrabold mb-4" style={{ color: "#162040" }}>
         {letter}) {dimension.name}
       </h1>
+
+      {dimension.description && (
+        <p className="text-sm leading-relaxed mb-6" style={{ color: "#475569" }}>
+          {dimension.description}
+        </p>
+      )}
+
+      {(dimension.tips || dimension.action) && (
+        <div className="grid gap-4 sm:grid-cols-2 mb-6">
+          {dimension.tips && (
+            <div className="rounded-2xl border p-4" style={{ background: "#fffbeb", borderColor: "#fde68a" }}>
+              <p
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider mb-2"
+                style={{ color: "#b45309" }}
+              >
+                <AlertTriangle size={13} aria-hidden="true" /> Atenție
+              </p>
+              <p className="text-sm leading-relaxed" style={{ color: "#b45309" }}>
+                {dimension.tips}
+              </p>
+            </div>
+          )}
+          {dimension.action && (
+            <div className="rounded-2xl border p-4" style={{ background: "#eff6ff", borderColor: "#bfdbfe" }}>
+              <p
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider mb-2"
+                style={{ color: "#1d4ed8" }}
+              >
+                <Play size={13} fill="currentColor" aria-hidden="true" /> Acțiune
+              </p>
+              <p className="text-sm leading-relaxed" style={{ color: "#1d4ed8" }}>
+                {dimension.action}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="space-y-4 mb-4">
         {dimension.quiz.map((question, index) => {
@@ -215,12 +277,7 @@ export function DimensionStep({
       </div>
 
       {showBackConfirm && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="back-confirm-title"
-        >
+        <ModalOverlay labelledBy="back-confirm-title">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6">
             <h2 id="back-confirm-title" className="font-heading font-extrabold text-lg mb-2" style={{ color: "#162040" }}>
               {onSaveDraftAndBack ? "Salvezi progresul înainte de a pleca?" : "Renunți la modificări?"}
@@ -262,7 +319,7 @@ export function DimensionStep({
               </button>
             </div>
           </div>
-        </div>
+        </ModalOverlay>
       )}
     </div>
   );

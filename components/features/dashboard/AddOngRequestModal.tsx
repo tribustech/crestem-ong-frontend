@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { ArrowLeft, Check, Loader2, Search, X } from "lucide-react";
 import { requestJoinOngAction, searchJoinableOngsAction } from "@/lib/api/membership-actions";
 import type { JoinableOng } from "@/lib/api/membership";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 /** Mirrors the 1000-char cap applied by the backend in `createJoinRequest`. */
 const MESSAGE_MAX_LENGTH = 1000;
@@ -68,12 +69,7 @@ export function AddOngRequestModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="add-ong-request-title"
-    >
+    <ModalOverlay labelledBy="add-ong-request-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -266,6 +262,6 @@ export function AddOngRequestModal({ onClose }: { onClose: () => void }) {
           )}
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

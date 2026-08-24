@@ -11,6 +11,7 @@ import {
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { listOngEvaluations, type OngEvaluation } from "@/lib/api/ongs";
 import type { AssignedMentor, AssignedOng } from "@/lib/api/programs";
+import { isRetras } from "@/lib/api/ongs";
 import type { ActiveOng } from "@/lib/api/ongs";
 
 function formatEvalPeriod(evaluation: OngEvaluation) {
@@ -34,12 +35,14 @@ export function AssignOngsSection({
   activeOngs,
   entryPhaseTitle,
   assignedMentors,
+  readOnly = false,
 }: {
   programId: string;
   assigned: AssignedOng[];
   activeOngs: ActiveOng[];
   entryPhaseTitle: string | null;
   assignedMentors: AssignedMentor[];
+  readOnly?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
@@ -170,18 +173,20 @@ export function AssignOngsSection({
             {assigned.length} {assigned.length === 1 ? "ONG alocat" : "ONG-uri alocate"}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setAdding((prev) => !prev);
-            setSearch("");
-            setPendingOng(null);
-          }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shrink-0"
-          style={{ background: adding ? "#475569" : "#2563eb" }}
-        >
-          {adding ? <X size={14} /> : <Plus size={14} />} {adding ? "Închide" : "Adaugă ONG"}
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={() => {
+              setAdding((prev) => !prev);
+              setSearch("");
+              setPendingOng(null);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shrink-0"
+            style={{ background: adding ? "#475569" : "#2563eb" }}
+          >
+            {adding ? <X size={14} /> : <Plus size={14} />} {adding ? "Închide" : "Adaugă ONG"}
+          </button>
+        )}
       </div>
 
       {error && (
@@ -353,7 +358,16 @@ export function AssignOngsSection({
                       <Building2 size={14} style={{ color: "#2563eb" }} />
                     </div>
                     <div className="min-w-0">
-                      <span className="text-sm font-medium block truncate" style={{ color: "#162040" }}>{ong.name}</span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-sm font-medium truncate min-w-0 flex-1" style={{ color: "#162040" }}>
+                          {ong.name}
+                        </span>
+                        {isRetras(ong) && (
+                          <span className="shrink-0 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                            Retras
+                          </span>
+                        )}
+                      </div>
                       <span className="text-xs text-muted-foreground block mt-0.5">
                         {ongMentors.length} {ongMentors.length === 1 ? "persoană resursă" : "persoane resursă"}
                       </span>
@@ -384,19 +398,21 @@ export function AssignOngsSection({
                       Persoane resursă
                       {isExpanded ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
                     </button>
-                    <button
-                      type="button"
-                      disabled={isPending}
-                      onClick={() => {
-                        setRemoveError(null);
-                        setPendingRemove(ong);
-                      }}
-                      aria-label={`Elimină ${ong.name}`}
-                      className="p-1.5 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60 shrink-0"
-                      style={{ color: "#94a3b8" }}
-                    >
-                      <Trash2 size={14} />
-                    </button>
+                    {!readOnly && (
+                      <button
+                        type="button"
+                        disabled={isPending}
+                        onClick={() => {
+                          setRemoveError(null);
+                          setPendingRemove(ong);
+                        }}
+                        aria-label={`Elimină ${ong.name}`}
+                        className="p-1.5 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60 shrink-0"
+                        style={{ color: "#94a3b8" }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -438,7 +454,7 @@ export function AssignOngsSection({
                               <input
                                 type="checkbox"
                                 checked={checked}
-                                disabled={mentorPending}
+                                disabled={mentorPending || readOnly}
                                 onChange={() => handleToggleOngMentor(ong, mentor)}
                                 className="h-4 w-4 rounded border-border shrink-0"
                               />

@@ -291,6 +291,7 @@ export function EvaluationWizard({
         key={reviewDimension.key}
         dimension={reviewDimension}
         dimensionIndex={reviewIndex}
+        totalDimensions={dimensions.length}
         block={blockByKey.get(reviewDimension.key)}
         saving={isPending && activeAction === "dimension"}
         savingDraft={isPending && activeAction === "draft"}
@@ -329,6 +330,7 @@ export function EvaluationWizard({
       key={currentDimension.key}
       dimension={currentDimension}
       dimensionIndex={dimensionIndex}
+      totalDimensions={dimensions.length}
       block={blockByKey.get(currentDimension.key)}
       saving={isPending && activeAction === "dimension"}
       savingDraft={isPending && activeAction === "draft"}

@@ -1,11 +1,14 @@
 import { getConversationsAction } from "@/lib/api/conversations-actions";
 import { MessagesPanel } from "@/components/features/dashboard-ong/MessagesPanel";
+import { PersoaneResursaTabs } from "@/components/features/dashboard-ong/PersoaneResursaTabs";
 
-export default async function OngMesajePage() {
+export default async function OngPersoaneResursaMesajePage() {
   const conversationsRes = await getConversationsAction();
 
   return (
     <div>
+      <PersoaneResursaTabs active="mesaje" />
+
       <div className="mb-6">
         <h1 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
           Mesaje

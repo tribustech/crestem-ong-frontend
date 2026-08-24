@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { User } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { LinkPendingIndicator } from "@/components/ui/LinkPendingIndicator";
 import { DespreDropdown } from "./DespreDropdown";
 import { NavLinks } from "./NavLinks";
 import { MobileMenu } from "./MobileMenu";
@@ -31,27 +32,30 @@ export function Navbar({ user }: { user: NavUser | null }) {
               </span>
               <Link
                 href={user.dashboardHref}
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90"
                 style={{ background: "#2dbe8f" }}
               >
                 Mergi la dashboard
+                <LinkPendingIndicator />
               </Link>
             </>
           ) : (
             <>
               <Link
                 href="/autentificare"
-                className="px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-muted"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-muted"
                 style={{ color: "#162040", border: "1.5px solid #e2e8f0" }}
               >
                 Intră în cont
+                <LinkPendingIndicator />
               </Link>
               <Link
                 href="/inregistrare"
-                className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:opacity-90"
                 style={{ background: "#2dbe8f" }}
               >
                 Înregistrează-te
+                <LinkPendingIndicator />
               </Link>
             </>
           )}

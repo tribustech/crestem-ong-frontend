@@ -11,10 +11,12 @@ export function AssignMentorsSection({
   programId,
   assigned,
   activeMentors,
+  readOnly = false,
 }: {
   programId: string;
   assigned: AssignedMentor[];
   activeMentors: ActiveMentor[];
+  readOnly?: boolean;
 }) {
   const [adding, setAdding] = useState(false);
   const [search, setSearch] = useState("");
@@ -67,17 +69,19 @@ export function AssignMentorsSection({
             {assigned.length} {assigned.length === 1 ? "persoană resursă alocată" : "persoane resursă alocate"}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            setAdding((prev) => !prev);
-            setSearch("");
-          }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shrink-0"
-          style={{ background: adding ? "#475569" : "#2563eb" }}
-        >
-          {adding ? <X size={14} /> : <Plus size={14} />} {adding ? "Închide" : "Adaugă persoană resursă"}
-        </button>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={() => {
+              setAdding((prev) => !prev);
+              setSearch("");
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 shrink-0"
+            style={{ background: adding ? "#475569" : "#2563eb" }}
+          >
+            {adding ? <X size={14} /> : <Plus size={14} />} {adding ? "Închide" : "Adaugă persoană resursă"}
+          </button>
+        )}
       </div>
 
       {error && (
@@ -86,7 +90,7 @@ export function AssignMentorsSection({
         </p>
       )}
 
-      {adding && (
+      {adding && !readOnly && (
         <div style={{ borderBottom: "1px solid #e2e8f0" }}>
           <div className="px-6 py-3 border-b border-border">
             <div className="relative">
@@ -147,19 +151,21 @@ export function AssignMentorsSection({
                   <p className="text-xs text-muted-foreground truncate">{mentor.email}</p>
                 </div>
               </div>
-              <button
-                type="button"
-                disabled={isPending}
-                onClick={() => {
-                  setRemoveError(null);
-                  setPendingRemove(mentor);
-                }}
-                aria-label={`Elimină ${mentor.nume}`}
-                className="p-1.5 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60 shrink-0"
-                style={{ color: "#94a3b8" }}
-              >
-                <Trash2 size={14} />
-              </button>
+              {!readOnly && (
+                <button
+                  type="button"
+                  disabled={isPending}
+                  onClick={() => {
+                    setRemoveError(null);
+                    setPendingRemove(mentor);
+                  }}
+                  aria-label={`Elimină ${mentor.nume}`}
+                  className="p-1.5 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-60 shrink-0"
+                  style={{ color: "#94a3b8" }}
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
             </div>
           ))}
         </div>

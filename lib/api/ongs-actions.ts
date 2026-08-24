@@ -16,6 +16,40 @@ export async function deleteOngAction(documentId: string): Promise<{ error?: str
   return {};
 }
 
+/**
+ * `Șterge ONG` from the Admin ONG's own Acțiuni menu.
+ *
+ * Same endpoint as `deleteOngAction` — the backend decides ownership, this only
+ * differs in what happens afterwards. Deleting the organization ends the
+ * caller's membership, so an admin with no other affiliation is demoted to
+ * `individual` on the spot and `/dashboard/ong/*` starts redirecting them away.
+ * The destination is therefore read back from `/api/auth/me` *after* the
+ * deletion rather than guessed: an admin who still runs another organization
+ * stays `ngo-admin` and belongs back on the ONG dashboard.
+ */
+export async function deleteMyOngAction(
+  documentId: string,
+): Promise<{ error?: string; redirectTo?: string }> {
+  try {
+    await serverApiFetch(`/api/ongs/${documentId}`, { method: "DELETE" });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut șterge organizația.") };
+  }
+
+  revalidatePath("/dashboard", "layout");
+
+  const { getCurrentUser, getDashboardPathForRole } = await import("./session-server");
+  let redirectTo = "/dashboard/individual";
+  try {
+    const user = await getCurrentUser();
+    redirectTo = getDashboardPathForRole(user?.role?.type) ?? redirectTo;
+  } catch {
+    // The organization is gone either way; fall back to the individual
+    // dashboard, which is where a demoted admin belongs.
+  }
+  return { redirectTo };
+}
+
 export interface UpdateMyOngInput {
   logo?: number | null;
   domeniuPrincipal?: string;
@@ -122,7 +156,7 @@ export async function rejectJoinRequestAction(documentId: string): Promise<{ err
   return {};
 }
 
-export async function uploadOngLogoAction(
+export async function uploadFileAction(
   formData: FormData,
 ): Promise<{ error?: string; id?: number }> {
   const { cookies } = await import("next/headers");
@@ -150,4 +184,41 @@ export async function uploadOngLogoAction(
   } catch (err) {
     return { error: getApiErrorMessage(err, "Nu am putut încărca fișierul.") };
   }
+}
+
+/**
+ * Sends `name`/`program`/`file` in one multipart request — the backend
+ * validates the program/ONG relationship first and only creates the upload
+ * once that passes, so a rejected request never leaves an orphaned file
+ * behind the way the old upload-then-create flow could.
+ */
+export async function createFdscReportAction(
+  ongDocumentId: string,
+  formData: FormData,
+): Promise<{ error?: string }> {
+  const { cookies } = await import("next/headers");
+  const { SESSION_COOKIE } = await import("./session-cookies");
+  const { ApiError } = await import("./client");
+
+  const cookieStore = await cookies();
+  const jwt = cookieStore.get(SESSION_COOKIE)?.value;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  try {
+    const res = await fetch(`${API_URL}/api/ongs/${ongDocumentId}/fdsc-reports`, {
+      method: "POST",
+      headers: jwt ? { Authorization: `Bearer ${jwt}` } : undefined,
+      body: formData,
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      const message = data?.error?.message ?? "Nu am putut încărca raportul.";
+      throw new ApiError(message, res.status, data?.error?.details);
+    }
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut încărca raportul.") };
+  }
+
+  revalidatePath(`/dashboard/fdsc/organizatii/${ongDocumentId}/rapoarte`);
+  return {};
 }

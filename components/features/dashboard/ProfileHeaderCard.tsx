@@ -1,4 +1,3 @@
-import { ChangePasswordForm } from "./ChangePasswordForm";
 
 function formatJoinDate(iso: string) {
   return new Intl.DateTimeFormat("ro-RO", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
@@ -46,7 +45,6 @@ export function ProfileHeaderCard({
             </p>
           </div>
         </div>
-        <ChangePasswordForm />
       </div>
     </div>
   );

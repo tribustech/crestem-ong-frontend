@@ -6,7 +6,7 @@ import { getConversationMessagesAction, sendMessageAction } from "@/lib/api/conv
 import type { ConversationListItem, ConversationMessage } from "@/lib/api/conversations";
 import { MessageComposer } from "./MessageComposer";
 
-const POLL_INTERVAL_MS = 5000;
+const POLL_INTERVAL_MS = 30000;
 
 function initials(name: string) {
   return name

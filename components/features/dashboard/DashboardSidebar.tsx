@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LogOut,
@@ -23,9 +23,11 @@ import {
   GraduationCap,
   Calendar,
   MessageCircle,
+  Loader2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { LinkPendingIndicator } from "@/components/ui/LinkPendingIndicator";
 import { logoutSession } from "@/lib/api/session";
 
 export interface DashboardNavSection {
@@ -80,7 +82,7 @@ const ONG_NAV_SECTIONS: DashboardNavSection[] = [
       { href: "/dashboard/ong/programe", label: "Programele mele", icon: Layers },
       { href: "/dashboard/ong/utilizatori", label: "Utilizatori", icon: Users },
       { href: "/dashboard/ong/e-learning", label: "E-Learning", icon: GraduationCap },
-      { href: "/dashboard/ong/mesaje", label: "Mesaje", icon: MessageCircle },
+      { href: "/dashboard/ong/persoane-resursa", label: "Persoane resursă", icon: UserCog },
     ],
   },
 ];
@@ -99,7 +101,6 @@ const INDIVIDUAL_NAV_SECTIONS: DashboardNavSection[] = [
   {
     items: [
       { href: "/dashboard/individual", label: "Profilul meu", icon: User },
-      { href: "/dashboard/individual/evaluari", label: "Evaluările mele", icon: ClipboardList },
       { href: "/dashboard/individual/e-learning", label: "E-Learning", icon: GraduationCap },
     ],
   },
@@ -167,7 +168,7 @@ export function DashboardSidebar({
   const initial = userName.trim().charAt(0).toUpperCase() || "?";
 
   return (
-    <aside className="w-60 shrink-0 h-screen sticky top-0 flex flex-col bg-white border-r border-border">
+    <aside className="w-60 shrink-0 h-screen sticky top-0 flex flex-col bg-white border-r border-border print:hidden">
       <div className="px-6 py-5 border-b border-border">
         <Logo variant="dark" height={24} />
       </div>
@@ -195,8 +196,7 @@ export function DashboardSidebar({
                         : { color: "#334155" }
                     }
                   >
-                    <Icon size={16} />
-                    {item.label}
+                    <NavItemContent icon={Icon} label={item.label} />
                   </Link>
                 );
               })}
@@ -222,10 +222,11 @@ export function DashboardSidebar({
         </div>
         <Link
           href="/"
-          className="block px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-muted"
+          className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-muted"
           style={{ color: "#334155" }}
         >
           Înapoi la site
+          <LinkPendingIndicator />
         </Link>
         <button
           type="button"
@@ -244,5 +245,26 @@ export function DashboardSidebar({
         )}
       </div>
     </aside>
+  );
+}
+
+/**
+ * Rendered inside a <Link> so `useLinkStatus` can report that navigation. The
+ * icon swaps for a spinner the moment the link is clicked, which covers the gap
+ * before the route's loading skeleton takes over.
+ */
+function NavItemContent({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
+  const { pending } = useLinkStatus();
+
+  return (
+    <>
+      {pending ? (
+        <Loader2 size={16} className="animate-spin" aria-hidden />
+      ) : (
+        <Icon size={16} aria-hidden />
+      )}
+      {label}
+      {pending && <span className="sr-only">Se încarcă…</span>}
+    </>
   );
 }

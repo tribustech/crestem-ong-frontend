@@ -6,7 +6,7 @@ import { getMentorConversationMessagesAction, sendMentorMessageAction } from "@/
 import type { ConversationListItem, ConversationMessage } from "@/lib/api/mentor-conversations";
 import { MessageComposer } from "@/components/features/dashboard-ong/MessageComposer";
 
-const POLL_INTERVAL_MS = 5000;
+const POLL_INTERVAL_MS = 30000;
 
 function initials(name: string) {
   return name

@@ -18,7 +18,7 @@ export function StartIndependentEvaluationButton({
   const [starting, setStarting] = useState(false);
 
   return (
-    <div className="mb-6 flex flex-col items-start gap-1.5">
+    <div className="flex flex-col items-start gap-1.5">
       <button
         type="button"
         disabled={!!lock}

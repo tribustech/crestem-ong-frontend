@@ -1,9 +1,10 @@
 import Link from "next/link";
+import { Layers } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
-import { getIndependentStartLock } from "@/lib/api/reports";
+import { findActiveReport, getIndependentStartLock } from "@/lib/api/reports";
 import type { ReportListItem, ReportsCurrent, OngMember } from "@/lib/api/reports";
 import { StartIndependentEvaluationButton } from "@/components/features/dashboard-ong/StartIndependentEvaluationButton";
-import { EvaluationDetailTabs } from "@/components/features/dashboard-ong/EvaluationDetailTabs";
+import { EvaluationTabs } from "@/components/features/overview/EvaluationTabs";
 
 function formatDate(iso: string) {
   if (!iso) return "—";
@@ -23,21 +24,32 @@ export default async function OngEvaluariPage() {
     serverApiFetch<{ data: OngMember[] }>("/api/ongs/members"),
   ]);
   const independentLock = getIndependentStartLock(currentRes.data.programRounds, currentRes.data.standaloneReports);
+  const activeReport = findActiveReport(currentRes.data.programRounds, currentRes.data.standaloneReports);
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
-          Evaluările mele
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Toate rundele de evaluare pornite de organizația ta.
-        </p>
+      <EvaluationTabs
+        active="evaluations"
+        basePath="/dashboard/ong/evaluari"
+        currentEvaluationHref={
+          activeReport
+            ? `/dashboard/ong/evaluari/${activeReport.documentId}`
+            : "/dashboard/ong/evaluari/curenta"
+        }
+        comparisonHref="/dashboard/ong/evaluari/comparatie"
+      />
+
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <StartIndependentEvaluationButton ongMembers={membersRes.data} lock={independentLock} />
+
+        <Link
+          href="/dashboard/ong/evaluari/model"
+          className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border hover:bg-slate-50 transition-colors"
+          style={{ color: "#475569" }}
+        >
+          <Layers size={13} /> Vezi modelul matricei
+        </Link>
       </div>
-
-      <EvaluationDetailTabs active="info" />
-
-      <StartIndependentEvaluationButton ongMembers={membersRes.data} lock={independentLock} />
 
       <div>
         {listRes.data.length === 0 ? (

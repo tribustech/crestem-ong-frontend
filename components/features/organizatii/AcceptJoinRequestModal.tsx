@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { CheckCircle2, Loader2, X } from "lucide-react";
 import { acceptJoinRequestAction } from "@/lib/api/ongs-actions";
 import type { OngJoinRequest } from "@/lib/api/membership";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 /** Mirrors `ngoRoleSchema` on the backend. */
 const ROLE_MIN_LENGTH = 2;
@@ -42,12 +43,7 @@ export function AcceptJoinRequestModal({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="accept-join-request-title"
-    >
+    <ModalOverlay labelledBy="accept-join-request-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -158,6 +154,6 @@ export function AcceptJoinRequestModal({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Trash2 } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { deleteOngAction } from "@/lib/api/ongs-actions";
+import { buildOngDeletionWarning } from "./ong-deletion-copy";
 
 export function DeleteOngButton({
   documentId,
@@ -44,7 +45,7 @@ export function DeleteOngButton({
       <ConfirmDialog
         open={open}
         title="Șterge organizația"
-        description={`Ești sigur că vrei să ștergi organizația „${ongName}”? Organizația va fi ascunsă din listă.`}
+        description={buildOngDeletionWarning(ongName)}
         confirmLabel="Șterge"
         loading={isPending}
         loadingLabel="Se șterge..."

@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { Search, X } from "lucide-react";
 import { addReportMembersAction } from "@/lib/api/reports-actions";
 import type { OngMember } from "@/lib/api/reports";
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 export function AddReportMembersModal({
   reportId,
@@ -55,10 +56,10 @@ export function AddReportMembersModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
+    <ModalOverlay labelledBy="add-report-members-title">
       <div className="bg-white rounded-2xl w-full max-w-md max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
-          <h2 className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
+          <h2 id="add-report-members-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
             Adaugă membri
           </h2>
           <button
@@ -147,6 +148,6 @@ export function AddReportMembersModal({
           </div>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

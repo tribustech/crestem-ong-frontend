@@ -37,6 +37,53 @@ export interface ReportsCurrent {
 }
 
 /**
+ * The program the Overview tab reports on: the one with a phase running today,
+ * falling back to the most recently started `Active` program. An ONG enrolled
+ * only in finished/upcoming programs has no current program at all.
+ */
+export function findCurrentProgramRound(programRounds: ProgramRound[]): ProgramRound | null {
+  const running = programRounds.find(({ phases }) => phases.some((phase) => phase.active));
+  if (running) return running;
+  const active = programRounds.filter(({ program }) => program.programStatus === "Active");
+  if (active.length === 0) return null;
+  return active.reduce((latest, round) =>
+    `${round.program.startDate}` > `${latest.program.startDate}` ? round : latest,
+  );
+}
+
+export interface ProgramOverviewStats {
+  /** Distinct reports the ONG ran inside this program. */
+  totalEvaluationSessions: number;
+  /** The evaluation to surface as "Evaluare curentă", if one is under way. */
+  currentReport: RoundSummary | null;
+  /** End of the evaluation phase in play — the deadline shown on the card. */
+  evaluationEndDate: string | null;
+}
+
+/** Counters for the Overview tab, all scoped to a single program round. */
+export function getProgramOverviewStats({ phases }: ProgramRound): ProgramOverviewStats {
+  // A report can be attached to more than one phase, so count report ids, not phases.
+  const reportIds = new Set(
+    phases.map((phase) => phase.report?.documentId).filter((id): id is string => Boolean(id)),
+  );
+  const evaluationPhases = phases.filter((phase) => phase.hasEvaluation);
+  const currentPhase =
+    evaluationPhases.find((phase) => phase.active) ??
+    evaluationPhases.find((phase) => phase.report && !phase.report.finished) ??
+    null;
+  const currentReport =
+    currentPhase?.report ??
+    phases.find((phase) => phase.report && !phase.report.finished)?.report ??
+    null;
+  return {
+    totalEvaluationSessions: reportIds.size,
+    currentReport,
+    evaluationEndDate:
+      currentPhase?.endDate ?? evaluationPhases.at(-1)?.endDate ?? null,
+  };
+}
+
+/**
  * An ONG can have at most one active (unfinished) evaluation at a time (BR-19),
  * whether it's tied to a program phase or independent. Finds that report, if any.
  */
@@ -86,6 +133,11 @@ export interface ReportPhaseInfo {
   program: { documentId: string; name: string } | null;
 }
 
+export interface ReportScores {
+  dimensions: Record<string, number | null>;
+  overall: number | null;
+}
+
 export interface ReportListItem {
   documentId: string;
   name: string;
@@ -96,11 +148,13 @@ export interface ReportListItem {
   phases: ReportPhaseInfo[];
   invitedCount: number;
   completedCount: number;
-}
-
-export interface ReportScores {
-  dimensions: Record<string, number | null>;
-  overall: number | null;
+  /**
+   * Report-level averages, the same numbers `/api/reports/:documentId` returns.
+   * They ride along on the list so the Comparație tab can chart every finished
+   * evaluation from one request. Dimensions with no complete respondent are
+   * `null`, and `overall` is `null` unless every dimension has a score.
+   */
+  scores: ReportScores;
 }
 
 export interface ReportDetail {
@@ -119,7 +173,8 @@ export interface ReportDetail {
 
 export interface ReportMember {
   documentId: string;
-  user: { documentId: string; nume: string; email: string } | null;
+  /** `email` is `null` once the respondent anonymized their account (BR-27). */
+  user: { documentId: string; nume: string; email: string | null } | null;
   status: EvaluationStatus;
   completedAt: string | null;
   notificationSentAt: string | null;

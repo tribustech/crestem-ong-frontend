@@ -1,6 +1,8 @@
 // components/ui/ConfirmDialog.tsx
 "use client";
 
+import { ModalOverlay } from "@/components/ui/ModalOverlay";
+
 const CONFIRM_VARIANT_CLASSES: Record<"danger" | "accent", string> = {
   danger: "bg-[#dc2626]",
   accent: "bg-[#2dbe8f]",
@@ -34,12 +36,7 @@ export function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="confirm-dialog-title"
-    >
+    <ModalOverlay labelledBy="confirm-dialog-title">
       <div className="bg-white rounded-2xl w-full max-w-sm p-6">
         <h2 id="confirm-dialog-title" className="font-heading font-extrabold text-lg mb-2 text-[#162040]">
           {title}
@@ -78,6 +75,6 @@ export function ConfirmDialog({
           </button>
         </div>
       </div>
-    </div>
+    </ModalOverlay>
   );
 }

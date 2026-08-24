@@ -6,6 +6,7 @@ import type { ProgramDetail, AssignedOng, AssignedMentor, ProgramStats } from "@
 import type { ActiveOng } from "@/lib/api/ongs";
 import type { ActiveMentor } from "@/lib/api/mentors";
 import { ProgramAssignments } from "@/components/features/programe/ProgramAssignments";
+import { isProgramFinished } from "@/lib/utils/program-status";
 
 export default async function ProgramDetailPage({
   params,
@@ -23,6 +24,7 @@ export default async function ProgramDetailPage({
     serverApiFetch<{ data: ProgramStats }>(`/api/programs/${documentId}/stats`),
   ]);
 
+  const finished = isProgramFinished(program.data);
   const programStats = statsRes.data;
   const stats = [
     {
@@ -52,10 +54,19 @@ export default async function ProgramDetailPage({
 
       <div className="mb-6">
         <h1 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
-          Gestionează programul
+          {finished ? "Programul" : "Gestionează programul"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">{program.data.name}</p>
       </div>
+
+      {finished && (
+        <div
+          className="mb-6 rounded-xl border px-5 py-4 text-sm"
+          style={{ background: "#f8fafc", borderColor: "#e2e8f0", color: "#475569" }}
+        >
+          Programul este finalizat. Datele pot fi consultate, dar nu mai pot fi modificate.
+        </div>
+      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {stats.map((stat) => (
@@ -75,6 +86,7 @@ export default async function ProgramDetailPage({
         activeOngs={activeOngsRes.data}
         activeMentors={activeMentorsRes.data}
         entryPhaseTitle={program.data.entryPhase?.title ?? null}
+        readOnly={finished}
       />
     </div>
   );
