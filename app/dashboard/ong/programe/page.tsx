@@ -37,11 +37,13 @@ export default async function OngProgramePage() {
         </p>
       </div>
 
-      <StartIndependentEvaluationButton
-        ongMembers={membersRes.data}
-        lock={independentLock}
-        showActivePhaseHint={false}
-      />
+      <div className="mb-6">
+        <StartIndependentEvaluationButton
+          ongMembers={membersRes.data}
+          lock={independentLock}
+          showActivePhaseHint={false}
+        />
+      </div>
 
       <ProgramRoundsSection
         programRounds={programRounds}

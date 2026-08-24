@@ -99,7 +99,6 @@ const INDIVIDUAL_NAV_SECTIONS: DashboardNavSection[] = [
   {
     items: [
       { href: "/dashboard/individual", label: "Profilul meu", icon: User },
-      { href: "/dashboard/individual/evaluari", label: "Evaluările mele", icon: ClipboardList },
       { href: "/dashboard/individual/e-learning", label: "E-Learning", icon: GraduationCap },
     ],
   },

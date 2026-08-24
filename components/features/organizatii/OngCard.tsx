@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Building2, ExternalLink, Globe, MapPin, Users } from "lucide-react";
-import type { Ong } from "@/lib/api/ongs";
+import { isRetras, type Ong } from "@/lib/api/ongs";
 import { DeleteOngButton } from "./DeleteOngButton";
 
 export function OngCard({ ong }: { ong: Ong }) {
@@ -14,11 +14,25 @@ export function OngCard({ ong }: { ong: Ong }) {
           >
             <Building2 size={18} style={{ color: "#2563eb" }} />
           </div>
-          <h3 className="font-semibold truncate" style={{ color: "#162040" }}>
-            {ong.name}
-          </h3>
+          {/* The badge is a sibling of the truncating heading, not inside it —
+              inside, a long organization name would ellipsize it away. */}
+          <div className="flex items-center gap-2 min-w-0">
+            <h3 className="font-semibold truncate min-w-0" style={{ color: "#162040" }}>
+              {ong.name}
+            </h3>
+            {isRetras(ong) && (
+              <span className="shrink-0 px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-500">
+                Retras
+              </span>
+            )}
+          </div>
         </div>
-        <DeleteOngButton documentId={ong.documentId} ongName={ong.name} />
+        {/* Nothing left to act on once the profile is anonymized; the backend
+            rejects a second deletion anyway. "Vezi ONG" stays — it is FDSC's
+            only navigation to the evaluations BR-33 preserves. */}
+        {!isRetras(ong) && (
+          <DeleteOngButton documentId={ong.documentId} ongName={ong.name} />
+        )}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">

@@ -10,10 +10,23 @@ export function listActiveOngs() {
   return localApiFetch<{ data: ActiveOng[] }>("/api/ongs/active");
 }
 
+/**
+ * An organization whose profile was deleted (`Șterge ONG`) keeps its reports,
+ * evaluations and program enrollment (BR-33) and is shown as withdrawn wherever
+ * it still appears. Lives here rather than in `programs.ts` because `ngoStatus`
+ * is an attribute of the organization, and both the FDSC organizations list and
+ * the program assignment table need the same predicate.
+ */
+export function isRetras(ong: { ngoStatus?: string }): boolean {
+  return ong.ngoStatus === "deleted";
+}
+
 export interface Ong {
   documentId: string;
   name: string;
   cui: string;
+  /** `"deleted"` once `Șterge ONG` has run — render the "Retras" badge. */
+  ngoStatus?: string;
   website: string;
   adresa: string;
   dataInfiintare: string;

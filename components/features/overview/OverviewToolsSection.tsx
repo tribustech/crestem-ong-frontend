@@ -1,0 +1,35 @@
+const TOOLS = [
+  {
+    title: "Biblioteca de resurse",
+    description: "Accesează resursele disponibile pentru ONG",
+  },
+  {
+    title: "E-Learning",
+    description: "Accesează cursurile online disponibile pentru ONG-ul tău",
+  },
+];
+
+/**
+ * Both destinations are still unbuilt, so `Vezi →` is deliberately inert text
+ * rather than a link that would dead-end on the placeholder pages.
+ */
+export function OverviewToolsSection() {
+  return (
+    <section>
+      <h2 className="text-xl font-heading font-extrabold text-primary mb-4">
+        Alte instrumente disponibile
+      </h2>
+      <div className="grid gap-4 md:grid-cols-2">
+        {TOOLS.map((tool) => (
+          <div key={tool.title} className="bg-white rounded-xl border border-border p-5">
+            <p className="text-base font-heading font-bold text-primary">{tool.title}</p>
+            <p className="mt-1 text-sm text-muted-foreground">{tool.description}</p>
+            <p className="mt-4 text-sm font-semibold text-accent opacity-60 cursor-not-allowed" title="Disponibil în curând">
+              Vezi →
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

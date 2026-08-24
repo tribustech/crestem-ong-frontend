@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Layers } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
 import type { Ong, OngEvaluation } from "@/lib/api/ongs";
 import { OrgDetailTabs } from "@/components/features/organizatii/OrgDetailTabs";
@@ -38,15 +38,6 @@ export default async function OrganizatieDetailPage({
         <h2 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
           Evaluare organizațională
         </h2>
-        <button
-          type="button"
-          disabled
-          title="Disponibil în curând"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border opacity-40 cursor-not-allowed"
-          style={{ color: "#475569" }}
-        >
-          <Layers size={13} /> Vezi modelul matricei
-        </button>
       </div>
 
       <OngEvaluationsTable ongDocumentId={documentId} evaluations={evaluationsRes.data} />
