@@ -1,9 +1,5 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
 import type { Ong, OngFdscReport } from "@/lib/api/ongs";
-import { OrgDetailTabs } from "@/components/features/organizatii/OrgDetailTabs";
-import { OrgHeaderCard } from "@/components/features/organizatii/OrgHeaderCard";
 import { FdscReportsTable } from "@/components/features/organizatii/FdscReportsTable";
 import { AddFdscReportModal } from "@/components/features/organizatii/AddFdscReportModal";
 
@@ -23,18 +19,6 @@ export default async function OrganizatieRapoartePage({
 
   return (
     <div>
-      <Link
-        href="/dashboard/fdsc/organizatii"
-        className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
-        style={{ color: "#94a3b8" }}
-      >
-        <ArrowLeft size={14} /> Înapoi la organizații
-      </Link>
-
-      <OrgHeaderCard ong={ong} />
-
-      <OrgDetailTabs documentId={documentId} active="rapoarte" />
-
       <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
         <div>
           <h2 className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
