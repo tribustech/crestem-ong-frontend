@@ -75,12 +75,19 @@ export interface AssignedMentor {
   avatar: { documentId: string; name: string; url: string } | null;
 }
 
+export interface PhaseEvaluation {
+  phaseDocumentId: string;
+  phaseTitle: string;
+  report: { documentId: string; name: string } | null;
+}
+
 export interface AssignedOng {
   documentId: string;
   name: string;
   ngoStatus?: string;
   evaluation: { documentId: string; name: string } | null;
   mentors: AssignedMentor[];
+  phaseEvaluations: PhaseEvaluation[];
 }
 
 export function getProgramOngs(documentId: string) {

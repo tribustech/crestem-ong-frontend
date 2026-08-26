@@ -1,5 +1,5 @@
 // components/features/programe/ProgramAssignments.tsx
-import type { AssignedOng, AssignedMentor } from "@/lib/api/programs";
+import type { AssignedOng, AssignedMentor, ProgramPhase } from "@/lib/api/programs";
 import type { ActiveOng } from "@/lib/api/ongs";
 import type { ActiveMentor } from "@/lib/api/mentors";
 import { AssignOngsSection } from "./AssignOngsSection";
@@ -11,7 +11,8 @@ export function ProgramAssignments({
   assignedMentors,
   activeOngs,
   activeMentors,
-  entryPhaseTitle,
+  phases,
+  entryPhase,
   readOnly = false,
 }: {
   programId: string;
@@ -19,16 +20,20 @@ export function ProgramAssignments({
   assignedMentors: AssignedMentor[];
   activeOngs: ActiveOng[];
   activeMentors: ActiveMentor[];
-  entryPhaseTitle: string | null;
+  phases: ProgramPhase[];
+  entryPhase: { documentId: string; title: string } | null;
   readOnly?: boolean;
 }) {
+  const evaluationPhases = phases.filter((phase) => phase.hasEvaluation);
+
   return (
     <div>
       <AssignOngsSection
         programId={programId}
         assigned={assignedOngs}
         activeOngs={activeOngs}
-        entryPhaseTitle={entryPhaseTitle}
+        evaluationPhases={evaluationPhases}
+        entryPhaseId={entryPhase?.documentId ?? null}
         assignedMentors={assignedMentors}
         readOnly={readOnly}
       />

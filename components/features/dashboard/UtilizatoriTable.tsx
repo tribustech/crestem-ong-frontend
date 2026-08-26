@@ -100,7 +100,7 @@ export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; di
                 <td className="px-4 py-3.5">
                   {role ? (
                     <span
-                      className="px-2.5 py-1 rounded-full text-xs font-semibold"
+                      className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold text-center"
                       style={{ background: role.bg, color: role.color }}
                     >
                       {role.label}
@@ -115,7 +115,7 @@ export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; di
                 <td className="px-4 py-3.5">
                   {statusBadge ? (
                     <span
-                      className="px-2.5 py-1 rounded-full text-xs font-semibold"
+                      className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold text-center"
                       style={{ background: statusBadge.bg, color: statusBadge.color }}
                     >
                       {statusBadge.label}

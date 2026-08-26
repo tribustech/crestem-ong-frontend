@@ -1,11 +1,7 @@
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
 import { listOngMeetings } from "@/lib/api/meetings";
 import type { Ong, OngMentor } from "@/lib/api/ongs";
 import { listDimensions } from "@/lib/api/dimensions";
-import { OrgDetailTabs } from "@/components/features/organizatii/OrgDetailTabs";
-import { OrgHeaderCard } from "@/components/features/organizatii/OrgHeaderCard";
 import { MentorCard } from "@/components/features/organizatii/MentorCard";
 import { MeetingsFilters } from "@/components/features/organizatii/MeetingsFilters";
 import { MeetingsTable } from "@/components/features/organizatii/MeetingsTable";
@@ -46,24 +42,12 @@ export default async function OrganizatiePersoaneResursaPage({ params, searchPar
 
   return (
     <div>
-      <Link
-        href="/dashboard/fdsc/organizatii"
-        className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
-        style={{ color: "#94a3b8" }}
-      >
-        <ArrowLeft size={14} /> Înapoi la organizații
-      </Link>
-
-      <OrgHeaderCard ong={ong} />
-
-      <OrgDetailTabs documentId={documentId} active="persoane-resursa" />
-
       <h2 className="text-2xl font-heading font-extrabold mb-4" style={{ color: "#162040" }}>
         Persoane resursă
       </h2>
 
       {mentors.length === 0 ? (
-        <div className="bg-white rounded-xl border border-border p-8 text-center">
+        <div className="bg-white rounded-xl border border-border p-8 text-center mb-10">
           <p className="text-sm text-muted-foreground">
             Nicio persoană resursă nu este alocată acestei organizații.
           </p>

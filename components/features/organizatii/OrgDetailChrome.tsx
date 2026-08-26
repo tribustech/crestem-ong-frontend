@@ -1,0 +1,78 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import type { Ong } from "@/lib/api/ongs";
+import { OrgHeaderCard } from "./OrgHeaderCard";
+
+const TABS = [
+  { key: "overview", label: "Overview", segment: "" },
+  { key: "evaluari", label: "Evaluări", segment: "evaluari" },
+  { key: "evaluare-curenta", label: "Evaluare curentă", segment: "evaluare-curenta" },
+  { key: "comparatie", label: "Comparație", segment: "comparatie" },
+  { key: "rapoarte", label: "Rapoarte", segment: "rapoarte" },
+  { key: "persoane-resursa", label: "Persoane resursă", segment: "persoane-resursa" },
+] as const;
+
+/**
+ * Renders the org header + tab bar around `children`. Lives in the
+ * `[documentId]` layout so it stays mounted across tab navigations instead
+ * of re-fetching and remounting on every click. Only shown on the exact tab
+ * routes — deeper drill-down pages (e.g. a single evaluation report) render
+ * `children` bare, matching their pre-existing chrome-less look.
+ */
+export function OrgDetailChrome({
+  ong,
+  documentId,
+  children,
+}: {
+  ong: Ong;
+  documentId: string;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const base = `/dashboard/fdsc/organizatii/${documentId}`;
+  const tabs = TABS.map((tab) => ({ ...tab, href: tab.segment ? `${base}/${tab.segment}` : base }));
+  const activeTab = tabs.find((tab) => tab.href === pathname);
+
+  if (!activeTab) {
+    return <>{children}</>;
+  }
+
+  return (
+    <>
+      <Link
+        href="/dashboard/fdsc/organizatii"
+        className="inline-flex items-center gap-1.5 text-sm font-medium mb-6 print:hidden"
+        style={{ color: "#94a3b8" }}
+      >
+        <ArrowLeft size={14} /> Înapoi la organizații
+      </Link>
+
+      <OrgHeaderCard ong={ong} />
+
+      <div className="mb-6 flex items-center gap-6 border-b border-border print:hidden">
+        {tabs.map((tab) => {
+          const isActive = tab.key === activeTab.key;
+          return (
+            <Link
+              key={tab.key}
+              href={tab.href}
+              className={
+                isActive
+                  ? "pb-3 text-sm font-semibold border-b-2"
+                  : "pb-3 text-sm font-medium hover:text-slate-700 transition-colors"
+              }
+              style={isActive ? { color: "#2dbe8f", borderColor: "#2dbe8f" } : { color: "#64748b" }}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
+      </div>
+
+      {children}
+    </>
+  );
+}
