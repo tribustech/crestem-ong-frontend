@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, RotateCcw } from "lucide-react";
 import type { Dimension } from "@/lib/api/dimensions";
 import { dimensionColor, dimensionLabel, dimensionPillStyle } from "@/lib/api/dimension-colors";
 
@@ -42,9 +42,9 @@ export function EvaluationComparisonTable({
     (a, b) => new Date(evaluationDate(b)).getTime() - new Date(evaluationDate(a)).getTime(),
   );
 
-  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
-    sortedByDateDesc[0] ? [sortedByDateDesc[0].documentId] : [],
-  );
+  const defaultSelectedIds = sortedByDateDesc[0] ? [sortedByDateDesc[0].documentId] : [];
+
+  const [selectedIds, setSelectedIds] = useState<string[]>(defaultSelectedIds);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -76,6 +76,15 @@ export function EvaluationComparisonTable({
     setDropdownOpen(false);
   };
 
+  const resetSelection = () => {
+    setSelectedIds(defaultSelectedIds);
+    setDropdownOpen(false);
+  };
+
+  const isDefaultSelection =
+    selectedIds.length === defaultSelectedIds.length &&
+    selectedIds.every((id, index) => id === defaultSelectedIds[index]);
+
   if (evaluations.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-border p-10 text-center text-sm text-muted-foreground">
@@ -86,6 +95,18 @@ export function EvaluationComparisonTable({
 
   return (
     <div className="bg-white rounded-2xl border border-border overflow-hidden">
+      {!isDefaultSelection && (
+        <div className="flex justify-end px-6 py-3 border-b border-border print:hidden">
+          <button
+            type="button"
+            onClick={resetSelection}
+            className="inline-flex items-center gap-1.5 text-xs font-medium hover:underline"
+            style={{ color: "#64748b" }}
+          >
+            <RotateCcw size={13} /> Resetează comparația
+          </button>
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="w-full text-sm border-collapse">
           <thead>
