@@ -2,11 +2,10 @@
 
 import { useState, useTransition } from "react";
 import { Loader2, X } from "lucide-react";
-import { updateFdscUserAction, uploadUserAvatarAction } from "@/lib/api/users-actions";
+import { updateMentorProfileAction, uploadUserAvatarAction } from "@/lib/api/users-actions";
 import { getMediaUrl } from "@/lib/api/client";
 import type { Dimension } from "@/lib/api/dimensions";
-import type { AdminUser } from "@/lib/api/users";
-import { ROLE_BADGES } from "@/lib/roles";
+import type { MentorProfile } from "@/lib/api/mentor-profile";
 import { MentorProfileFields, type MentorProfileFieldsValue } from "./MentorProfileFields";
 import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
@@ -16,23 +15,20 @@ const inputClass =
 const disabledInputClass =
   "w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-sm cursor-not-allowed";
 
-export function EditFdscUserModal({
-  user,
+export function EditMentorProfileModal({
+  profile,
   dimensions,
   onClose,
 }: {
-  user: AdminUser;
+  profile: MentorProfile;
   dimensions: Dimension[];
   onClose: () => void;
 }) {
-  const roleType = user.role?.type;
-  const isMentor = roleType === "mentor";
-
-  const [nume, setNume] = useState(user.nume ?? "");
+  const [nume, setNume] = useState(profile.nume ?? "");
   const [mentorFields, setMentorFields] = useState<MentorProfileFieldsValue>({
-    bio: user.bio ?? "",
-    ariiDeExpertiza: (user.ariiDeExpertiza ?? []).join(", "),
-    selectedDimensions: user.dimensiuni ?? [],
+    bio: profile.bio ?? "",
+    ariiDeExpertiza: (profile.ariiDeExpertiza ?? []).join(", "),
+    selectedDimensions: profile.dimensiuni ?? [],
     avatarFile: null,
     avatarRemoved: false,
   });
@@ -40,32 +36,12 @@ export function EditFdscUserModal({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isPending, startTransition] = useTransition();
 
-  const roleLabel = user.role ? ROLE_BADGES[user.role.type].label : "";
-
   const handleSubmit = () => {
     setError(null);
     setFieldErrors({});
 
     startTransition(async () => {
       try {
-        if (!isMentor) {
-          if (roleType !== "super-admin" && roleType !== "editor-fdsc") {
-            setError("Acest tip de cont nu poate fi editat din acest ecran.");
-            return;
-          }
-          const result = await updateFdscUserAction(user.documentId, {
-            role: roleType,
-            nume,
-          });
-          if (result.error || Object.keys(result.fieldErrors ?? {}).length > 0) {
-            setFieldErrors(result.fieldErrors ?? {});
-            setError(result.error ?? null);
-            return;
-          }
-          onClose();
-          return;
-        }
-
         let avatarId: number | null | undefined;
         if (mentorFields.avatarFile) {
           const form = new FormData();
@@ -85,8 +61,7 @@ export function EditFdscUserModal({
           .map((entry) => entry.trim())
           .filter(Boolean);
 
-        const result = await updateFdscUserAction(user.documentId, {
-          role: "mentor",
+        const result = await updateMentorProfileAction({
           nume,
           bio: mentorFields.bio.trim(),
           ...(avatarId !== undefined ? { avatar: avatarId } : {}),
@@ -106,11 +81,15 @@ export function EditFdscUserModal({
   };
 
   return (
-    <ModalOverlay labelledBy="edit-fdsc-user-title">
+    <ModalOverlay labelledBy="edit-mentor-profile-title">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
         <div className="px-6 py-5 border-b border-border flex items-start justify-between gap-4">
-          <h2 id="edit-fdsc-user-title" className="font-heading font-extrabold text-lg" style={{ color: "#162040" }}>
-            Editează {roleLabel.toLowerCase()}
+          <h2
+            id="edit-mentor-profile-title"
+            className="font-heading font-extrabold text-lg"
+            style={{ color: "#162040" }}
+          >
+            Editează profilul
           </h2>
           <button
             type="button"
@@ -130,11 +109,11 @@ export function EditFdscUserModal({
           )}
 
           <div>
-            <label htmlFor="edit-fdsc-user-nume" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
+            <label htmlFor="edit-mentor-profile-nume" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
               Nume complet <span style={{ color: "#2563eb" }}>*</span>
             </label>
             <input
-              id="edit-fdsc-user-nume"
+              id="edit-mentor-profile-nume"
               type="text"
               className={inputClass}
               value={nume}
@@ -147,27 +126,25 @@ export function EditFdscUserModal({
           </div>
 
           <div>
-            <label htmlFor="edit-fdsc-user-email" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
+            <label htmlFor="edit-mentor-profile-email" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
               Adresă email
             </label>
             <input
-              id="edit-fdsc-user-email"
+              id="edit-mentor-profile-email"
               type="email"
-              value={user.email}
+              value={profile.email}
               disabled
               className={disabledInputClass}
             />
-            <p className="mt-1 text-xs text-muted-foreground">Adresa de email nu poate fi modificată.</p>
+            <p className="mt-1 text-xs text-muted-foreground">Adresa de email nu poate fi modificată aici.</p>
           </div>
 
-          {isMentor && (
-            <MentorProfileFields
-              dimensions={dimensions}
-              value={mentorFields}
-              onChange={setMentorFields}
-              existingAvatarUrl={user.avatar ? getMediaUrl(user.avatar.url) : null}
-            />
-          )}
+          <MentorProfileFields
+            dimensions={dimensions}
+            value={mentorFields}
+            onChange={setMentorFields}
+            existingAvatarUrl={profile.avatar ? getMediaUrl(profile.avatar.url) : null}
+          />
         </div>
 
         <div className="px-6 py-4 border-t border-border flex justify-end gap-3">

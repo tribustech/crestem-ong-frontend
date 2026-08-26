@@ -110,6 +110,44 @@ export async function updateFdscUserAction(
   return {};
 }
 
+export interface UpdateMentorProfileInput {
+  nume: string;
+  bio?: string;
+  avatar?: number | null;
+  dimensiuni?: string[];
+  ariiDeExpertiza?: string[];
+}
+
+/**
+ * The mentor's own self-service edit, as opposed to `updateFdscUserAction`
+ * which an administrator uses on someone else's account. Gated on "caller is
+ * a mentor" rather than `refuseNonAdministrator`. The backend route
+ * (`PATCH /api/mentors/me`) updates the caller's own record regardless of
+ * what id is asked for, so there is nothing here for a mentor to target
+ * another account with.
+ */
+export async function updateMentorProfileAction(
+  input: UpdateMentorProfileInput,
+): Promise<{ error?: string; fieldErrors?: Record<string, string> }> {
+  const user = await getCurrentUser();
+  if (user?.role?.type !== "mentor") {
+    return { error: FORBIDDEN_MESSAGE };
+  }
+
+  try {
+    await serverApiFetch("/api/mentors/me", {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  } catch (err) {
+    const parsed = parseApiError(err, "Nu am putut actualiza profilul.");
+    return { error: parsed.message || undefined, fieldErrors: parsed.fieldErrors };
+  }
+
+  revalidatePath("/dashboard/mentor/profil");
+  return {};
+}
+
 export async function uploadUserAvatarAction(
   formData: FormData,
 ): Promise<{ error?: string; id?: number }> {
