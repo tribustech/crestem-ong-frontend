@@ -10,6 +10,7 @@ import type { Dimension } from "@/lib/api/dimensions";
 import { formatShortDate } from "@/lib/utils/date";
 import { avatarColorFor } from "@/lib/utils/avatar";
 import { MemberActivationLink } from "@/components/features/organizatii/MemberActivationLink";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 import { EditFdscUserModal } from "./EditFdscUserModal";
 
 export function PersoaneResursaTable({
@@ -64,7 +65,9 @@ export function PersoaneResursaTable({
               return (
                 <tr
                   key={mentor.documentId}
-                  className="border-b border-border last:border-0 hover:bg-slate-50 transition-colors"
+                  className={`border-b border-border last:border-0 hover:bg-slate-50 transition-colors ${
+                    mentor.accountStatus === "deleted" ? "opacity-60" : ""
+                  }`}
                 >
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3 min-w-0">
@@ -84,12 +87,17 @@ export function PersoaneResursaTable({
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="font-semibold whitespace-normal wrap-break-word" style={{ color: "#162040" }}>
-                          {displayName}
-                        </p>
-                        <p className="text-xs truncate" style={{ color: "#64748b" }}>
-                          {mentor.email}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold whitespace-normal wrap-break-word" style={{ color: "#162040" }}>
+                            {displayName}
+                          </p>
+                          {mentor.accountStatus === "deleted" && <DeletedAccountBadge />}
+                        </div>
+                        {mentor.accountStatus !== "deleted" && (
+                          <p className="text-xs truncate" style={{ color: "#64748b" }}>
+                            {mentor.email}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </td>
@@ -125,14 +133,16 @@ export function PersoaneResursaTable({
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2">
                       <Link
-                        href={`/dashboard/fdsc/persoane-resursa/${mentor.documentId}`}
+                        href={`/dashboard/persoane-resursa/${mentor.documentId}`}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
                         style={{ color: "#475569" }}
                       >
                         <Eye size={14} />
                         Vezi
                       </Link>
-                      {canManage && (
+                      {/* Nothing left to edit once the profile is anonymized —
+                          the fields the form writes no longer exist. */}
+                      {canManage && mentor.accountStatus !== "deleted" && (
                         <button
                           type="button"
                           onClick={() => setEditingUser(mentor)}

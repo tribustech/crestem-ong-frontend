@@ -90,7 +90,7 @@ export function AddOngRequestModal({ onClose }: { onClose: () => void }) {
             <p className="mt-1 text-sm text-muted-foreground">
               {selected
                 ? "Adaugă un mesaj pentru administratorul organizației, apoi trimite cererea."
-                : "Caută un ONG activ pe platformă și trimite o cerere de afiliere."}
+                : "Caută un ONG activ după nume sau CUI/CIF și trimite o cerere de afiliere."}
             </p>
           </div>
           <button
@@ -123,7 +123,7 @@ export function AddOngRequestModal({ onClose }: { onClose: () => void }) {
                   {selected.name}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
-                  {[selected.domeniu, selected.localitate, `${selected.memberCount} membri`]
+                  {[selected.cui, selected.domeniu, selected.localitate, `${selected.memberCount} membri`]
                     .filter(Boolean)
                     .join(" · ")}
                 </p>
@@ -161,7 +161,7 @@ export function AddOngRequestModal({ onClose }: { onClose: () => void }) {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Caută după nume, domeniu sau oraș..."
+                placeholder="Caută după nume sau CUI/CIF..."
                 className="w-full pl-10 pr-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#2dbe8f]/30 focus:border-[#2dbe8f] transition-colors bg-white text-sm"
                 autoFocus
               />
@@ -201,7 +201,7 @@ export function AddOngRequestModal({ onClose }: { onClose: () => void }) {
                           {ong.name}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
-                          {[ong.domeniu, ong.localitate, `${ong.memberCount} membri`]
+                          {[ong.cui, ong.domeniu, ong.localitate, `${ong.memberCount} membri`]
                             .filter(Boolean)
                             .join(" · ")}
                         </p>

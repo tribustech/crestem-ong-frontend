@@ -5,7 +5,7 @@ import type { AssignedMentor } from "@/lib/api/programs";
 import { EvaluationTabs } from "@/components/features/overview/EvaluationTabs";
 import { OverviewSections } from "@/components/features/overview/OverviewSections";
 
-const BASE_PATH = "/dashboard/ong/evaluari";
+const BASE_PATH = "/dashboard/evaluari";
 
 export default async function OngEvaluariOverviewPage() {
   const currentRes = await serverApiFetch<{ data: ReportsCurrent }>("/api/reports/current");

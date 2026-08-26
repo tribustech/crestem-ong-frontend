@@ -1,6 +1,7 @@
 export interface JoinableOng {
   documentId: string;
   name: string;
+  cui: string | null;
   domeniu: string | null;
   localitate: string | null;
   memberCount: number;

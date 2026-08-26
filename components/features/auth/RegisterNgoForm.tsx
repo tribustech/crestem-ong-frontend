@@ -29,7 +29,6 @@ const registerNgoSchema = z
       .regex(/^(RO\s?)?\d{2,10}$/i, "Format invalid (ex. RO 12345678)"),
     judet: z.string().min(1, "Selectează județul"),
     localitate: z.string().min(1, "Selectează localitatea"),
-    website: z.string().trim(),
     nume: z.string().trim().min(1, "Câmp obligatoriu"),
     telefon: z
       .string()
@@ -52,7 +51,6 @@ const EMPTY: RegisterNgoFormValues = {
   cui: "",
   judet: "",
   localitate: "",
-  website: "",
   nume: "",
   telefon: "",
   email: "",
@@ -166,7 +164,6 @@ export function RegisterNgoForm() {
         numeOng: data.numeOng,
         judet: data.judet,
         localitate: data.localitate,
-        website: data.website.trim() || undefined,
         acordTermeniSiConditii: data.acordTermeniSiConditii,
       });
       setSubmittedEmail(data.email);
@@ -380,15 +377,6 @@ export function RegisterNgoForm() {
             )}
           </Field>
         </div>
-
-        <Field label="Website">
-          <input
-            type="text"
-            placeholder="www.organizatia.ro"
-            className={inputClass}
-            {...register("website")}
-          />
-        </Field>
       </div>
 
       <div

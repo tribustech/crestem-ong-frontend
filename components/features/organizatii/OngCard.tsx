@@ -92,7 +92,7 @@ export function OngCard({ ong }: { ong: Ong }) {
           <span style={{ color: "#334155" }}>{ong.admin?.nume ?? "—"}</span>
         </p>
         <Link
-          href={`/dashboard/fdsc/organizatii/${ong.documentId}`}
+          href={`/dashboard/organizatii/${ong.documentId}`}
           className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-semibold text-white shrink-0 hover:opacity-90 transition-opacity"
           style={{ background: "#162040" }}
         >

@@ -88,7 +88,7 @@ export function OngEvaluationsTable({
               </td>
               <td className="px-5 py-3.5 text-right whitespace-nowrap">
                 <Link
-                  href={`/dashboard/fdsc/organizatii/${ongDocumentId}/evaluari/${evaluation.documentId}`}
+                  href={`/dashboard/organizatii/${ongDocumentId}/evaluari/${evaluation.documentId}`}
                   className="text-xs font-semibold hover:underline"
                   style={{ color: "#2dbe8f" }}
                 >

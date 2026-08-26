@@ -1,9 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { cookies } from "next/headers";
+import { revalidateDashboardPath } from "./revalidate";
 import { serverApiFetch } from "./server";
 import { getApiErrorMessage, parseApiError } from "./client";
 import type { MyOng } from "./ongs";
+import { ROLE_COOKIE, roleCookieOptions } from "./session-cookies";
+import { dashboardSegmentForRole } from "@/lib/dashboard-routes";
 
 export async function deleteOngAction(documentId: string): Promise<{ error?: string }> {
   try {
@@ -12,7 +16,7 @@ export async function deleteOngAction(documentId: string): Promise<{ error?: str
     return { error: getApiErrorMessage(err, "Nu am putut șterge organizația.") };
   }
 
-  revalidatePath("/dashboard/fdsc/organizatii");
+  revalidateDashboardPath("/dashboard/fdsc/organizatii");
   return {};
 }
 
@@ -22,7 +26,7 @@ export async function deleteOngAction(documentId: string): Promise<{ error?: str
  * Same endpoint as `deleteOngAction` — the backend decides ownership, this only
  * differs in what happens afterwards. Deleting the organization ends the
  * caller's membership, so an admin with no other affiliation is demoted to
- * `individual` on the spot and `/dashboard/ong/*` starts redirecting them away.
+ * `individual` on the spot and the ONG dashboard starts turning them away.
  * The destination is therefore read back from `/api/auth/me` *after* the
  * deletion rather than guessed: an admin who still runs another organization
  * stays `ngo-admin` and belongs back on the ONG dashboard.
@@ -39,10 +43,17 @@ export async function deleteMyOngAction(
   revalidatePath("/dashboard", "layout");
 
   const { getCurrentUser, getDashboardPathForRole } = await import("./session-server");
-  let redirectTo = "/dashboard/individual";
+  let redirectTo = "/dashboard";
   try {
     const user = await getCurrentUser();
     redirectTo = getDashboardPathForRole(user?.role?.type) ?? redirectTo;
+    // The demotion also changes which dashboard folder the proxy must rewrite
+    // to, so re-stamp the routing cookie here rather than let the next request
+    // land on the ONG dashboard and bounce through the re-sync endpoint.
+    const segment = dashboardSegmentForRole(user?.role?.type);
+    if (segment) {
+      (await cookies()).set(ROLE_COOKIE, segment, roleCookieOptions);
+    }
   } catch {
     // The organization is gone either way; fall back to the individual
     // dashboard, which is where a demoted admin belongs.
@@ -68,7 +79,7 @@ export async function updateMyOngAction(
       method: "PATCH",
       body: JSON.stringify(input),
     });
-    revalidatePath("/dashboard/ong/profil");
+    revalidateDashboardPath("/dashboard/ong/profil");
     return { data: res.data };
   } catch (err) {
     return { error: getApiErrorMessage(err, "Nu am putut actualiza profilul organizației.") };
@@ -94,7 +105,7 @@ export async function inviteOngMemberAction(
     return { error: parsed.message || undefined, fieldErrors: parsed.fieldErrors };
   }
 
-  revalidatePath("/dashboard/ong/utilizatori");
+  revalidateDashboardPath("/dashboard/ong/utilizatori");
   return {};
 }
 
@@ -113,7 +124,7 @@ export async function resendMemberInvitationAction(id: number): Promise<{ error?
     return { error: getApiErrorMessage(err, "Nu am putut retrimite invitația.") };
   }
 
-  revalidatePath("/dashboard/ong/utilizatori");
+  revalidateDashboardPath("/dashboard/ong/utilizatori");
   return {};
 }
 
@@ -124,7 +135,7 @@ export async function removeOngMemberAction(documentId: string): Promise<{ error
     return { error: getApiErrorMessage(err, "Nu am putut elimina utilizatorul.") };
   }
 
-  revalidatePath("/dashboard/ong/utilizatori");
+  revalidateDashboardPath("/dashboard/ong/utilizatori");
   return {};
 }
 
@@ -141,7 +152,7 @@ export async function acceptJoinRequestAction(
     return { error: getApiErrorMessage(err, "Nu am putut confirma cererea.") };
   }
 
-  revalidatePath("/dashboard/ong/utilizatori");
+  revalidateDashboardPath("/dashboard/ong/utilizatori");
   return {};
 }
 
@@ -152,7 +163,7 @@ export async function rejectJoinRequestAction(documentId: string): Promise<{ err
     return { error: getApiErrorMessage(err, "Nu am putut respinge cererea.") };
   }
 
-  revalidatePath("/dashboard/ong/utilizatori");
+  revalidateDashboardPath("/dashboard/ong/utilizatori");
   return {};
 }
 
@@ -219,6 +230,6 @@ export async function createFdscReportAction(
     return { error: getApiErrorMessage(err, "Nu am putut încărca raportul.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/organizatii/${ongDocumentId}/rapoarte`);
+  revalidateDashboardPath(`/dashboard/fdsc/organizatii/${ongDocumentId}/rapoarte`);
   return {};
 }

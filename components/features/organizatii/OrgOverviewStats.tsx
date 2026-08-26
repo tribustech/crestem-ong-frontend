@@ -64,7 +64,7 @@ function ProgramsCard({ programs }: { programs: { documentId: string; name: stri
       </div>
       {overflow && (
         <Link
-          href="/dashboard/fdsc/programe"
+          href="/dashboard/programe"
           className="self-start mt-auto pt-2 text-sm font-semibold"
           style={{ color: "#2dbe8f" }}
         >
@@ -109,7 +109,7 @@ export function OrgOverviewStats({
         <StatCard
           label="Total sesiuni de evaluare"
           value={totalEvaluations}
-          link={{ href: `/dashboard/fdsc/organizatii/${documentId}/evaluari`, text: "Vezi istoric evaluări" }}
+          link={{ href: `/dashboard/organizatii/${documentId}/evaluari`, text: "Vezi istoric evaluări" }}
         />
         <StatCard
           label="Evaluare curentă"
@@ -122,7 +122,7 @@ export function OrgOverviewStats({
           link={
             currentEvaluation
               ? {
-                  href: `/dashboard/fdsc/organizatii/${documentId}/evaluare-curenta`,
+                  href: `/dashboard/organizatii/${documentId}/evaluare-curenta`,
                   text: "Vezi evaluare curentă",
                 }
               : undefined

@@ -30,7 +30,7 @@ export default async function MemberOngsPage() {
             return (
               <Link
                 key={ong.documentId}
-                href={`/dashboard/user-ong/${ong.documentId}`}
+                href={`/dashboard/${ong.documentId}`}
                 className="bg-white rounded-2xl border border-border p-5 hover:shadow-sm transition-shadow"
               >
                 <div className="flex items-center gap-3 mb-4">

@@ -32,7 +32,7 @@ export function OrgDetailChrome({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const base = `/dashboard/fdsc/organizatii/${documentId}`;
+  const base = `/dashboard/organizatii/${documentId}`;
   const tabs = TABS.map((tab) => ({ ...tab, href: tab.segment ? `${base}/${tab.segment}` : base }));
   const activeTab = tabs.find((tab) => tab.href === pathname);
 
@@ -43,7 +43,7 @@ export function OrgDetailChrome({
   return (
     <>
       <Link
-        href="/dashboard/fdsc/organizatii"
+        href="/dashboard/organizatii"
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6 print:hidden"
         style={{ color: "#94a3b8" }}
       >

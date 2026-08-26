@@ -34,9 +34,12 @@ function evaluationDate(evaluation: ComparableEvaluation) {
 export function EvaluationComparisonTable({
   evaluations,
   dimensions,
+  emptyMessage = "Nu există evaluări finalizate pentru această organizație.",
 }: {
   evaluations: ComparableEvaluation[];
   dimensions: Dimension[];
+  /** Overridden by the ngo-member page, whose columns are one person's own evaluations. */
+  emptyMessage?: string;
 }) {
   const sortedByDateDesc = [...evaluations].sort(
     (a, b) => new Date(evaluationDate(b)).getTime() - new Date(evaluationDate(a)).getTime(),
@@ -79,7 +82,7 @@ export function EvaluationComparisonTable({
   if (evaluations.length === 0) {
     return (
       <div className="bg-white rounded-2xl border border-border p-10 text-center text-sm text-muted-foreground">
-        Nu există evaluări finalizate pentru această organizație.
+        {emptyMessage}
       </div>
     );
   }

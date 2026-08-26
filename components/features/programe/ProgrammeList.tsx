@@ -35,7 +35,7 @@ export function ProgrammeList({ programs }: { programs: Program[] }) {
           </p>
         </div>
         <Link
-          href="/dashboard/fdsc/programe/nou"
+          href="/dashboard/programe/nou"
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-white transition-all hover:opacity-90"
           style={{ background: "#7c3aed" }}
         >

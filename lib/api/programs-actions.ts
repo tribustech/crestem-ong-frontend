@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateDashboardPath } from "./revalidate";
 import { serverApiFetch } from "./server";
 import { getApiErrorMessage } from "./client";
 
@@ -11,7 +11,7 @@ export async function deleteProgramAction(documentId: string): Promise<{ error?:
     return { error: getApiErrorMessage(err, "Nu am putut șterge programul.") };
   }
 
-  revalidatePath("/dashboard/fdsc/programe");
+  revalidateDashboardPath("/dashboard/fdsc/programe");
   return {};
 }
 
@@ -33,7 +33,7 @@ export async function assignOngAction(
     return { error: getApiErrorMessage(err, "Nu am putut adăuga organizația.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  revalidateDashboardPath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }
 
@@ -52,7 +52,7 @@ export async function assignPhaseEvaluationAction(
     return { error: getApiErrorMessage(err, "Nu am putut aloca evaluarea.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  revalidateDashboardPath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }
 
@@ -69,7 +69,7 @@ export async function removePhaseEvaluationAction(
     return { error: getApiErrorMessage(err, "Nu am putut elimina evaluarea.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  revalidateDashboardPath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }
 
@@ -83,7 +83,7 @@ export async function removeOngAction(programId: string, ongId: string): Promise
     return { error: getApiErrorMessage(err, "Nu am putut elimina organizația.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  revalidateDashboardPath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }
 
@@ -97,7 +97,7 @@ export async function assignMentorAction(programId: string, mentorId: string): P
     return { error: getApiErrorMessage(err, "Nu am putut adăuga persoana resursă.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  revalidateDashboardPath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }
 
@@ -111,7 +111,7 @@ export async function removeMentorAction(programId: string, mentorId: string): P
     return { error: getApiErrorMessage(err, "Nu am putut elimina persoana resursă.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  revalidateDashboardPath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }
 
@@ -129,7 +129,7 @@ export async function assignOngMentorAction(
     return { error: getApiErrorMessage(err, "Nu am putut adăuga persoana resursă.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  revalidateDashboardPath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }
 
@@ -147,6 +147,6 @@ export async function removeOngMentorAction(
     return { error: getApiErrorMessage(err, "Nu am putut elimina persoana resursă.") };
   }
 
-  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  revalidateDashboardPath(`/dashboard/fdsc/programe/${programId}`);
   return {};
 }

@@ -120,13 +120,17 @@ export interface OngFdscReport {
 
 export interface OngMentor {
   documentId: string;
+  /** `Anonim <documentId>` once the account is deleted. */
   nume: string;
-  email: string;
+  /** Null once the account is deleted — the stored address is a placeholder. */
+  email: string | null;
   mentorJobTitle: string | null;
   mentorOrganization: string | null;
   ariiDeExpertiza: string[];
   avatar: { documentId: string; name: string; url: string } | null;
   programs: { documentId: string; name: string }[];
+  /** Deleted accounts keep their assignment (BR-34); they render greyed and inert. */
+  isDeleted: boolean;
 }
 
 export interface OngEvaluationDetail {

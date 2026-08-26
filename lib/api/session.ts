@@ -12,11 +12,17 @@ export interface LoginSessionPayload {
   password: string;
 }
 
+export interface LoginSessionResult {
+  user: SessionUser;
+  /** Only the very first login of an account reports true. */
+  isFirstLogin: boolean;
+}
+
 export function loginSession(payload: LoginSessionPayload) {
-  return localApiFetch<{ user: SessionUser }>("/api/auth/login", {
+  return localApiFetch<LoginSessionResult>("/api/auth/login", {
     method: "POST",
     body: JSON.stringify(payload),
-  }).then((res) => res.user);
+  });
 }
 
 export function logoutSession() {

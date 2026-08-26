@@ -9,6 +9,7 @@ import { AlertCircle, Loader2 } from "lucide-react";
 import { loginSession } from "@/lib/api/session";
 import { getApiErrorMessage } from "@/lib/api/client";
 import { isFdscStaff } from "@/lib/roles";
+import { FIRST_LOGIN_PARAM } from "@/lib/first-login";
 import { PasswordInput } from "./PasswordInput";
 
 const loginSchema = z.object({
@@ -40,20 +41,27 @@ export function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     setApiError(null);
     try {
-      const user = await loginSession(data);
+      const { user, isFirstLogin } = await loginSession(data);
       const destination =
         isFdscStaff(user.role?.type)
-          ? "/dashboard/fdsc/programe"
+          ? "/dashboard/programe"
           : user.role?.type === "ngo-admin"
-            ? "/dashboard/ong/evaluari"
+            ? "/dashboard/evaluari"
             : user.role?.type === "ngo-member"
-              ? "/dashboard/user-ong"
+              ? "/dashboard"
               : user.role?.type === "individual"
-                ? "/dashboard/individual"
+                ? "/dashboard"
                 : user.role?.type === "mentor"
-                  ? "/dashboard/mentor/mesaje"
+                  ? "/dashboard/mesaje"
                   : "/";
-      router.push(destination);
+      // The first-login flag lives only in the login response — by the time any
+      // page renders, firstLoginAt is already stamped — so it travels to the
+      // dashboard as a query param that the prompt strips once it is answered.
+      router.push(
+        isFirstLogin && user.role?.type === "ngo-admin"
+          ? `${destination}?${FIRST_LOGIN_PARAM}=1`
+          : destination,
+      );
       router.refresh();
     } catch (err) {
       setApiError(getApiErrorMessage(err, "Nu am putut finaliza autentificarea. Încearcă din nou."));

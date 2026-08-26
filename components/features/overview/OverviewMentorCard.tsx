@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import type { AssignedMentor } from "@/lib/api/programs";
 import { mediaUrl } from "@/lib/utils/media";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 
 const initials = (name: string) =>
   name
@@ -25,7 +26,11 @@ export function OverviewMentorCard({
   const avatar = mediaUrl(mentor.avatar?.url);
 
   return (
-    <div className="bg-white rounded-xl border border-border p-5">
+    <div
+      className={`bg-white rounded-xl border border-border p-5 ${
+        mentor.isDeleted ? "opacity-60" : ""
+      }`}
+    >
       <div className="flex items-center gap-4">
         {avatar ? (
           <Image
@@ -37,12 +42,17 @@ export function OverviewMentorCard({
             className="w-11 h-11 rounded-full object-cover flex-shrink-0"
           />
         ) : (
-          <div className="w-11 h-11 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+          <div
+            className={`w-11 h-11 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 ${
+              mentor.isDeleted ? "bg-slate-400" : "bg-primary"
+            }`}
+          >
             {initials(mentor.nume)}
           </div>
         )}
         <div className="min-w-0">
           <p className="text-sm font-semibold font-heading text-primary truncate">{mentor.nume}</p>
+          {mentor.isDeleted && <DeletedAccountBadge className="mt-1 inline-block" />}
           {mentor.mentorJobTitle && (
             <p className="text-sm text-accent truncate">{mentor.mentorJobTitle}</p>
           )}
@@ -54,7 +64,7 @@ export function OverviewMentorCard({
 
       {showMessage && (
         <Link
-          href="/dashboard/ong/persoane-resursa"
+          href="/dashboard/persoane-resursa"
           className="mt-4 flex items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-sm font-semibold text-primary hover:bg-muted transition-colors"
         >
           <Mail size={16} /> Mesaje

@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { Plus, Search, Trash2, Users, X } from "lucide-react";
 import { assignMentorAction, removeMentorAction } from "@/lib/api/programs-actions";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 import type { AssignedMentor } from "@/lib/api/programs";
 import type { ActiveMentor } from "@/lib/api/mentors";
 
@@ -141,17 +142,33 @@ export function AssignMentorsSection({
       ) : (
         <div className="divide-y divide-border">
           {assigned.map((mentor) => (
-            <div key={mentor.documentId} className="flex items-center justify-between px-6 py-3.5 hover:bg-slate-50 transition-colors">
+            <div
+              key={mentor.documentId}
+              className={`flex items-center justify-between px-6 py-3.5 hover:bg-slate-50 transition-colors ${
+                mentor.isDeleted ? "opacity-60" : ""
+              }`}
+            >
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "#eff6ff" }}>
-                  <Users size={14} style={{ color: "#2563eb" }} />
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                  style={{ background: mentor.isDeleted ? "#f1f5f9" : "#eff6ff" }}
+                >
+                  <Users size={14} style={{ color: mentor.isDeleted ? "#94a3b8" : "#2563eb" }} />
                 </div>
                 <div className="min-w-0">
-                  <p className="font-medium text-sm truncate" style={{ color: "#162040" }}>{mentor.nume}</p>
-                  <p className="text-xs text-muted-foreground truncate">{mentor.email}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium text-sm truncate" style={{ color: "#162040" }}>{mentor.nume}</p>
+                    {mentor.isDeleted && <DeletedAccountBadge />}
+                  </div>
+                  {mentor.email && (
+                    <p className="text-xs text-muted-foreground truncate">{mentor.email}</p>
+                  )}
                 </div>
               </div>
-              {!readOnly && (
+              {/* Removing a deleted account would detach the assignment its
+                  conversations, meetings and reports hang off (BR-34), so the
+                  organization would lose the history. Nothing to act on. */}
+              {!readOnly && !mentor.isDeleted && (
                 <button
                   type="button"
                   disabled={isPending}

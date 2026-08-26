@@ -6,11 +6,6 @@ import { createMentorMeetingAction, updateMentorMeetingAction } from "@/lib/api/
 import type { Dimension } from "@/lib/api/dimensions";
 import type { MentorOng, OngMeeting } from "@/lib/api/meetings";
 
-interface ActivityTypeOption {
-  documentId: string;
-  name: string;
-}
-
 const inputClass =
   "w-full px-4 py-3 rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-[#2dbe8f]/30 focus:border-[#2dbe8f] transition-colors bg-white text-sm";
 
@@ -37,7 +32,6 @@ interface MentorMeetingFormModalProps {
   open: boolean;
   onClose: () => void;
   ongs: MentorOng[];
-  activityTypes: ActivityTypeOption[];
   dimensions: Dimension[];
   meeting?: OngMeeting;
 }
@@ -55,7 +49,6 @@ export function MentorMeetingFormModal(props: MentorMeetingFormModalProps) {
 function MentorMeetingFormModalInner({
   onClose,
   ongs,
-  activityTypes,
   dimensions,
   meeting,
 }: MentorMeetingFormModalProps) {
@@ -68,7 +61,6 @@ function MentorMeetingFormModalInner({
   const [ora, setOra] = useState(meeting ? toTimeInputValue(meeting.dataOra) : "");
   const [format, setFormat] = useState<"online" | "fata_in_fata">(meeting?.format ?? "online");
   const [linkIntalnire, setLinkIntalnire] = useState(meeting?.linkIntalnire ?? "");
-  const [activityType, setActivityType] = useState(meeting?.activityType?.documentId ?? "");
   const [selectedDimensions, setSelectedDimensions] = useState<string[]>(meeting?.dimensiuni ?? []);
   const [comentarii, setComentarii] = useState(meeting?.comentarii ?? "");
   const [error, setError] = useState<string | null>(null);
@@ -105,7 +97,6 @@ function MentorMeetingFormModalInner({
         linkIntalnire: linkIntalnire.trim() || undefined,
         ong,
         program: program || undefined,
-        activityType: activityType || undefined,
         dimensiuni: selectedDimensions,
         comentarii: comentarii.trim() || undefined,
       };
@@ -284,41 +275,16 @@ function MentorMeetingFormModalInner({
 
           <div>
             <label htmlFor="mentor-meeting-link" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
-              Link întâlnire
+              Detalii
             </label>
             <input
               id="mentor-meeting-link"
-              type="url"
+              type="text"
               className={inputClass}
               value={linkIntalnire}
               onChange={(e) => setLinkIntalnire(e.target.value)}
-              placeholder="https://meet.google.com/..."
+              placeholder="Link pentru întâlnire sau adresa fizică"
             />
-          </div>
-
-          <div>
-            <label htmlFor="mentor-meeting-activity-type" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
-              Tipul activității
-            </label>
-            <div className="relative">
-              <select
-                id="mentor-meeting-activity-type"
-                className={selectClass}
-                value={activityType}
-                onChange={(e) => setActivityType(e.target.value)}
-              >
-                <option value="">Selectează tipul activității...</option>
-                {activityTypes.map((a) => (
-                  <option key={a.documentId} value={a.documentId}>
-                    {a.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                size={16}
-                className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
-              />
-            </div>
           </div>
 
           <div>

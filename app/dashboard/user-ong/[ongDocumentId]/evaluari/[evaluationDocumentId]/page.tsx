@@ -26,7 +26,7 @@ export default async function MemberEvaluationWizardPage({
           {message}
         </p>
         <Link
-          href={`/dashboard/user-ong/${ongDocumentId}`}
+          href={`/dashboard/${ongDocumentId}`}
           className="text-sm font-semibold hover:underline"
           style={{ color: "#2dbe8f" }}
         >

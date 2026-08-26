@@ -1,12 +1,17 @@
 import { User } from "lucide-react";
 import { getMediaUrl } from "@/lib/api/client";
 import type { OngMentor } from "@/lib/api/ongs";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 
 export function MentorCard({ mentor }: { mentor: OngMentor }) {
   const avatarUrl = mentor.avatar ? getMediaUrl(mentor.avatar.url) : null;
 
   return (
-    <div className="bg-white rounded-xl border border-border p-5">
+    <div
+      className={`bg-white rounded-xl border border-border p-5 ${
+        mentor.isDeleted ? "opacity-60" : ""
+      }`}
+    >
       <div className="flex items-start gap-3">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -27,6 +32,7 @@ export function MentorCard({ mentor }: { mentor: OngMentor }) {
           <h3 className="font-semibold truncate" style={{ color: "#162040" }}>
             {mentor.nume}
           </h3>
+          {mentor.isDeleted && <DeletedAccountBadge className="mt-1 inline-block" />}
         </div>
       </div>
 

@@ -15,13 +15,15 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   }
 }
 
+// Landing paths as the browser sees them — the role folder each one is served
+// from is added by the proxy and never appears in the URL.
 const DASHBOARD_PATH_BY_ROLE: Record<string, string> = {
-  "ngo-admin": "/dashboard/ong",
-  "super-admin": "/dashboard/fdsc",
-  "editor-fdsc": "/dashboard/fdsc",
-  "ngo-member": "/dashboard/user-ong",
-  individual: "/dashboard/individual",
-  mentor: "/dashboard/mentor/mesaje",
+  "ngo-admin": "/dashboard",
+  "super-admin": "/dashboard",
+  "editor-fdsc": "/dashboard",
+  "ngo-member": "/dashboard",
+  individual: "/dashboard",
+  mentor: "/dashboard/mesaje",
 };
 
 export function getDashboardPathForRole(roleType?: string | null): string | null {

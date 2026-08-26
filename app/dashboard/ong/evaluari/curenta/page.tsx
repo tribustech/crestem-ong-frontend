@@ -3,7 +3,7 @@ import { serverApiFetch } from "@/lib/api/server";
 import type { ReportListItem } from "@/lib/api/reports";
 import { EvaluationTabs } from "@/components/features/overview/EvaluationTabs";
 
-const BASE_PATH = "/dashboard/ong/evaluari";
+const BASE_PATH = "/dashboard/evaluari";
 const CURRENT_PATH = `${BASE_PATH}/curenta`;
 
 /**

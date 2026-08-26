@@ -33,7 +33,7 @@ export function StartIndependentEvaluationButton({
         <p className="text-xs" style={{ color: "#94a3b8" }}>
           Ai deja o evaluare în desfășurare —{" "}
           <Link
-            href={`/dashboard/ong/evaluari/${lock.report.documentId}`}
+            href={`/dashboard/evaluari/${lock.report.documentId}`}
             className="font-semibold hover:underline"
             style={{ color: "#2dbe8f" }}
           >

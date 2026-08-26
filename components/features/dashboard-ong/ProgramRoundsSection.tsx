@@ -7,6 +7,7 @@ import { StartEvaluationModal } from "./StartEvaluationModal";
 import { findActiveReport } from "@/lib/api/reports";
 import type { ProgramRound, RoundPhase, RoundSummary, OngMember } from "@/lib/api/reports";
 import type { AssignedMentor } from "@/lib/api/programs";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 
 export interface ProgramRoundWithDetail extends ProgramRound {
   mentors: AssignedMentor[];
@@ -148,7 +149,7 @@ export function ProgramRoundsSection({
                 <p className="text-xs" style={{ color: "#94a3b8" }}>
                   Ai o evaluare activă în desfășurare —{" "}
                   <Link
-                    href={`/dashboard/ong/evaluari/${activeReport!.documentId}`}
+                    href={`/dashboard/evaluari/${activeReport!.documentId}`}
                     className="font-semibold hover:underline"
                     style={{ color: "#2dbe8f" }}
                   >
@@ -169,15 +170,23 @@ export function ProgramRoundsSection({
                   ) : (
                     <div className="flex flex-wrap gap-3">
                       {mentors.map((mentor) => (
-                        <div key={mentor.documentId} className="flex items-center gap-3 bg-white rounded-xl border border-border px-4 py-3">
+                        <div
+                          key={mentor.documentId}
+                          className={`flex items-center gap-3 bg-white rounded-xl border border-border px-4 py-3 ${
+                            mentor.isDeleted ? "opacity-60" : ""
+                          }`}
+                        >
                           <div
                             className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                            style={{ background: "#162040" }}
+                            style={{ background: mentor.isDeleted ? "#94a3b8" : "#162040" }}
                           >
                             {mentor.nume.trim().split(/\s+/).filter(Boolean).map((w) => w[0]).join("").slice(0, 2).toUpperCase() || "?"}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold font-heading" style={{ color: "#162040" }}>{mentor.nume}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-sm font-semibold font-heading" style={{ color: "#162040" }}>{mentor.nume}</p>
+                              {mentor.isDeleted && <DeletedAccountBadge />}
+                            </div>
                             {mentor.mentorJobTitle && (
                               <p className="text-xs" style={{ color: "#2dbe8f" }}>{mentor.mentorJobTitle}</p>
                             )}
@@ -270,7 +279,7 @@ export function ProgramRoundsSection({
                                 <td className="px-5 py-3 text-right">
                                   {phase.report ? (
                                     <Link
-                                      href={`/dashboard/ong/evaluari/${phase.report.documentId}`}
+                                      href={`/dashboard/evaluari/${phase.report.documentId}`}
                                       className="text-xs font-semibold hover:underline"
                                       style={{ color: "#2dbe8f" }}
                                     >

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { SESSION_COOKIE, REFRESH_COOKIE } from "@/lib/api/session-cookies";
+import { SESSION_COOKIE, REFRESH_COOKIE, ROLE_COOKIE } from "@/lib/api/session-cookies";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -22,5 +22,6 @@ export async function POST() {
   const response = NextResponse.json({ message: "Delogare reușită" });
   response.cookies.delete(SESSION_COOKIE);
   response.cookies.delete(REFRESH_COOKIE);
+  response.cookies.delete(ROLE_COOKIE);
   return response;
 }

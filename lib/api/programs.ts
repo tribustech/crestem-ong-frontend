@@ -68,11 +68,15 @@ export function updateProgram(documentId: string, payload: UpdateProgramPayload)
 
 export interface AssignedMentor {
   documentId: string;
+  /** `Anonim <documentId>` once the account is deleted. */
   nume: string;
-  email: string;
+  /** Null once the account is deleted — the stored address is a placeholder. */
+  email: string | null;
   mentorJobTitle: string | null;
   mentorOrganization: string | null;
   avatar: { documentId: string; name: string; url: string } | null;
+  /** Deleted accounts keep their assignment (BR-34); they render greyed and inert. */
+  isDeleted: boolean;
 }
 
 export interface PhaseEvaluation {

@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const BASE_PATH = "/dashboard/ong/persoane-resursa";
+const BASE_PATH = "/dashboard/persoane-resursa";
 
 export function PersoaneResursaTabs({ active }: { active: "mesaje" | "intalniri" }) {
   const tabClass = (isActive: boolean) =>

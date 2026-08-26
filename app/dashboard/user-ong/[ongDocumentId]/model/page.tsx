@@ -17,7 +17,7 @@ export default async function MemberMatrixModelPage({
   return (
     <div>
       <Link
-        href={`/dashboard/user-ong/${ongDocumentId}`}
+        href={`/dashboard/${ongDocumentId}`}
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
         style={{ color: "#94a3b8" }}
       >

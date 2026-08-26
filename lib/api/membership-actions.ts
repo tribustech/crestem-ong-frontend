@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateDashboardPath } from "./revalidate";
 import { serverApiFetch } from "./server";
 import { getApiErrorMessage } from "./client";
 import type { JoinableOng } from "./membership";
@@ -12,8 +12,8 @@ export async function leaveOngAction(ongDocumentId: string): Promise<{ error?: s
     return { error: getApiErrorMessage(err, "Nu am putut părăsi organizația.") };
   }
 
-  revalidatePath("/dashboard/user-ong/profil");
-  revalidatePath("/dashboard/user-ong");
+  revalidateDashboardPath("/dashboard/user-ong/profil");
+  revalidateDashboardPath("/dashboard/user-ong");
   return {};
 }
 

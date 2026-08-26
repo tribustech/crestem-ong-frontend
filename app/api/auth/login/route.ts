@@ -6,7 +6,10 @@ import {
   REFRESH_COOKIE,
   sessionCookieOptions,
   refreshCookieOptions,
+  ROLE_COOKIE,
+  roleCookieOptions,
 } from "@/lib/api/session-cookies";
+import { dashboardSegmentForRole } from "@/lib/dashboard-routes";
 
 export async function POST(request: Request) {
   const body = await request.json().catch(() => null);
@@ -18,15 +21,22 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { jwt, user, refreshToken } = await login({ identifier, password });
+    const { jwt, user, refreshToken, isFirstLogin } = await login({ identifier, password });
     const me = await getMe(jwt).catch(() => null);
 
     const response = NextResponse.json({
       user: { id: user.id, username: user.username, email: user.email, role: me?.data.role ?? null },
+      isFirstLogin: isFirstLogin ?? false,
     });
     response.cookies.set(SESSION_COOKIE, jwt, sessionCookieOptions);
     if (refreshToken) {
       response.cookies.set(REFRESH_COOKIE, refreshToken, refreshCookieOptions);
+    }
+    // Lets the proxy rewrite `/dashboard/*` onto this role's folder without
+    // re-asking the backend who the visitor is on every request.
+    const segment = dashboardSegmentForRole(me?.data.role?.type);
+    if (segment) {
+      response.cookies.set(ROLE_COOKIE, segment, roleCookieOptions);
     }
     return response;
   } catch (err) {

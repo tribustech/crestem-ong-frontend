@@ -6,7 +6,7 @@ import { findActiveEvaluation } from "@/lib/api/evaluations";
 import type { MyOng, OngEvaluationListItem } from "@/lib/api/evaluations";
 import type { Dimension } from "@/lib/api/dimensions";
 import { OrgEvaluationsTable } from "@/components/features/dashboard-member/OrgEvaluationsTable";
-import { MatrixModelButton } from "@/components/features/evaluari/MatrixModelButton";
+import { PendingEvaluationBanner } from "@/components/features/dashboard-member/PendingEvaluationBanner";
 import { MemberOngHeader } from "@/components/features/dashboard-member/MemberOngHeader";
 import { EvaluationTabs } from "@/components/features/overview/EvaluationTabs";
 
@@ -39,39 +39,21 @@ export default async function MemberOngPage({
 
       <EvaluationTabs
         active="evaluations"
-        basePath={`/dashboard/user-ong/${ongDocumentId}`}
+        basePath={`/dashboard/${ongDocumentId}`}
+        currentEvaluationHref={
+          activeEvaluation
+            ? `/dashboard/${ongDocumentId}/evaluari/${activeEvaluation.documentId}`
+            : `/dashboard/${ongDocumentId}/curenta`
+        }
+        comparisonHref={`/dashboard/${ongDocumentId}/comparatie`}
       />
 
       {activeEvaluation && (
-        <div
-          className="rounded-2xl p-6 mb-6 flex items-center justify-between gap-4"
-          style={{ background: "#162040" }}
-        >
-          <div>
-            <p
-              className="text-xs font-semibold uppercase tracking-wider mb-2"
-              style={{ color: "#2dbe8f" }}
-            >
-              Evaluare în așteptare
-            </p>
-            <p className="text-sm text-white/80 max-w-xl">
-              Ai fost adăugat de organizație în procesul de evaluare
-              organizațională. Dă click pe butonul de pornire pentru a începe.
-            </p>
-          </div>
-          <Link
-            href={`/dashboard/user-ong/${ongDocumentId}/evaluari/${activeEvaluation.documentId}`}
-            className="shrink-0 inline-flex items-center px-5 py-2.5 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity"
-            style={{
-              background: "#2dbe8f",
-              boxShadow: "0 4px 16px rgba(45,190,143,0.3)",
-            }}
-          >
-            {activeEvaluation.progress.status === "neinceput"
-              ? "Pornește evaluarea"
-              : "Continuă evaluarea"}
-          </Link>
-        </div>
+        <PendingEvaluationBanner
+          evaluation={activeEvaluation}
+          ongDocumentId={ongDocumentId}
+          dimensionCount={dimensionsRes.length}
+        />
       )}
 
       <div className="flex items-center justify-between mb-4">
@@ -80,7 +62,7 @@ export default async function MemberOngPage({
         </p>
         <div className="flex items-center gap-2">
           <Link
-            href={`/dashboard/user-ong/${ongDocumentId}/model`}
+            href={`/dashboard/${ongDocumentId}/model`}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border hover:bg-slate-50 transition-colors"
             style={{ color: "#475569" }}
           >
