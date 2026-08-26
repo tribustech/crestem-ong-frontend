@@ -2,7 +2,11 @@ import Link from "next/link";
 import type { OngOverview } from "@/lib/api/ongs";
 
 function formatDate(iso: string) {
-  return new Intl.DateTimeFormat("ro-RO", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
+  return new Intl.DateTimeFormat("ro-RO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(iso));
 }
 
 function StatCard({
@@ -19,7 +23,10 @@ function StatCard({
   return (
     <div className="bg-white rounded-xl border border-border p-5 h-full flex flex-col">
       <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-2 text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
+      <p
+        className="mt-2 text-2xl font-heading font-extrabold"
+        style={{ color: "#162040" }}
+      >
         {value}
       </p>
       {sublabel && <p className="text-xs text-muted-foreground">{sublabel}</p>}
@@ -38,7 +45,13 @@ function StatCard({
 
 const MAX_VISIBLE_PROGRAMS = 4;
 
-function ProgramsCard({ programs }: { programs: { documentId: string; name: string }[] }) {
+function ProgramsCard({
+  programs,
+  programsHref,
+}: {
+  programs: { documentId: string; name: string }[];
+  programsHref: string;
+}) {
   const overflow = programs.length > MAX_VISIBLE_PROGRAMS;
   const visible = overflow ? programs.slice(0, MAX_VISIBLE_PROGRAMS) : programs;
 
@@ -57,7 +70,10 @@ function ProgramsCard({ programs }: { programs: { documentId: string; name: stri
             </span>
           ))
         ) : (
-          <p className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
+          <p
+            className="text-2xl font-heading font-extrabold"
+            style={{ color: "#162040" }}
+          >
             —
           </p>
         )}
@@ -82,7 +98,10 @@ function DisabledStatCard({ label, value }: { label: string; value: string }) {
       title="Disponibil în curând"
     >
       <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-2 text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
+      <p
+        className="mt-2 text-2xl font-heading font-extrabold"
+        style={{ color: "#162040" }}
+      >
         {value}
       </p>
     </div>
@@ -93,23 +112,35 @@ export function OrgOverviewStats({
   documentId,
   overview,
   programs,
+  basePath = `/dashboard/fdsc/organizatii/${documentId}`,
+  programsHref = "/dashboard/fdsc/programe",
 }: {
   documentId: string;
   overview: OngOverview;
   programs: { documentId: string; name: string }[];
+  /** Base route for this org's detail tabs — defaults to the fdsc-admin path. */
+  basePath?: string;
+  /** "Vezi toate programele" overflow link — defaults to the fdsc-admin programs list. */
+  programsHref?: string;
 }) {
   const { totalEvaluations, currentEvaluation, lastFinalizedDate } = overview;
 
   return (
     <div>
-      <h2 className="text-2xl font-heading font-extrabold mb-4" style={{ color: "#162040" }}>
+      <h2
+        className="text-2xl font-heading font-extrabold mb-4"
+        style={{ color: "#162040" }}
+      >
         Informații Organizație
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           label="Total sesiuni de evaluare"
           value={totalEvaluations}
-          link={{ href: `/dashboard/organizatii/${documentId}/evaluari`, text: "Vezi istoric evaluări" }}
+          link={{
+            href: `/dashboard/organizatii/${documentId}/evaluari`,
+            text: "Vezi istoric evaluări",
+          }}
         />
         <StatCard
           label="Evaluare curentă"
@@ -118,7 +149,9 @@ export function OrgOverviewStats({
               ? `${currentEvaluation.completedCount} / ${currentEvaluation.invitedCount}`
               : "—"
           }
-          sublabel={currentEvaluation ? "completări" : "Nicio evaluare în desfășurare"}
+          sublabel={
+            currentEvaluation ? "completări" : "Nicio evaluare în desfășurare"
+          }
           link={
             currentEvaluation
               ? {
@@ -130,7 +163,7 @@ export function OrgOverviewStats({
         />
         <DisabledStatCard label="Număr de sesiuni de mentorat" value="—" />
         <DisabledStatCard label="E-Learning" value="—" />
-        <ProgramsCard programs={programs} />
+        <ProgramsCard programs={programs} programsHref={programsHref} />
         <StatCard
           label="Data finalizare evaluare"
           value={lastFinalizedDate ? formatDate(lastFinalizedDate) : "—"}

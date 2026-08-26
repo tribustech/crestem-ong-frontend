@@ -1,10 +1,10 @@
-import { getCurrentUser } from "@/lib/api/session-server";
-import { userDisplayName } from "@/lib/api/auth";
-import { ProfileHeaderCard } from "@/components/features/dashboard/ProfileHeaderCard";
+import { getMentorProfile } from "@/lib/api/mentor-profile";
+import { listDimensions } from "@/lib/api/dimensions";
 import { ProfileActionsMenu } from "@/components/features/dashboard/ProfileActionsMenu";
+import { MentorProfileDetailsCard } from "@/components/features/dashboard/MentorProfileDetailsCard";
 
 export default async function MentorProfilePage() {
-  const user = await getCurrentUser();
+  const [profileRes, dimensions] = await Promise.all([getMentorProfile(), listDimensions()]);
 
   return (
     <div>
@@ -20,7 +20,7 @@ export default async function MentorProfilePage() {
         <ProfileActionsMenu showAddOng={false} />
       </div>
 
-      <ProfileHeaderCard nume={userDisplayName(user!)} email={user!.email} createdAt={user!.createdAt} />
+      <MentorProfileDetailsCard profile={profileRes.data} dimensions={dimensions} />
     </div>
   );
 }

@@ -1,28 +1,20 @@
 import { Download, Eye } from "lucide-react";
 import { getMediaUrl } from "@/lib/api/client";
+import { formatLongDate } from "@/lib/utils/date";
+import { fileTypeBadge } from "@/lib/utils/fdsc-report";
+import { DeleteFdscReportButton } from "@/components/features/organizatii/DeleteFdscReportButton";
 import type { OngFdscReport } from "@/lib/api/ongs";
 
-function formatDate(iso: string) {
-  return new Intl.DateTimeFormat("ro-RO", { day: "numeric", month: "long", year: "numeric" }).format(
-    new Date(iso),
-  );
-}
-
-const FILE_TYPE_STYLES: Record<string, { label: string; background: string; color: string }> = {
-  ".pdf": { label: "PDF", background: "#fef2f2", color: "#dc2626" },
-  ".doc": { label: "DOC", background: "#eff6ff", color: "#2563eb" },
-  ".docx": { label: "DOC", background: "#eff6ff", color: "#2563eb" },
-  ".xls": { label: "XLS", background: "#f0fdf4", color: "#16a34a" },
-  ".xlsx": { label: "XLS", background: "#f0fdf4", color: "#16a34a" },
-};
-
-function fileTypeBadge(ext: string | undefined) {
-  const key = ext?.toLowerCase() ?? "";
-  const fallbackLabel = key.replace(/^\./, "").slice(0, 4).toUpperCase() || "?";
-  return FILE_TYPE_STYLES[key] ?? { label: fallbackLabel, background: "#f1f5f9", color: "#64748b" };
-}
-
-export function FdscReportsTable({ reports }: { reports: OngFdscReport[] }) {
+export function FdscReportsTable({
+  reports,
+  ongDocumentId,
+  readOnly = false,
+}: {
+  reports: OngFdscReport[];
+  ongDocumentId: string;
+  /** Hides the delete action — used for roles (e.g. mentor) that can only view/download reports. */
+  readOnly?: boolean;
+}) {
   if (reports.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-border p-8 text-center">
@@ -36,7 +28,7 @@ export function FdscReportsTable({ reports }: { reports: OngFdscReport[] }) {
       <table className="w-full text-sm">
         <thead>
           <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-            {["Denumire raport", "Program", "Data încărcării", "Acțiuni"].map((h) => (
+            {["Denumire raport", "Evaluare", "Program", "Data încărcării", "Acțiuni"].map((h) => (
               <th
                 key={h}
                 className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider whitespace-nowrap"
@@ -66,39 +58,51 @@ export function FdscReportsTable({ reports }: { reports: OngFdscReport[] }) {
                   </span>
                 </td>
                 <td className="px-5 py-3.5" style={{ color: "#64748b" }}>
-                  {report.program?.name ?? "—"}
+                  {report.evaluation?.name ?? "—"}
+                </td>
+                <td className="px-5 py-3.5" style={{ color: "#64748b" }}>
+                  {report.evaluation?.program?.name ?? "—"}
                 </td>
                 <td className="px-5 py-3.5 whitespace-nowrap" style={{ color: "#64748b" }}>
-                  {formatDate(report.uploadedAt)}
+                  {formatLongDate(report.uploadedAt)}
                 </td>
                 <td className="px-5 py-3.5 whitespace-nowrap">
-                  {fileUrl ? (
-                    <div className="flex items-center gap-2">
-                      {isPdf && (
+                  <div className="flex items-center gap-2">
+                    {fileUrl ? (
+                      <>
+                        {isPdf && (
+                          <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
+                            style={{ color: "#334155" }}
+                          >
+                            <Eye size={13} /> Vezi
+                          </a>
+                        )}
                         <a
                           href={fileUrl}
+                          download={report.file?.name}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
                           style={{ color: "#334155" }}
                         >
-                          <Eye size={13} /> Vezi
+                          <Download size={13} /> Descarcă
                         </a>
-                      )}
-                      <a
-                        href={fileUrl}
-                        download={report.file?.name}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
-                        style={{ color: "#334155" }}
-                      >
-                        <Download size={13} /> Descarcă
-                      </a>
-                    </div>
-                  ) : (
-                    <span style={{ color: "#94a3b8" }}>—</span>
-                  )}
+                      </>
+                    ) : (
+                      <span style={{ color: "#94a3b8" }}>—</span>
+                    )}
+                    {!readOnly && (
+                      <DeleteFdscReportButton
+                        ongDocumentId={ongDocumentId}
+                        reportDocumentId={report.documentId}
+                        reportName={report.name}
+                      />
+                    )}
+                  </div>
                 </td>
               </tr>
             );

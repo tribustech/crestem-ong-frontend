@@ -66,3 +66,23 @@ export function listMentorMeetings(params: ListMentorMeetingsParams = {}) {
   const qs = query.toString();
   return serverApiFetch<{ data: OngMeeting[] }>(`/api/mentor/meetings${qs ? `?${qs}` : ""}`);
 }
+
+export interface MentorProgramOng {
+  documentId: string;
+  name: string;
+  memberCount: number;
+  admin: { nume: string; email: string } | null;
+}
+
+export interface MentorProgram {
+  documentId: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  programStatus: "Upcoming" | "Active" | "Finished";
+  ongs: MentorProgramOng[];
+}
+
+export function listMentorPrograms() {
+  return serverApiFetch<{ data: MentorProgram[] }>("/api/mentor/programs");
+}

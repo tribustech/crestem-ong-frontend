@@ -114,7 +114,11 @@ export interface OngFdscReport {
   documentId: string;
   name: string;
   uploadedAt: string;
-  program: { documentId: string; name: string } | null;
+  evaluation: {
+    documentId: string;
+    name: string;
+    program: { documentId: string; name: string } | null;
+  } | null;
   file: { url: string; name: string; ext: string } | null;
 }
 
