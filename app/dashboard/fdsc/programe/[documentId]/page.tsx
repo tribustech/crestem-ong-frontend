@@ -85,7 +85,8 @@ export default async function ProgramDetailPage({
         assignedMentors={mentorsRes.data}
         activeOngs={activeOngsRes.data}
         activeMentors={activeMentorsRes.data}
-        entryPhaseTitle={program.data.entryPhase?.title ?? null}
+        phases={program.data.phases}
+        entryPhase={program.data.entryPhase}
         readOnly={finished}
       />
     </div>

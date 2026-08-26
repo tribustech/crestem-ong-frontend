@@ -19,17 +19,54 @@ export async function assignOngAction(
   programId: string,
   ongId: string,
   reportId?: string,
+  phaseId?: string,
 ): Promise<{ error?: string }> {
   try {
     await serverApiFetch("/api/programs/assign-ongs", {
       method: "POST",
       body: JSON.stringify({
         program: programId,
-        ongs: [reportId ? { ong: ongId, report: reportId } : ongId],
+        ongs: [reportId ? { ong: ongId, report: reportId, phase: phaseId } : ongId],
       }),
     });
   } catch (err) {
     return { error: getApiErrorMessage(err, "Nu am putut adăuga organizația.") };
+  }
+
+  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  return {};
+}
+
+export async function assignPhaseEvaluationAction(
+  programId: string,
+  phaseId: string,
+  ongId: string,
+  reportId: string,
+): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch(`/api/programs/${programId}/phases/${phaseId}/evaluation`, {
+      method: "POST",
+      body: JSON.stringify({ ong: ongId, report: reportId }),
+    });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut aloca evaluarea.") };
+  }
+
+  revalidatePath(`/dashboard/fdsc/programe/${programId}`);
+  return {};
+}
+
+export async function removePhaseEvaluationAction(
+  programId: string,
+  phaseId: string,
+  ongId: string,
+): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch(`/api/programs/${programId}/phases/${phaseId}/evaluation/${ongId}`, {
+      method: "DELETE",
+    });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut elimina evaluarea.") };
   }
 
   revalidatePath(`/dashboard/fdsc/programe/${programId}`);
