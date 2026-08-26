@@ -6,13 +6,21 @@ import { ArrowLeft } from "lucide-react";
 import type { Ong } from "@/lib/api/ongs";
 import { OrgHeaderCard } from "./OrgHeaderCard";
 
-const TABS = [
+const FDSC_TABS = [
   { key: "overview", label: "Overview", segment: "" },
   { key: "evaluari", label: "Evaluări", segment: "evaluari" },
   { key: "evaluare-curenta", label: "Evaluare curentă", segment: "evaluare-curenta" },
   { key: "comparatie", label: "Comparație", segment: "comparatie" },
   { key: "rapoarte", label: "Rapoarte", segment: "rapoarte" },
   { key: "persoane-resursa", label: "Persoane resursă", segment: "persoane-resursa" },
+] as const;
+
+const MENTOR_TABS = [
+  { key: "overview", label: "Overview", segment: "" },
+  { key: "evaluari", label: "Evaluări", segment: "evaluari" },
+  { key: "evaluare-curenta", label: "Evaluare curentă", segment: "evaluare-curenta" },
+  { key: "comparatie", label: "Comparație", segment: "comparatie" },
+  { key: "rapoarte", label: "Rapoarte", segment: "rapoarte" },
 ] as const;
 
 /**
@@ -26,13 +34,22 @@ export function OrgDetailChrome({
   ong,
   documentId,
   children,
+  role = "fdsc",
 }: {
   ong: Ong;
   documentId: string;
   children: React.ReactNode;
+  /** Which role's tab set + base path to render — the mentor view drops Comparație and Persoane resursă. */
+  role?: "fdsc" | "mentor";
 }) {
   const pathname = usePathname();
-  const base = `/dashboard/fdsc/organizatii/${documentId}`;
+  const base =
+    role === "mentor"
+      ? `/dashboard/mentor/organizatii/${documentId}`
+      : `/dashboard/fdsc/organizatii/${documentId}`;
+  const backHref = role === "mentor" ? "/dashboard/mentor/programe" : "/dashboard/fdsc/organizatii";
+  const backLabel = role === "mentor" ? "Înapoi la programele mele" : "Înapoi la organizații";
+  const TABS = role === "mentor" ? MENTOR_TABS : FDSC_TABS;
   const tabs = TABS.map((tab) => ({ ...tab, href: tab.segment ? `${base}/${tab.segment}` : base }));
   const activeTab = tabs.find((tab) => tab.href === pathname);
 
@@ -43,11 +60,11 @@ export function OrgDetailChrome({
   return (
     <>
       <Link
-        href="/dashboard/fdsc/organizatii"
+        href={backHref}
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6 print:hidden"
         style={{ color: "#94a3b8" }}
       >
-        <ArrowLeft size={14} /> Înapoi la organizații
+        <ArrowLeft size={14} /> {backLabel}
       </Link>
 
       <OrgHeaderCard ong={ong} />

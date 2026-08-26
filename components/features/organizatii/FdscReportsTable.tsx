@@ -8,9 +8,12 @@ import type { OngFdscReport } from "@/lib/api/ongs";
 export function FdscReportsTable({
   reports,
   ongDocumentId,
+  readOnly = false,
 }: {
   reports: OngFdscReport[];
   ongDocumentId: string;
+  /** Hides the delete action — used for roles (e.g. mentor) that can only view/download reports. */
+  readOnly?: boolean;
 }) {
   if (reports.length === 0) {
     return (
@@ -92,11 +95,13 @@ export function FdscReportsTable({
                     ) : (
                       <span style={{ color: "#94a3b8" }}>—</span>
                     )}
-                    <DeleteFdscReportButton
-                      ongDocumentId={ongDocumentId}
-                      reportDocumentId={report.documentId}
-                      reportName={report.name}
-                    />
+                    {!readOnly && (
+                      <DeleteFdscReportButton
+                        ongDocumentId={ongDocumentId}
+                        reportDocumentId={report.documentId}
+                        reportName={report.name}
+                      />
+                    )}
                   </div>
                 </td>
               </tr>

@@ -38,7 +38,13 @@ function StatCard({
 
 const MAX_VISIBLE_PROGRAMS = 4;
 
-function ProgramsCard({ programs }: { programs: { documentId: string; name: string }[] }) {
+function ProgramsCard({
+  programs,
+  programsHref,
+}: {
+  programs: { documentId: string; name: string }[];
+  programsHref: string;
+}) {
   const overflow = programs.length > MAX_VISIBLE_PROGRAMS;
   const visible = overflow ? programs.slice(0, MAX_VISIBLE_PROGRAMS) : programs;
 
@@ -64,7 +70,7 @@ function ProgramsCard({ programs }: { programs: { documentId: string; name: stri
       </div>
       {overflow && (
         <Link
-          href="/dashboard/fdsc/programe"
+          href={programsHref}
           className="self-start mt-auto pt-2 text-sm font-semibold"
           style={{ color: "#2dbe8f" }}
         >
@@ -93,10 +99,16 @@ export function OrgOverviewStats({
   documentId,
   overview,
   programs,
+  basePath = `/dashboard/fdsc/organizatii/${documentId}`,
+  programsHref = "/dashboard/fdsc/programe",
 }: {
   documentId: string;
   overview: OngOverview;
   programs: { documentId: string; name: string }[];
+  /** Base route for this org's detail tabs — defaults to the fdsc-admin path. */
+  basePath?: string;
+  /** "Vezi toate programele" overflow link — defaults to the fdsc-admin programs list. */
+  programsHref?: string;
 }) {
   const { totalEvaluations, currentEvaluation, lastFinalizedDate } = overview;
 
@@ -109,7 +121,7 @@ export function OrgOverviewStats({
         <StatCard
           label="Total sesiuni de evaluare"
           value={totalEvaluations}
-          link={{ href: `/dashboard/fdsc/organizatii/${documentId}/evaluari`, text: "Vezi istoric evaluări" }}
+          link={{ href: `${basePath}/evaluari`, text: "Vezi istoric evaluări" }}
         />
         <StatCard
           label="Evaluare curentă"
@@ -122,7 +134,7 @@ export function OrgOverviewStats({
           link={
             currentEvaluation
               ? {
-                  href: `/dashboard/fdsc/organizatii/${documentId}/evaluare-curenta`,
+                  href: `${basePath}/evaluare-curenta`,
                   text: "Vezi evaluare curentă",
                 }
               : undefined
@@ -130,7 +142,7 @@ export function OrgOverviewStats({
         />
         <DisabledStatCard label="Număr de sesiuni de mentorat" value="—" />
         <DisabledStatCard label="E-Learning" value="—" />
-        <ProgramsCard programs={programs} />
+        <ProgramsCard programs={programs} programsHref={programsHref} />
         <StatCard
           label="Data finalizare evaluare"
           value={lastFinalizedDate ? formatDate(lastFinalizedDate) : "—"}
