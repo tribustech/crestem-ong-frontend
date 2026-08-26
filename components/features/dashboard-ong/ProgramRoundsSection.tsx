@@ -2,15 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Building2, Calendar, Play, Users, ExternalLink, FileText } from "lucide-react";
+import { Building2, Calendar, Download, Eye, Play, Users, ExternalLink, FileText } from "lucide-react";
 import { StartEvaluationModal } from "./StartEvaluationModal";
 import { findActiveReport } from "@/lib/api/reports";
-import type { ProgramRound, RoundPhase, RoundSummary, OngMember } from "@/lib/api/reports";
+import type { ProgramRound, RoundPhase, RoundSummary, OngMember, MyFdscReport } from "@/lib/api/reports";
 import type { AssignedMentor } from "@/lib/api/programs";
+import { getMediaUrl } from "@/lib/api/client";
+import { formatLongDate } from "@/lib/utils/date";
+import { fileTypeBadge } from "@/lib/utils/fdsc-report";
 
 export interface ProgramRoundWithDetail extends ProgramRound {
   mentors: AssignedMentor[];
   phases: (RoundPhase & { score: number | null })[];
+  fdscReports: MyFdscReport[];
 }
 
 function formatDate(iso: string) {
@@ -89,7 +93,7 @@ export function ProgramRoundsSection({
 
   return (
     <div className="space-y-2">
-      {programRounds.map(({ program, phases, mentors }) => {
+      {programRounds.map(({ program, phases, mentors, fdscReports }) => {
         const isExpanded = expanded === program.documentId;
         const evaluationPhases = phases.filter((phase) => phase.hasEvaluation);
         const startablePhase = evaluationPhases.find((phase) => phase.active && !phase.report);
@@ -232,7 +236,7 @@ export function ProgramRoundsSection({
                   <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#94a3b8" }}>
                     Evaluări asociate programului
                   </p>
-                  <div className="bg-white rounded-xl border border-border overflow-hidden">
+                  <div className="bg-white rounded-xl border border-border overflow-hidden overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
@@ -302,11 +306,11 @@ export function ProgramRoundsSection({
                   <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: "#94a3b8" }}>
                     Rapoarte disponibile (FDSC)
                   </p>
-                  <div className="bg-white rounded-xl border border-border overflow-hidden">
+                  <div className="bg-white rounded-xl border border-border overflow-hidden overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-                          {["Titlu raport", "Tip", "Data", "Mărime", ""].map((h) => (
+                          {["Denumire raport", "Evaluare", "Program", "Data încărcării", "Acțiuni"].map((h) => (
                             <th key={h} className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: "#94a3b8" }}>
                               {h}
                             </th>
@@ -314,15 +318,75 @@ export function ProgramRoundsSection({
                         </tr>
                       </thead>
                       <tbody>
-                        {/* FDSC report uploads are not implemented yet — empty state only. */}
-                        <tr>
-                          <td colSpan={5} className="px-5 py-8 text-center">
-                            <FileText size={20} className="mx-auto mb-2" style={{ color: "#cbd5e1" }} />
-                            <p className="text-sm text-muted-foreground">
-                              Nu există rapoarte disponibile pentru acest program încă.
-                            </p>
-                          </td>
-                        </tr>
+                        {fdscReports.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="px-5 py-8 text-center">
+                              <FileText size={20} className="mx-auto mb-2" style={{ color: "#cbd5e1" }} />
+                              <p className="text-sm text-muted-foreground">
+                                Nu există rapoarte disponibile pentru acest program încă.
+                              </p>
+                            </td>
+                          </tr>
+                        ) : (
+                          fdscReports.map((report) => {
+                            const fileUrl = report.file ? getMediaUrl(report.file.url) : null;
+                            const isPdf = report.file?.ext?.toLowerCase() === ".pdf";
+                            const badge = fileTypeBadge(report.file?.ext);
+                            return (
+                              <tr key={report.documentId} className="border-b border-border last:border-0 hover:bg-slate-50 transition-colors">
+                                <td className="px-5 py-3">
+                                  <span className="inline-flex items-center gap-2.5 font-medium" style={{ color: "#162040" }}>
+                                    <span
+                                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[9px] font-bold"
+                                      style={{ background: badge.background, color: badge.color }}
+                                    >
+                                      {badge.label}
+                                    </span>
+                                    {report.name}
+                                  </span>
+                                </td>
+                                <td className="px-5 py-3" style={{ color: "#64748b" }}>
+                                  {report.evaluation?.name ?? "—"}
+                                </td>
+                                <td className="px-5 py-3" style={{ color: "#64748b" }}>
+                                  {report.evaluation?.program?.name ?? "—"}
+                                </td>
+                                <td className="px-5 py-3 whitespace-nowrap" style={{ color: "#64748b" }}>
+                                  {formatLongDate(report.uploadedAt)}
+                                </td>
+                                <td className="px-5 py-3 whitespace-nowrap">
+                                  {fileUrl ? (
+                                    <div className="flex items-center gap-2">
+                                      {isPdf && (
+                                        <a
+                                          href={fileUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
+                                          style={{ color: "#334155" }}
+                                        >
+                                          <Eye size={13} /> Vezi
+                                        </a>
+                                      )}
+                                      <a
+                                        href={fileUrl}
+                                        download={report.file?.name}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
+                                        style={{ color: "#334155" }}
+                                      >
+                                        <Download size={13} /> Descarcă
+                                      </a>
+                                    </div>
+                                  ) : (
+                                    <span style={{ color: "#94a3b8" }}>—</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })
+                        )}
                       </tbody>
                     </table>
                   </div>

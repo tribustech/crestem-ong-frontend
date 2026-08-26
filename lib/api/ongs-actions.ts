@@ -187,8 +187,8 @@ export async function uploadFileAction(
 }
 
 /**
- * Sends `name`/`program`/`file` in one multipart request — the backend
- * validates the program/ONG relationship first and only creates the upload
+ * Sends `name`/`evaluation`/`file` in one multipart request — the backend
+ * validates the evaluation/ONG relationship first and only creates the upload
  * once that passes, so a rejected request never leaves an orphaned file
  * behind the way the old upload-then-create flow could.
  */
@@ -217,6 +217,22 @@ export async function createFdscReportAction(
     }
   } catch (err) {
     return { error: getApiErrorMessage(err, "Nu am putut încărca raportul.") };
+  }
+
+  revalidatePath(`/dashboard/fdsc/organizatii/${ongDocumentId}/rapoarte`);
+  return {};
+}
+
+export async function deleteFdscReportAction(
+  ongDocumentId: string,
+  reportDocumentId: string,
+): Promise<{ error?: string }> {
+  try {
+    await serverApiFetch(`/api/ongs/${ongDocumentId}/fdsc-reports/${reportDocumentId}`, {
+      method: "DELETE",
+    });
+  } catch (err) {
+    return { error: getApiErrorMessage(err, "Nu am putut șterge raportul.") };
   }
 
   revalidatePath(`/dashboard/fdsc/organizatii/${ongDocumentId}/rapoarte`);

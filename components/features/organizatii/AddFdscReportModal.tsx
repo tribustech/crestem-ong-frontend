@@ -1,12 +1,10 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import type { ChangeEvent, DragEvent, MouseEvent } from "react";
 import { ChevronDown, Loader2, Plus, Upload, X } from "lucide-react";
-import {
-  createFdscReportAction,
-  uploadFileAction,
-} from "@/lib/api/ongs-actions";
+import { createFdscReportAction } from "@/lib/api/ongs-actions";
+import { listOngEvaluations, type OngEvaluation } from "@/lib/api/ongs";
 import { ModalOverlay } from "@/components/ui/ModalOverlay";
 
 const ACCEPTED_FILE_TYPES = [
@@ -31,6 +29,10 @@ export function AddFdscReportModal({
 }) {
   const [open, setOpen] = useState(false);
   const [program, setProgram] = useState("");
+  const [evaluation, setEvaluation] = useState("");
+  const [evaluations, setEvaluations] = useState<OngEvaluation[]>([]);
+  const [loadingEvaluations, setLoadingEvaluations] = useState(false);
+  const [evaluationsError, setEvaluationsError] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -40,10 +42,44 @@ export function AddFdscReportModal({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const canSubmit =
-    program.trim() !== "" && name.trim() !== "" && file !== null;
+    program.trim() !== "" &&
+    evaluation.trim() !== "" &&
+    name.trim() !== "" &&
+    file !== null;
+
+  useEffect(() => {
+    if (!program) return;
+    let cancelled = false;
+    listOngEvaluations(ongDocumentId, program)
+      .then((res) => {
+        if (!cancelled) setEvaluations(res.data);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setEvaluationsError("Nu am putut încărca evaluările acestui program.");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingEvaluations(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ongDocumentId, program]);
+
+  const handleProgramChange = (value: string) => {
+    setProgram(value);
+    setEvaluation("");
+    setEvaluations([]);
+    setEvaluationsError(null);
+    setLoadingEvaluations(value !== "");
+  };
 
   const reset = () => {
     setProgram("");
+    setEvaluation("");
+    setEvaluations([]);
+    setEvaluationsError(null);
     setName("");
     setFile(null);
     setFileError(null);
@@ -96,7 +132,7 @@ export function AddFdscReportModal({
     startTransition(async () => {
       const form = new FormData();
       form.append("name", name.trim());
-      form.append("program", program);
+      form.append("evaluation", evaluation);
       form.append("files", file);
       const result = await createFdscReportAction(ongDocumentId, form);
       if (result.error) {
@@ -163,7 +199,7 @@ export function AddFdscReportModal({
                     id="fdsc-report-program"
                     className={selectClass}
                     value={program}
-                    onChange={(e) => setProgram(e.target.value)}
+                    onChange={(e) => handleProgramChange(e.target.value)}
                   >
                     <option value="">Selectează programul...</option>
                     {programs.map((p) => (
@@ -177,6 +213,52 @@ export function AddFdscReportModal({
                     className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="fdsc-report-evaluation"
+                  className="block text-sm font-semibold mb-1.5"
+                  style={{ color: "#334155" }}
+                >
+                  Evaluare <span style={{ color: "#ef4444" }}>*</span>
+                </label>
+                <div className="relative">
+                  <select
+                    id="fdsc-report-evaluation"
+                    className={selectClass}
+                    value={evaluation}
+                    onChange={(e) => setEvaluation(e.target.value)}
+                    disabled={!program || loadingEvaluations}
+                  >
+                    <option value="">
+                      {!program
+                        ? "Selectează mai întâi programul"
+                        : loadingEvaluations
+                          ? "Se încarcă evaluările..."
+                          : "Selectează evaluarea..."}
+                    </option>
+                    {evaluations.map((ev) => (
+                      <option key={ev.documentId} value={ev.documentId}>
+                        {ev.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    size={16}
+                    className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  />
+                </div>
+                {evaluationsError && (
+                  <p className="mt-1.5 text-xs" style={{ color: "#ef4444" }}>
+                    {evaluationsError}
+                  </p>
+                )}
+                {program && !loadingEvaluations && !evaluationsError && evaluations.length === 0 && (
+                  <p className="mt-1.5 text-xs text-muted-foreground">
+                    Această organizație nu are nicio evaluare în acest program.
+                  </p>
+                )}
               </div>
 
               <div>

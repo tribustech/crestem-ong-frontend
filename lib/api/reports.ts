@@ -186,6 +186,33 @@ export interface ReportMembers {
   completedCount: number;
 }
 
+export interface MyFdscReport {
+  documentId: string;
+  name: string;
+  uploadedAt: string;
+  evaluation: {
+    documentId: string;
+    name: string;
+    program: { documentId: string; name: string } | null;
+  } | null;
+  file: { url: string; name: string; ext: string } | null;
+}
+
+/** Groups the ONG's own FDSC reports by the program derived from each one's evaluation. */
+export function groupFdscReportsByProgram(
+  reports: MyFdscReport[],
+): Map<string, MyFdscReport[]> {
+  const grouped = new Map<string, MyFdscReport[]>();
+  for (const report of reports) {
+    const programId = report.evaluation?.program?.documentId;
+    if (!programId) continue;
+    const list = grouped.get(programId) ?? [];
+    list.push(report);
+    grouped.set(programId, list);
+  }
+  return grouped;
+}
+
 export interface OngMember {
   /** Numeric id — required by the resend-invitation endpoint. */
   id: number;

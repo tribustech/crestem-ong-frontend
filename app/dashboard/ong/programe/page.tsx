@@ -1,15 +1,18 @@
 import { serverApiFetch } from "@/lib/api/server";
-import { getIndependentStartLock } from "@/lib/api/reports";
-import type { ReportsCurrent, OngMember } from "@/lib/api/reports";
+import { getIndependentStartLock, groupFdscReportsByProgram } from "@/lib/api/reports";
+import type { ReportsCurrent, OngMember, MyFdscReport } from "@/lib/api/reports";
 import type { AssignedMentor } from "@/lib/api/programs";
 import { ProgramRoundsSection, type ProgramRoundWithDetail } from "@/components/features/dashboard-ong/ProgramRoundsSection";
 import { StartIndependentEvaluationButton } from "@/components/features/dashboard-ong/StartIndependentEvaluationButton";
 
 export default async function OngProgramePage() {
-  const [currentRes, membersRes] = await Promise.all([
+  const [currentRes, membersRes, fdscReportsRes] = await Promise.all([
     serverApiFetch<{ data: ReportsCurrent }>("/api/reports/current"),
     serverApiFetch<{ data: OngMember[] }>("/api/ongs/members"),
+    serverApiFetch<{ data: MyFdscReport[] }>("/api/reports/fdsc-reports"),
   ]);
+
+  const fdscReportsByProgram = groupFdscReportsByProgram(fdscReportsRes.data);
 
   const programRounds: ProgramRoundWithDetail[] = await Promise.all(
     currentRes.data.programRounds.map(async ({ program, phases }) => {
@@ -20,6 +23,7 @@ export default async function OngProgramePage() {
         program,
         mentors: mentorsRes.data,
         phases: phases.map((phase) => ({ ...phase, score: phase.report?.score ?? null })),
+        fdscReports: fdscReportsByProgram.get(program.documentId) ?? [],
       };
     }),
   );

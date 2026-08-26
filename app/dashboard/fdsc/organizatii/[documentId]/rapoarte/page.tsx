@@ -31,7 +31,7 @@ export default async function OrganizatieRapoartePage({
         <AddFdscReportModal ongDocumentId={documentId} programs={ong.programs} />
       </div>
 
-      <FdscReportsTable reports={reportsRes.data} />
+      <FdscReportsTable reports={reportsRes.data} ongDocumentId={documentId} />
     </div>
   );
 }
