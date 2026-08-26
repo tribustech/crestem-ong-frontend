@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { serverApiFetch } from "@/lib/api/server";
 import { ApiError } from "@/lib/api/client";
-import { requireSuperAdminRoute } from "@/lib/api/route-auth";
+import { requireFdscStaffRoute } from "@/lib/api/route-auth";
 
 function errorResponse(err: unknown) {
   const message = err instanceof ApiError ? err.message : "A apărut o eroare.";
@@ -27,7 +27,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ documentId: string }> },
 ) {
-  const authError = await requireSuperAdminRoute();
+  const authError = await requireFdscStaffRoute();
   if (authError) return authError;
 
   const { documentId } = await params;

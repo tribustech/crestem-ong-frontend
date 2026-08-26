@@ -1,11 +1,14 @@
 import { AuthPageHeader } from "@/components/features/auth/AuthPageHeader";
 import { LoginForm } from "@/components/features/auth/LoginForm";
+import { redirectAuthenticatedToDashboard } from "@/lib/api/session-server";
 
 export const metadata = {
   title: "Autentificare - Crestem ONG",
 };
 
-export default function AutentificarePage() {
+export default async function AutentificarePage() {
+  await redirectAuthenticatedToDashboard();
+
   return (
     <>
       <AuthPageHeader

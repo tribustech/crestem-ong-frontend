@@ -1,5 +1,6 @@
 import { Mail, Calendar, Layers } from "lucide-react";
 import { getMediaUrl } from "@/lib/api/client";
+import { userDisplayName } from "@/lib/api/auth";
 import type { AdminUser } from "@/lib/api/users";
 import type { Dimension } from "@/lib/api/dimensions";
 import { formatShortDate } from "@/lib/utils/date";
@@ -13,7 +14,8 @@ export function PersoanaResursaDetail({
   mentor: AdminUser;
   dimensions: Dimension[];
 }) {
-  const initials = mentor.nume.trim().slice(0, 2).toUpperCase();
+  const displayName = userDisplayName(mentor);
+  const initials = displayName.slice(0, 2).toUpperCase();
   const dimensionNames = mentor.dimensiuni.map(
     (key) => dimensions.find((d) => d.key === key)?.name ?? key,
   );
@@ -38,7 +40,7 @@ export function PersoanaResursaDetail({
             </div>
           )}
           <p className="mt-4 font-semibold text-lg" style={{ color: "#162040" }}>
-            {mentor.nume}
+            {displayName}
           </p>
           <p className="text-sm" style={{ color: "#64748b" }}>
             Persoană resursă

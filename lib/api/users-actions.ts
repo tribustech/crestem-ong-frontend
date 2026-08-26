@@ -2,7 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 import { serverApiFetch } from "./server";
+import { getCurrentUser } from "./session-server";
 import { getApiErrorMessage, parseApiError } from "./client";
+
+const FORBIDDEN_MESSAGE = "Nu ai permisiunea necesară pentru această acțiune.";
+
+/**
+ * Creating and editing accounts is the administrator's; `editor-fdsc` reads
+ * "Persoane resursă" without the write actions. A Server Action is an
+ * addressable endpoint, so the check lives here too and not only in the buttons
+ * the page decides to render. The backend refuses the same calls.
+ */
+async function refuseNonAdministrator(): Promise<{ error: string } | null> {
+  const user = await getCurrentUser();
+  return user?.role?.type === "super-admin" ? null : { error: FORBIDDEN_MESSAGE };
+}
 
 export interface CreateMentorInput {
   role: "mentor";
@@ -25,6 +39,9 @@ export type CreateFdscUserInput = CreateMentorInput | CreateStaffInput;
 export async function createFdscUserAction(
   input: CreateFdscUserInput,
 ): Promise<{ error?: string; fieldErrors?: Record<string, string> }> {
+  const forbidden = await refuseNonAdministrator();
+  if (forbidden) return forbidden;
+
   const path = input.role === "mentor" ? "/api/auth/register/mentor" : "/api/auth/register/staff";
   const { role, ...body } = input;
 
@@ -63,6 +80,9 @@ export async function updateFdscUserAction(
   documentId: string,
   input: UpdateFdscUserInput,
 ): Promise<{ error?: string; fieldErrors?: Record<string, string> }> {
+  const forbidden = await refuseNonAdministrator();
+  if (forbidden) return forbidden;
+
   const body =
     input.role === "mentor"
       ? {

@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 import { getMediaUrl } from "@/lib/api/client";
+import { userDisplayName } from "@/lib/api/auth";
 import type { AdminUser } from "@/lib/api/users";
 import type { Dimension } from "@/lib/api/dimensions";
 import { formatShortDate } from "@/lib/utils/date";
@@ -14,9 +15,12 @@ import { EditFdscUserModal } from "./EditFdscUserModal";
 export function PersoaneResursaTable({
   mentors,
   dimensions,
+  canManage = true,
 }: {
   mentors: AdminUser[];
   dimensions: Dimension[];
+  /** False for `editor-fdsc`, who reads the list without editing or removing. */
+  canManage?: boolean;
 }) {
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
 
@@ -55,7 +59,8 @@ export function PersoaneResursaTable({
           </thead>
           <tbody>
             {mentors.map((mentor) => {
-              const initials = mentor.nume.trim().slice(0, 2).toUpperCase();
+              const displayName = userDisplayName(mentor);
+              const initials = displayName.slice(0, 2).toUpperCase();
               return (
                 <tr
                   key={mentor.documentId}
@@ -80,7 +85,7 @@ export function PersoaneResursaTable({
                       )}
                       <div className="min-w-0">
                         <p className="font-semibold whitespace-normal wrap-break-word" style={{ color: "#162040" }}>
-                          {mentor.nume}
+                          {displayName}
                         </p>
                         <p className="text-xs truncate" style={{ color: "#64748b" }}>
                           {mentor.email}
@@ -111,7 +116,7 @@ export function PersoaneResursaTable({
                   {showActivationLink && (
                     <td className="px-4 py-3.5">
                       {mentor.activationLink ? (
-                        <MemberActivationLink href={mentor.activationLink} nume={mentor.nume} />
+                        <MemberActivationLink href={mentor.activationLink} nume={displayName} />
                       ) : (
                         <span style={{ color: "#94a3b8" }}>—</span>
                       )}
@@ -127,25 +132,17 @@ export function PersoaneResursaTable({
                         <Eye size={14} />
                         Vezi
                       </Link>
-                      <button
-                        type="button"
-                        onClick={() => setEditingUser(mentor)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
-                        style={{ color: "#475569" }}
-                      >
-                        <Pencil size={14} />
-                        Editează
-                      </button>
-                      <button
-                        type="button"
-                        disabled
-                        title="Ștergere persoană resursă — în curând"
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium disabled:cursor-not-allowed disabled:opacity-40"
-                        style={{ color: "#dc2626", borderColor: "#fecaca" }}
-                      >
-                        <Trash2 size={14} />
-                        Elimină
-                      </button>
+                      {canManage && (
+                        <button
+                          type="button"
+                          onClick={() => setEditingUser(mentor)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border text-xs font-medium hover:bg-slate-50 transition-colors"
+                          style={{ color: "#475569" }}
+                        >
+                          <Pencil size={14} />
+                          Editează
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

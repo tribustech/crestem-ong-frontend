@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { loginSession } from "@/lib/api/session";
 import { getApiErrorMessage } from "@/lib/api/client";
+import { isFdscStaff } from "@/lib/roles";
 import { PasswordInput } from "./PasswordInput";
 
 const loginSchema = z.object({
@@ -41,7 +42,7 @@ export function LoginForm() {
     try {
       const user = await loginSession(data);
       const destination =
-        user.role?.type === "super-admin"
+        isFdscStaff(user.role?.type)
           ? "/dashboard/fdsc/programe"
           : user.role?.type === "ngo-admin"
             ? "/dashboard/ong/evaluari"

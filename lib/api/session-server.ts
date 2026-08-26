@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { serverApiFetch } from "./server";
 import { ApiError } from "./client";
 import type { CurrentUser } from "./auth";
@@ -17,6 +18,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
 const DASHBOARD_PATH_BY_ROLE: Record<string, string> = {
   "ngo-admin": "/dashboard/ong",
   "super-admin": "/dashboard/fdsc",
+  "editor-fdsc": "/dashboard/fdsc",
   "ngo-member": "/dashboard/user-ong",
   individual: "/dashboard/individual",
   mentor: "/dashboard/mentor/mesaje",
@@ -25,4 +27,21 @@ const DASHBOARD_PATH_BY_ROLE: Record<string, string> = {
 export function getDashboardPathForRole(roleType?: string | null): string | null {
   if (!roleType) return null;
   return DASHBOARD_PATH_BY_ROLE[roleType] ?? null;
+}
+
+/**
+ * Sends an already-authenticated visitor to their dashboard. Auth entry pages
+ * (login, registration) have nothing to offer someone who is already signed in.
+ * Call it straight from a Server Component body — it raises Next's redirect
+ * signal, so it must not be wrapped in a try/catch.
+ */
+export async function redirectAuthenticatedToDashboard(): Promise<void> {
+  let dashboard: string | null = null;
+  try {
+    const user = await getCurrentUser();
+    dashboard = getDashboardPathForRole(user?.role?.type);
+  } catch {
+    // Backend unreachable — render the auth page instead of failing the request.
+  }
+  if (dashboard) redirect(dashboard);
 }

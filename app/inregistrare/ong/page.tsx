@@ -1,11 +1,14 @@
 import { AuthPageHeader } from "@/components/features/auth/AuthPageHeader";
 import { RegisterNgoForm } from "@/components/features/auth/RegisterNgoForm";
+import { redirectAuthenticatedToDashboard } from "@/lib/api/session-server";
 
 export const metadata = {
   title: "Înregistrare ONG - Crestem ONG",
 };
 
-export default function InregistrareOngPage() {
+export default async function InregistrareOngPage() {
+  await redirectAuthenticatedToDashboard();
+
   return (
     <>
       <AuthPageHeader

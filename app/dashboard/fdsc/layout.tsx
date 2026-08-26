@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/api/session-server";
 import { userDisplayName } from "@/lib/api/auth";
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
+import { isFdscStaff } from "@/lib/roles";
 import { PageTransition } from "@/components/ui/PageTransition";
 
 export default async function FdscDashboardLayout({
@@ -18,13 +19,17 @@ export default async function FdscDashboardLayout({
   if (!user) {
     redirect("/autentificare");
   }
-  if (user.role?.type !== "super-admin") {
+  if (!isFdscStaff(user.role?.type)) {
     redirect("/");
   }
 
   return (
     <div className="flex min-h-screen">
-      <DashboardSidebar userName={userDisplayName(user)} userEmail={user.email} />
+      <DashboardSidebar
+        userName={userDisplayName(user)}
+        userEmail={user.email}
+        showUserManagement={user.role?.type === "super-admin"}
+      />
       <main
         className="flex-1 overflow-y-auto p-8 print:p-0 print:overflow-visible"
         style={{ background: "#f8fafc" }}

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { MailX } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
 import { getApiErrorMessage } from "@/lib/api/client";
+import { redirectAuthenticatedToDashboard } from "@/lib/api/session-server";
 import { ConfirmEmailChange } from "@/components/features/auth/ConfirmEmailChange";
 
 export default async function SchimbareEmailPage({
@@ -15,6 +16,9 @@ export default async function SchimbareEmailPage({
   let error: string | null = null;
 
   if (!token) {
+    // The confirmation link is normally opened while signed in, so the token
+    // branch must stay reachable — only a bare visit gets bounced.
+    await redirectAuthenticatedToDashboard();
     error = "Link de confirmare invalid sau expirat";
   } else {
     try {

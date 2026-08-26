@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { AuthPageHeader } from "@/components/features/auth/AuthPageHeader";
 import { AccountTypeCards } from "@/components/features/auth/AccountTypeCards";
+import { redirectAuthenticatedToDashboard } from "@/lib/api/session-server";
 
 export const metadata = {
   title: "Înregistrare - Crestem ONG",
 };
 
-export default function InregistrarePage() {
+export default async function InregistrarePage() {
+  await redirectAuthenticatedToDashboard();
+
   return (
     <>
       <AuthPageHeader

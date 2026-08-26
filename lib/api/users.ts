@@ -3,7 +3,7 @@ import type { UserRoleType } from "@/lib/roles";
 
 export interface AdminUser {
   documentId: string;
-  nume: string;
+  nume: string | null;
   email: string;
   accountStatus: "pending" | "active" | "deleted";
   role: { type: UserRoleType; name: string } | null;

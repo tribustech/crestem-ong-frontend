@@ -25,7 +25,7 @@ export function EditFdscUserModal({
   const roleType = user.role?.type;
   const isMentor = roleType === "mentor";
 
-  const [nume, setNume] = useState(user.nume);
+  const [nume, setNume] = useState(user.nume ?? "");
   const [mentorFields, setMentorFields] = useState<MentorProfileFieldsValue>({
     bio: user.bio ?? "",
     ariiDeExpertiza: (user.ariiDeExpertiza ?? []).join(", "),

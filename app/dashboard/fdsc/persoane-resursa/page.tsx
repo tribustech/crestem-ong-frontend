@@ -1,4 +1,5 @@
 import { serverApiFetch } from "@/lib/api/server";
+import { getCurrentUser } from "@/lib/api/session-server";
 import { listUsers } from "@/lib/api/users";
 import { listDimensions } from "@/lib/api/dimensions";
 import type { Program } from "@/lib/api/programs";
@@ -17,11 +18,16 @@ export default async function Page({ searchParams }: PageProps) {
   const program = params.program ?? "";
   const page = Math.max(1, Number(params.page) || 1);
 
-  const [{ data: mentors, meta }, { data: programs }, dimensions] = await Promise.all([
+  const [{ data: mentors, meta }, { data: programs }, dimensions, user] = await Promise.all([
     listUsers({ role: "mentor", search, program, page, sort: "createdAt:desc" }),
     serverApiFetch<{ data: Program[] }>("/api/programs"),
     listDimensions(),
+    getCurrentUser(),
   ]);
+
+  // `editor-fdsc` reads this screen but does not administer it: no adding, no
+  // editing, no removing. Only the administrator gets the write actions.
+  const canManage = user?.role?.type === "super-admin";
 
   return (
     <div>
@@ -34,12 +40,12 @@ export default async function Page({ searchParams }: PageProps) {
             Toți mentorii și experții alocați programelor platformei Crestem.ONG
           </p>
         </div>
-        <PersoaneResursaHeaderActions dimensions={dimensions} />
+        {canManage && <PersoaneResursaHeaderActions dimensions={dimensions} />}
       </div>
 
       <PersoaneResursaFilters programs={programs} initialSearch={search} initialProgram={program} />
 
-      <PersoaneResursaTable mentors={mentors} dimensions={dimensions} />
+      <PersoaneResursaTable mentors={mentors} dimensions={dimensions} canManage={canManage} />
 
       <PersoaneResursaPagination pagination={meta.pagination} search={search} program={program} />
     </div>

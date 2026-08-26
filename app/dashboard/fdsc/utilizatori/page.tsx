@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { serverApiFetch } from "@/lib/api/server";
+import { getCurrentUser } from "@/lib/api/session-server";
 import { listUsers } from "@/lib/api/users";
 import { listDimensions } from "@/lib/api/dimensions";
 import type { Ong } from "@/lib/api/ongs";
@@ -12,6 +14,14 @@ interface PageProps {
 }
 
 export default async function Page({ searchParams }: PageProps) {
+  // The layout already keeps non-staff out; this screen narrows that to the
+  // administrator, since `editor-fdsc` has no user administration at all. The
+  // sidebar hides the entry, so this only catches a typed or bookmarked URL.
+  const user = await getCurrentUser();
+  if (user?.role?.type !== "super-admin") {
+    redirect("/dashboard/fdsc");
+  }
+
   const params = await searchParams;
   const search = params.search ?? "";
   const role = params.role ?? "";

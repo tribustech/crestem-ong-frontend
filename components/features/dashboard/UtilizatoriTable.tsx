@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { getMediaUrl } from "@/lib/api/client";
+import { userDisplayName } from "@/lib/api/auth";
 import type { AdminUser } from "@/lib/api/users";
 import type { Dimension } from "@/lib/api/dimensions";
 import { ROLE_BADGES } from "@/lib/roles";
@@ -48,7 +49,9 @@ export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; di
             ].map((h) => (
               <th
                 key={h}
-                className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                className={`px-4 py-3 text-xs font-semibold uppercase tracking-wider ${
+                  h === "Acțiuni" ? "text-center" : "text-left"
+                }`}
                 style={{ color: "#94a3b8" }}
               >
                 {h}
@@ -58,7 +61,8 @@ export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; di
         </thead>
         <tbody>
           {users.map((user) => {
-            const initials = user.nume.trim().slice(0, 2).toUpperCase();
+            const displayName = userDisplayName(user);
+            const initials = displayName.slice(0, 2).toUpperCase();
             const role = user.role ? (ROLE_BADGES[user.role.type] ?? null) : null;
             const statusBadge = STATUS_BADGES[user.accountStatus] ?? null;
             const orgNames = user.ong.map((ong) => ong.name).join(", ");
@@ -86,7 +90,7 @@ export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; di
                       </div>
                     )}
                     <p className="font-semibold whitespace-normal wrap-break-word min-w-0" style={{ color: "#162040" }}>
-                      {user.nume}
+                      {displayName}
                     </p>
                   </div>
                 </td>
@@ -123,7 +127,7 @@ export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; di
                 {showActivationLink && (
                   <td className="px-4 py-3.5">
                     {user.activationLink ? (
-                      <MemberActivationLink href={user.activationLink} nume={user.nume} />
+                      <MemberActivationLink href={user.activationLink} nume={displayName} />
                     ) : (
                       <span style={{ color: "#94a3b8" }}>—</span>
                     )}
@@ -133,7 +137,7 @@ export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; di
                   {formatDate(user.lastLoginAt)}
                 </td>
                 <td className="px-4 py-3.5">
-                  <div className="flex items-center justify-end gap-3">
+                  <div className="flex items-center justify-center gap-3">
                     {canEdit && (
                       <button
                         type="button"
@@ -145,15 +149,6 @@ export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; di
                         <Pencil size={16} />
                       </button>
                     )}
-                    <button
-                      type="button"
-                      disabled
-                      title="Ștergere utilizator — în curând"
-                      className="disabled:cursor-not-allowed disabled:opacity-40"
-                      style={{ color: "#94a3b8" }}
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
                 </td>
               </tr>

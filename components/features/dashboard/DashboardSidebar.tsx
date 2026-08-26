@@ -35,6 +35,8 @@ export interface DashboardNavSection {
   items: { href: string; label: string; icon: LucideIcon }[];
 }
 
+export const USER_MANAGEMENT_HREF = "/dashboard/fdsc/utilizatori";
+
 const FDSC_NAV_SECTIONS: DashboardNavSection[] = [
   {
     items: [{ href: "/dashboard/fdsc", label: "Panou principal", icon: LayoutGrid }],
@@ -67,7 +69,7 @@ const FDSC_NAV_SECTIONS: DashboardNavSection[] = [
   {
     label: "Admin",
     items: [
-      { href: "/dashboard/fdsc/utilizatori", label: "Utilizatori", icon: Users },
+      { href: USER_MANAGEMENT_HREF, label: "Utilizatori", icon: Users },
       { href: "/dashboard/fdsc/setari", label: "Setări", icon: Settings },
     ],
   },
@@ -131,13 +133,23 @@ export function DashboardSidebar({
   userEmail,
   variant = "fdsc",
   accountLabel,
+  showUserManagement = true,
 }: {
   userName: string;
   userEmail: string;
   variant?: "fdsc" | "ong" | "member" | "individual" | "mentor";
   accountLabel?: string;
+  /** False for `editor-fdsc`, whose account has no user administration. */
+  showUserManagement?: boolean;
 }) {
-  const sections = NAV_SECTIONS_BY_VARIANT[variant];
+  const sections = showUserManagement
+    ? NAV_SECTIONS_BY_VARIANT[variant]
+    : NAV_SECTIONS_BY_VARIANT[variant]
+        .map((section) => ({
+          ...section,
+          items: section.items.filter((item) => item.href !== USER_MANAGEMENT_HREF),
+        }))
+        .filter((section) => section.items.length > 0);
   const pathname = usePathname();
   const router = useRouter();
 

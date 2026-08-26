@@ -6,6 +6,16 @@ export type UserRoleType =
   | "mentor"
   | "individual";
 
+/**
+ * The two accounts that reach the FDSC dashboard. They see the same screens
+ * apart from "Utilizatori", which belongs to the administrator alone.
+ */
+export const FDSC_STAFF_ROLES: UserRoleType[] = ["super-admin", "editor-fdsc"];
+
+export function isFdscStaff(roleType?: string | null): boolean {
+  return FDSC_STAFF_ROLES.includes(roleType as UserRoleType);
+}
+
 export const ROLE_OPTIONS: { type: UserRoleType; label: string }[] = [
   { type: "super-admin", label: "Admin FDSC" },
   { type: "editor-fdsc", label: "Editor FDSC" },

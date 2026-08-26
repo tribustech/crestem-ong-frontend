@@ -1,11 +1,14 @@
 import { AuthPageHeader } from "@/components/features/auth/AuthPageHeader";
 import { RegisterIndividualForm } from "@/components/features/auth/RegisterIndividualForm";
+import { redirectAuthenticatedToDashboard } from "@/lib/api/session-server";
 
 export const metadata = {
   title: "Creează cont de utilizator - Crestem ONG",
 };
 
-export default function InregistrareUtilizatorPage() {
+export default async function InregistrareUtilizatorPage() {
+  await redirectAuthenticatedToDashboard();
+
   return (
     <>
       <AuthPageHeader
