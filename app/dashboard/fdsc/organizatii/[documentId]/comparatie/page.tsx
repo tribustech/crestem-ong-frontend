@@ -29,7 +29,7 @@ export default async function OrganizatieComparatiePage({
         <div className="flex items-center gap-3 print:hidden">
           <ExportPdfButton />
           <Link
-            href={`/dashboard/fdsc/organizatii/${documentId}/evaluari`}
+            href={`/dashboard/organizatii/${documentId}/evaluari`}
             className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-slate-50 transition-colors"
             style={{ color: "#334155" }}
           >

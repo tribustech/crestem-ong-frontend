@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ROLE_SYNC_PATH } from "@/lib/dashboard-routes";
 import { getCurrentUser } from "@/lib/api/session-server";
 import { userDisplayName } from "@/lib/api/auth";
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
@@ -20,7 +21,7 @@ export default async function FdscDashboardLayout({
     redirect("/autentificare");
   }
   if (!isFdscStaff(user.role?.type)) {
-    redirect("/");
+    redirect(ROLE_SYNC_PATH);
   }
 
   return (

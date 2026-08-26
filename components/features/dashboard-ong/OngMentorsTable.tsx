@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { OngDashboardMentor } from "@/lib/api/dashboard";
 import { avatarColorFor } from "@/lib/utils/avatar";
 import { mediaUrl } from "@/lib/utils/media";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 
 const initials = (name: string) =>
   name
@@ -71,7 +72,9 @@ export function OngMentorsTable({ mentors }: { mentors: OngDashboardMentor[] }) 
                 return (
                   <tr
                     key={`${mentor.documentId}-${mentor.program?.documentId ?? "fara-program"}`}
-                    className="border-b border-border last:border-b-0"
+                    className={`border-b border-border last:border-b-0 ${
+                      mentor.isDeleted ? "opacity-60" : ""
+                    }`}
                   >
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
@@ -88,12 +91,17 @@ export function OngMentorsTable({ mentors }: { mentors: OngDashboardMentor[] }) 
                           <span
                             aria-hidden="true"
                             className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[11px] font-bold shrink-0"
-                            style={{ background: avatarColorFor(mentor.documentId) }}
+                            style={{
+                              background: mentor.isDeleted
+                                ? "#94a3b8"
+                                : avatarColorFor(mentor.documentId),
+                            }}
                           >
                             {initials(mentor.nume)}
                           </span>
                         )}
                         <span className="font-semibold text-primary">{mentor.nume}</span>
+                        {mentor.isDeleted && <DeletedAccountBadge />}
                       </div>
                     </td>
                     <td className="px-5 py-3 text-accent">

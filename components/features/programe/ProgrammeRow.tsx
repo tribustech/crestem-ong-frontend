@@ -44,7 +44,7 @@ export function ProgrammeRow({ program }: { program: Program }) {
         <div className="flex items-center gap-2 shrink-0">
           {!finished && (
             <Link
-              href={`/dashboard/fdsc/programe/${program.documentId}/editeaza`}
+              href={`/dashboard/programe/${program.documentId}/editeaza`}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border hover:bg-slate-50 transition-colors"
               style={{ color: "#475569" }}
             >
@@ -52,7 +52,7 @@ export function ProgrammeRow({ program }: { program: Program }) {
             </Link>
           )}
           <Link
-            href={`/dashboard/fdsc/programe/${program.documentId}`}
+            href={`/dashboard/programe/${program.documentId}`}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90"
             style={{ background: "#7c3aed" }}
           >

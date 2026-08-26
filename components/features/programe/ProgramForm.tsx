@@ -83,7 +83,7 @@ export function ProgramForm({
     },
   });
 
-  const backHref = "/dashboard/fdsc/programe";
+  const backHref = "/dashboard/programe";
 
   const openNewPhase = () => {
     setDraftPhase(emptyDraft());
@@ -182,7 +182,7 @@ export function ProgramForm({
           removePhases: removedPhaseIds.length > 0 ? removedPhaseIds : undefined,
         });
       }
-      router.push("/dashboard/fdsc/programe");
+      router.push("/dashboard/programe");
       router.refresh();
     } catch (err) {
       setApiError(getApiErrorMessage(err, "Nu am putut salva programul."));

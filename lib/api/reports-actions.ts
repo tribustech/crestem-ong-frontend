@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateDashboardPath } from "./revalidate";
 import { redirect } from "next/navigation";
 import { serverApiFetch } from "./server";
 import { getApiErrorMessage } from "./client";
@@ -20,8 +20,8 @@ export async function startEvaluationAction(
     return { error: getApiErrorMessage(err, "Nu am putut porni evaluarea.") };
   }
 
-  revalidatePath("/dashboard/ong/programe");
-  revalidatePath("/dashboard/ong/evaluari");
+  revalidateDashboardPath("/dashboard/ong/programe");
+  revalidateDashboardPath("/dashboard/ong/evaluari");
   return { reportId };
 }
 
@@ -38,7 +38,7 @@ export async function addReportMembersAction(
     return { error: getApiErrorMessage(err, "Nu am putut adăuga membrii.") };
   }
 
-  revalidatePath(`/dashboard/ong/evaluari/${reportId}`);
+  revalidateDashboardPath(`/dashboard/ong/evaluari/${reportId}`);
   return {};
 }
 
@@ -49,9 +49,9 @@ export async function finishReportAction(reportId: string): Promise<{ error?: st
     return { error: getApiErrorMessage(err, "Nu am putut finaliza evaluarea.") };
   }
 
-  revalidatePath(`/dashboard/ong/evaluari/${reportId}`);
-  revalidatePath("/dashboard/ong/evaluari");
-  revalidatePath("/dashboard/ong/programe");
+  revalidateDashboardPath(`/dashboard/ong/evaluari/${reportId}`);
+  revalidateDashboardPath("/dashboard/ong/evaluari");
+  revalidateDashboardPath("/dashboard/ong/programe");
   return {};
 }
 
@@ -62,6 +62,6 @@ export async function deleteReportAction(reportId: string): Promise<{ error?: st
     return { error: getApiErrorMessage(err, "Nu am putut șterge runda.") };
   }
 
-  revalidatePath("/dashboard/ong/evaluari");
-  redirect("/dashboard/ong/evaluari");
+  revalidateDashboardPath("/dashboard/ong/evaluari");
+  redirect("/dashboard/evaluari");
 }

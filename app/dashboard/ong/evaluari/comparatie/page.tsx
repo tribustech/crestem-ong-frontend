@@ -8,7 +8,7 @@ import { EvaluationTabs } from "@/components/features/overview/EvaluationTabs";
 import { EvaluationComparisonTable } from "@/components/features/overview/EvaluationComparisonTable";
 import { ExportPdfButton } from "@/components/features/overview/ExportPdfButton";
 
-const BASE_PATH = "/dashboard/ong/evaluari";
+const BASE_PATH = "/dashboard/evaluari";
 
 export default async function OngComparatiePage() {
   const [listRes, currentRes, dimensionsRes] = await Promise.all([

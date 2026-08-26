@@ -11,7 +11,7 @@ export default async function OngMatrixModelPage() {
   return (
     <div>
       <Link
-        href="/dashboard/ong/evaluari"
+        href="/dashboard/evaluari"
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
         style={{ color: "#94a3b8" }}
       >

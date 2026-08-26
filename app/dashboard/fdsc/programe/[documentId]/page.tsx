@@ -1,4 +1,4 @@
-// app/dashboard/fdsc/programe/[documentId]/page.tsx
+// app/dashboard/programe/[documentId]/page.tsx
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
@@ -45,7 +45,7 @@ export default async function ProgramDetailPage({
   return (
     <div>
       <Link
-        href="/dashboard/fdsc/programe"
+        href="/dashboard/programe"
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
         style={{ color: "#94a3b8" }}
       >

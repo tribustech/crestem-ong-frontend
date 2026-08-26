@@ -41,7 +41,7 @@ export function MissingReportsAlert({
                   {formatShortDate(meeting.dataOra)}
                 </span>
                 <Link
-                  href="/dashboard/mentor/intalniri"
+                  href="/dashboard/intalniri"
                   className="shrink-0 font-semibold hover:underline text-warning-strong"
                 >
                   Completează →

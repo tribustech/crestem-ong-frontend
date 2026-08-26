@@ -19,7 +19,7 @@ export default async function Page({ searchParams }: PageProps) {
   // sidebar hides the entry, so this only catches a typed or bookmarked URL.
   const user = await getCurrentUser();
   if (user?.role?.type !== "super-admin") {
-    redirect("/dashboard/fdsc");
+    redirect("/dashboard");
   }
 
   const params = await searchParams;

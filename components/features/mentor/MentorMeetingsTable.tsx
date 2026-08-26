@@ -23,11 +23,6 @@ const FORMAT_LABELS: Record<OngMeeting["format"], string> = {
   fata_in_fata: "Față în față",
 };
 
-interface ActivityTypeOption {
-  documentId: string;
-  name: string;
-}
-
 function IconButton({
   icon,
   label,
@@ -65,12 +60,10 @@ export function MentorMeetingsTable({
   meetings,
   dimensions,
   ongs,
-  activityTypes,
 }: {
   meetings: OngMeeting[];
   dimensions: Dimension[];
   ongs: MentorOng[];
-  activityTypes: ActivityTypeOption[];
 }) {
   const [openMeetingId, setOpenMeetingId] = useState<string | null>(null);
   const [editMeetingId, setEditMeetingId] = useState<string | null>(null);
@@ -268,7 +261,6 @@ export function MentorMeetingsTable({
         open={editMeeting !== null}
         onClose={() => setEditMeetingId(null)}
         ongs={ongs}
-        activityTypes={activityTypes}
         dimensions={dimensions}
         meeting={editMeeting ?? undefined}
       />

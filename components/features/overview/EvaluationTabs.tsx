@@ -2,12 +2,14 @@ import Link from "next/link";
 
 /**
  * The tab row above the evaluation views. Shared by the ngo-admin dashboard
- * (`/dashboard/ong/evaluari`) and the ngo-member one
- * (`/dashboard/user-ong/<ong>`), which differ only in where the tabs point.
+ * (`/dashboard/evaluari`) and the ngo-member one
+ * (`/dashboard/<ong>`), which differ only in where the tabs point.
  *
  * "Evaluare curentă" and "Comparație" are real links only when the matching
- * href is given. Members never get one: the report endpoints behind both views
- * are `is-ngo-admin` only, so for them the tabs stay disabled.
+ * href is given. The two roles reach different data behind the same labels:
+ * the admin views aggregate the whole organization off the `is-ngo-admin`
+ * report endpoints, while the member views are built from
+ * `/api/evaluations/ong/:id` and never leave that member's own evaluations.
  *
  * Callers that already know the ONG's unfinished report should point this at
  * `<basePath>/<documentId>` directly. The `<basePath>/curenta` resolver is a

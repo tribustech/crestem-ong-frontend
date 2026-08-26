@@ -35,42 +35,42 @@ export interface DashboardNavSection {
   items: { href: string; label: string; icon: LucideIcon }[];
 }
 
-export const USER_MANAGEMENT_HREF = "/dashboard/fdsc/utilizatori";
+export const USER_MANAGEMENT_HREF = "/dashboard/utilizatori";
 
 const FDSC_NAV_SECTIONS: DashboardNavSection[] = [
   {
-    items: [{ href: "/dashboard/fdsc", label: "Panou principal", icon: LayoutGrid }],
+    items: [{ href: "/dashboard", label: "Panou principal", icon: LayoutGrid }],
   },
   {
     label: "CMS",
     items: [
-      { href: "/dashboard/fdsc/pagini", label: "Pagini", icon: FileText },
-      { href: "/dashboard/fdsc/biblioteca", label: "Bibliotecă", icon: BookOpen },
-      { href: "/dashboard/fdsc/meniuri", label: "Meniuri", icon: Menu },
-      { href: "/dashboard/fdsc/arbori-decizionali", label: "Arbori decizionali", icon: Workflow },
-      { href: "/dashboard/fdsc/media-library", label: "Media library", icon: ImageIcon },
+      { href: "/dashboard/pagini", label: "Pagini", icon: FileText },
+      { href: "/dashboard/biblioteca", label: "Bibliotecă", icon: BookOpen },
+      { href: "/dashboard/meniuri", label: "Meniuri", icon: Menu },
+      { href: "/dashboard/arbori-decizionali", label: "Arbori decizionali", icon: Workflow },
+      { href: "/dashboard/media-library", label: "Media library", icon: ImageIcon },
     ],
   },
   {
     label: "E-Learning",
     items: [
-      { href: "/dashboard/fdsc/cursuri", label: "Lista cursuri", icon: ListChecks },
-      { href: "/dashboard/fdsc/cursuri/adauga", label: "Adaugă curs", icon: Plus },
+      { href: "/dashboard/cursuri", label: "Lista cursuri", icon: ListChecks },
+      { href: "/dashboard/cursuri/adauga", label: "Adaugă curs", icon: Plus },
     ],
   },
   {
     label: "Programe",
     items: [
-      { href: "/dashboard/fdsc/programe", label: "Management programe", icon: Layers },
-      { href: "/dashboard/fdsc/organizatii", label: "Organizații", icon: Building2 },
-      { href: "/dashboard/fdsc/persoane-resursa", label: "Persoane resursă", icon: UserCog },
+      { href: "/dashboard/programe", label: "Management programe", icon: Layers },
+      { href: "/dashboard/organizatii", label: "Organizații", icon: Building2 },
+      { href: "/dashboard/persoane-resursa", label: "Persoane resursă", icon: UserCog },
     ],
   },
   {
     label: "Admin",
     items: [
       { href: USER_MANAGEMENT_HREF, label: "Utilizatori", icon: Users },
-      { href: "/dashboard/fdsc/setari", label: "Setări", icon: Settings },
+      { href: "/dashboard/setari", label: "Setări", icon: Settings },
     ],
   },
 ];
@@ -78,13 +78,13 @@ const FDSC_NAV_SECTIONS: DashboardNavSection[] = [
 const ONG_NAV_SECTIONS: DashboardNavSection[] = [
   {
     items: [
-      { href: "/dashboard/ong", label: "Panou principal", icon: LayoutGrid },
-      { href: "/dashboard/ong/profil", label: "Profilul meu", icon: User },
-      { href: "/dashboard/ong/evaluari", label: "Evaluările mele", icon: ClipboardList },
-      { href: "/dashboard/ong/programe", label: "Programele mele", icon: Layers },
-      { href: "/dashboard/ong/utilizatori", label: "Utilizatori", icon: Users },
-      { href: "/dashboard/ong/e-learning", label: "E-Learning", icon: GraduationCap },
-      { href: "/dashboard/ong/persoane-resursa", label: "Persoane resursă", icon: UserCog },
+      { href: "/dashboard", label: "Panou principal", icon: LayoutGrid },
+      { href: "/dashboard/profil", label: "Profilul meu", icon: User },
+      { href: "/dashboard/evaluari", label: "Evaluările mele", icon: ClipboardList },
+      { href: "/dashboard/programe", label: "Programele mele", icon: Layers },
+      { href: "/dashboard/utilizatori", label: "Utilizatori", icon: Users },
+      { href: "/dashboard/e-learning", label: "E-Learning", icon: GraduationCap },
+      { href: "/dashboard/persoane-resursa", label: "Persoane resursă", icon: UserCog },
     ],
   },
 ];
@@ -92,9 +92,9 @@ const ONG_NAV_SECTIONS: DashboardNavSection[] = [
 const MEMBER_NAV_SECTIONS: DashboardNavSection[] = [
   {
     items: [
-      { href: "/dashboard/user-ong/profil", label: "Profilul meu", icon: User },
-      { href: "/dashboard/user-ong", label: "Evaluările mele", icon: ClipboardList },
-      { href: "/dashboard/user-ong/e-learning", label: "E-Learning", icon: GraduationCap },
+      { href: "/dashboard/profil", label: "Profilul meu", icon: User },
+      { href: "/dashboard", label: "Evaluările mele", icon: ClipboardList },
+      { href: "/dashboard/e-learning", label: "E-Learning", icon: GraduationCap },
     ],
   },
 ];
@@ -102,8 +102,8 @@ const MEMBER_NAV_SECTIONS: DashboardNavSection[] = [
 const INDIVIDUAL_NAV_SECTIONS: DashboardNavSection[] = [
   {
     items: [
-      { href: "/dashboard/individual", label: "Profilul meu", icon: User },
-      { href: "/dashboard/individual/e-learning", label: "E-Learning", icon: GraduationCap },
+      { href: "/dashboard", label: "Profilul meu", icon: User },
+      { href: "/dashboard/e-learning", label: "E-Learning", icon: GraduationCap },
     ],
   },
 ];
@@ -111,11 +111,11 @@ const INDIVIDUAL_NAV_SECTIONS: DashboardNavSection[] = [
 const MENTOR_NAV_SECTIONS: DashboardNavSection[] = [
   {
     items: [
-      { href: "/dashboard/mentor", label: "Panou principal", icon: LayoutGrid },
-      { href: "/dashboard/mentor/profil", label: "Profilul meu", icon: User },
-      { href: "/dashboard/mentor/programe", label: "Programele mele", icon: Layers },
-      { href: "/dashboard/mentor/intalniri", label: "Întâlniri", icon: Calendar },
-      { href: "/dashboard/mentor/mesaje", label: "Mesaje", icon: MessageCircle },
+      { href: "/dashboard", label: "Panou principal", icon: LayoutGrid },
+      { href: "/dashboard/profil", label: "Profilul meu", icon: User },
+      { href: "/dashboard/programe", label: "Programele mele", icon: Layers },
+      { href: "/dashboard/intalniri", label: "Întâlniri", icon: Calendar },
+      { href: "/dashboard/mesaje", label: "Mesaje", icon: MessageCircle },
     ],
   },
 ];
@@ -153,7 +153,7 @@ export function DashboardSidebar({
   const pathname = usePathname();
   const router = useRouter();
 
-  // Longest-prefix match: a root item like "Panou principal" (href "/dashboard/fdsc")
+  // Longest-prefix match: a root item like "Panou principal" (href "/dashboard")
   // would otherwise stay highlighted on every nested page, since its href prefixes them all.
   const activeHref = sections
     .flatMap((section) => section.items)

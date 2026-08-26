@@ -1,4 +1,4 @@
-// app/dashboard/fdsc/programe/[documentId]/editeaza/page.tsx
+// app/dashboard/programe/[documentId]/editeaza/page.tsx
 import { redirect } from "next/navigation";
 import { serverApiFetch } from "@/lib/api/server";
 import type { ProgramDetail } from "@/lib/api/programs";
@@ -15,7 +15,7 @@ export default async function EditProgramPage({
 
   // A finished program is read-only (the backend refuses the update too).
   if (isProgramFinished(program.data)) {
-    redirect(`/dashboard/fdsc/programe/${documentId}`);
+    redirect(`/dashboard/programe/${documentId}`);
   }
 
   return <ProgramForm mode="edit" program={program.data} />;

@@ -1,6 +1,5 @@
 import { listMentorMeetings, listMentorOngs } from "@/lib/api/meetings";
 import { listDimensions } from "@/lib/api/dimensions";
-import { listActivityTypes } from "@/lib/api/activity-types";
 import { pickNextMeeting } from "@/lib/utils/meetings";
 import { MentorMeetingsFilters } from "@/components/features/mentor/MentorMeetingsFilters";
 import { MentorMeetingsTable } from "@/components/features/mentor/MentorMeetingsTable";
@@ -24,7 +23,7 @@ export default async function MentorIntalniriPage({ searchParams }: PageProps) {
   const statusFilter = firstQueryValue(searchParamsResolved.status);
   const formatFilter = firstQueryValue(searchParamsResolved.format);
 
-  const [{ data: ongs }, { data: meetings }, { data: upcomingMeetings }, dimensions, { data: activityTypes }] =
+  const [{ data: ongs }, { data: meetings }, { data: upcomingMeetings }, dimensions] =
     await Promise.all([
       listMentorOngs(),
       listMentorMeetings({
@@ -35,7 +34,6 @@ export default async function MentorIntalniriPage({ searchParams }: PageProps) {
       }),
       listMentorMeetings({ status: "programata" }),
       listDimensions(),
-      listActivityTypes(),
     ]);
 
   const nextMeeting = pickNextMeeting(upcomingMeetings);
@@ -53,7 +51,7 @@ export default async function MentorIntalniriPage({ searchParams }: PageProps) {
         <h2 className="font-heading font-bold text-lg" style={{ color: "#162040" }}>
           Toate întâlnirile
         </h2>
-        <AddMentorMeetingModal ongs={ongs} activityTypes={activityTypes} dimensions={dimensions} />
+        <AddMentorMeetingModal ongs={ongs} dimensions={dimensions} />
       </div>
 
       <MentorMeetingsFilters
@@ -64,7 +62,7 @@ export default async function MentorIntalniriPage({ searchParams }: PageProps) {
         initialFormat={formatFilter}
       />
 
-      <MentorMeetingsTable meetings={meetings} dimensions={dimensions} ongs={ongs} activityTypes={activityTypes} />
+      <MentorMeetingsTable meetings={meetings} dimensions={dimensions} ongs={ongs} />
     </div>
   );
 }

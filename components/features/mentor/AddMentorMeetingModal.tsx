@@ -6,18 +6,11 @@ import type { Dimension } from "@/lib/api/dimensions";
 import type { MentorOng } from "@/lib/api/meetings";
 import { MentorMeetingFormModal } from "./MentorMeetingFormModal";
 
-interface ActivityTypeOption {
-  documentId: string;
-  name: string;
-}
-
 export function AddMentorMeetingModal({
   ongs,
-  activityTypes,
   dimensions,
 }: {
   ongs: MentorOng[];
-  activityTypes: ActivityTypeOption[];
   dimensions: Dimension[];
 }) {
   const [open, setOpen] = useState(false);
@@ -37,7 +30,6 @@ export function AddMentorMeetingModal({
         open={open}
         onClose={() => setOpen(false)}
         ongs={ongs}
-        activityTypes={activityTypes}
         dimensions={dimensions}
       />
     </>

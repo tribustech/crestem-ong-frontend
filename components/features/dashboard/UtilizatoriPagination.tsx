@@ -25,7 +25,7 @@ export function UtilizatoriPagination({
     if (status) params.set("status", status);
     if (targetPage > 1) params.set("page", String(targetPage));
     const qs = params.toString();
-    return `/dashboard/fdsc/utilizatori${qs ? `?${qs}` : ""}`;
+    return `/dashboard/utilizatori${qs ? `?${qs}` : ""}`;
   }
 
   const pages = Array.from({ length: pageCount }, (_, i) => i + 1);

@@ -15,6 +15,8 @@ export interface LoginResponse {
   jwt: string;
   user: AuthUser;
   refreshToken: string;
+  /** True only on the login that stamped the account's firstLoginAt. */
+  isFirstLogin?: boolean;
 }
 
 export function login(payload: LoginPayload) {
@@ -65,7 +67,6 @@ export interface RegisterNgoPayload {
   numeOng: string;
   judet: string;
   localitate: string;
-  website?: string;
   acordTermeniSiConditii: boolean;
 }
 

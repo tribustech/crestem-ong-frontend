@@ -42,7 +42,7 @@ export function StartEvaluationModal({
         return;
       }
       onClose();
-      router.push(`/dashboard/ong/evaluari/${result.reportId}`);
+      router.push(`/dashboard/evaluari/${result.reportId}`);
     });
   };
 

@@ -9,7 +9,11 @@ export interface OngMeeting {
   linkIntalnire: string | null;
   /** Only populated on the mentor's own meetings list — a mentor's meetings span multiple ONGs. */
   ong?: { documentId: string; name: string } | null;
-  mentor: { documentId: string; nume: string } | null;
+  /**
+   * `isDeleted` is only sent on the organization's side of the API — a mentor
+   * reading their own meetings is by definition not deleted.
+   */
+  mentor: { documentId: string; nume: string; isDeleted?: boolean } | null;
   program: { documentId: string; name: string } | null;
   activityType: { documentId: string; name: string } | null;
   dimensiuni: string[];

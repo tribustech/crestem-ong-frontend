@@ -7,7 +7,7 @@ export function MemberOngHeader({ ongName }: { ongName: string }) {
 
   return (
     <div className="mb-6 flex items-center gap-2 text-sm">
-      <Link href="/dashboard/user-ong" className="font-medium" style={{ color: "#94a3b8" }}>
+      <Link href="/dashboard" className="font-medium" style={{ color: "#94a3b8" }}>
         <span className="inline-flex items-center gap-1.5">
           <ArrowLeft size={14} /> Toate ONG-urile
         </span>

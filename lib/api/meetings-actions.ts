@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateDashboardPath } from "./revalidate";
 import { serverApiFetch } from "./server";
 import { getApiErrorMessage } from "./client";
 
@@ -29,7 +29,7 @@ export async function createMeetingAction(
     return { error: getApiErrorMessage(err, "Nu am putut adăuga întâlnirea.") };
   }
 
-  revalidatePath(`/dashboard/ong/persoane-resursa/intalniri`);
+  revalidateDashboardPath(`/dashboard/ong/persoane-resursa/intalniri`);
   return {};
 }
 
@@ -47,7 +47,7 @@ export async function updateMeetingAction(
     return { error: getApiErrorMessage(err, "Nu am putut actualiza întâlnirea.") };
   }
 
-  revalidatePath(`/dashboard/ong/persoane-resursa/intalniri`);
+  revalidateDashboardPath(`/dashboard/ong/persoane-resursa/intalniri`);
   return {};
 }
 
@@ -75,7 +75,7 @@ export async function createMentorMeetingAction(
     return { error: getApiErrorMessage(err, "Nu am putut adăuga întâlnirea.") };
   }
 
-  revalidatePath(`/dashboard/mentor/intalniri`);
+  revalidateDashboardPath(`/dashboard/mentor/intalniri`);
   return {};
 }
 
@@ -92,7 +92,7 @@ export async function updateMentorMeetingAction(
     return { error: getApiErrorMessage(err, "Nu am putut actualiza întâlnirea.") };
   }
 
-  revalidatePath(`/dashboard/mentor/intalniri`);
+  revalidateDashboardPath(`/dashboard/mentor/intalniri`);
   return {};
 }
 
@@ -105,7 +105,7 @@ export async function cancelMentorMeetingAction(
     return { error: getApiErrorMessage(err, "Nu am putut anula întâlnirea.") };
   }
 
-  revalidatePath(`/dashboard/mentor/intalniri`);
+  revalidateDashboardPath(`/dashboard/mentor/intalniri`);
   return {};
 }
 
@@ -118,7 +118,7 @@ export async function completeMentorMeetingAction(
     return { error: getApiErrorMessage(err, "Nu am putut marca întâlnirea ca efectuată.") };
   }
 
-  revalidatePath(`/dashboard/mentor/intalniri`);
+  revalidateDashboardPath(`/dashboard/mentor/intalniri`);
   return {};
 }
 
@@ -154,6 +154,6 @@ export async function uploadMentorMeetingReportAction(
     return { error: getApiErrorMessage(err, "Nu am putut încărca raportul.") };
   }
 
-  revalidatePath(`/dashboard/mentor/intalniri`);
+  revalidateDashboardPath(`/dashboard/mentor/intalniri`);
   return {};
 }

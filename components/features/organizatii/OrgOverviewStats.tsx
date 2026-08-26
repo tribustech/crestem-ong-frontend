@@ -2,7 +2,11 @@ import Link from "next/link";
 import type { OngOverview } from "@/lib/api/ongs";
 
 function formatDate(iso: string) {
-  return new Intl.DateTimeFormat("ro-RO", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
+  return new Intl.DateTimeFormat("ro-RO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(iso));
 }
 
 function StatCard({
@@ -19,7 +23,10 @@ function StatCard({
   return (
     <div className="bg-white rounded-xl border border-border p-5 h-full flex flex-col">
       <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-2 text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
+      <p
+        className="mt-2 text-2xl font-heading font-extrabold"
+        style={{ color: "#162040" }}
+      >
         {value}
       </p>
       {sublabel && <p className="text-xs text-muted-foreground">{sublabel}</p>}
@@ -63,14 +70,17 @@ function ProgramsCard({
             </span>
           ))
         ) : (
-          <p className="text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
+          <p
+            className="text-2xl font-heading font-extrabold"
+            style={{ color: "#162040" }}
+          >
             —
           </p>
         )}
       </div>
       {overflow && (
         <Link
-          href={programsHref}
+          href="/dashboard/programe"
           className="self-start mt-auto pt-2 text-sm font-semibold"
           style={{ color: "#2dbe8f" }}
         >
@@ -88,7 +98,10 @@ function DisabledStatCard({ label, value }: { label: string; value: string }) {
       title="Disponibil în curând"
     >
       <p className="text-sm text-muted-foreground">{label}</p>
-      <p className="mt-2 text-2xl font-heading font-extrabold" style={{ color: "#162040" }}>
+      <p
+        className="mt-2 text-2xl font-heading font-extrabold"
+        style={{ color: "#162040" }}
+      >
         {value}
       </p>
     </div>
@@ -114,14 +127,20 @@ export function OrgOverviewStats({
 
   return (
     <div>
-      <h2 className="text-2xl font-heading font-extrabold mb-4" style={{ color: "#162040" }}>
+      <h2
+        className="text-2xl font-heading font-extrabold mb-4"
+        style={{ color: "#162040" }}
+      >
         Informații Organizație
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <StatCard
           label="Total sesiuni de evaluare"
           value={totalEvaluations}
-          link={{ href: `${basePath}/evaluari`, text: "Vezi istoric evaluări" }}
+          link={{
+            href: `/dashboard/organizatii/${documentId}/evaluari`,
+            text: "Vezi istoric evaluări",
+          }}
         />
         <StatCard
           label="Evaluare curentă"
@@ -130,11 +149,13 @@ export function OrgOverviewStats({
               ? `${currentEvaluation.completedCount} / ${currentEvaluation.invitedCount}`
               : "—"
           }
-          sublabel={currentEvaluation ? "completări" : "Nicio evaluare în desfășurare"}
+          sublabel={
+            currentEvaluation ? "completări" : "Nicio evaluare în desfășurare"
+          }
           link={
             currentEvaluation
               ? {
-                  href: `${basePath}/evaluare-curenta`,
+                  href: `/dashboard/organizatii/${documentId}/evaluare-curenta`,
                   text: "Vezi evaluare curentă",
                 }
               : undefined

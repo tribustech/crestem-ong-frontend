@@ -1,6 +1,7 @@
 "use client";
 
 import type { ConversationListItem } from "@/lib/api/conversations";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 
 function initials(name: string) {
   return name
@@ -44,23 +45,31 @@ export function ConversationList({
             const mentor = conversation.mentor;
             if (!mentor) return null;
             const isSelected = conversation.documentId === selectedId;
+            // The thread of a deleted account stays selectable — the history is
+            // the whole point of keeping it — but reads as archived.
+            const archived = mentor.isDeleted;
             return (
               <button
                 key={conversation.documentId}
                 type="button"
                 onClick={() => onSelect(conversation.documentId)}
-                className="w-full flex items-start gap-3 px-5 py-3.5 text-left transition-colors hover:bg-slate-50"
+                className={`w-full flex items-start gap-3 px-5 py-3.5 text-left transition-colors hover:bg-slate-50 ${
+                  archived ? "opacity-60" : ""
+                }`}
                 style={{ background: isSelected ? "#f0faf6" : "transparent" }}
               >
                 <div
                   className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-                  style={{ background: "#162040" }}
+                  style={{ background: archived ? "#94a3b8" : "#162040" }}
                 >
                   {initials(mentor.nume)}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-semibold truncate" style={{ color: "#162040" }}>
+                    <p
+                      className="text-sm font-semibold truncate"
+                      style={{ color: archived ? "#64748b" : "#162040" }}
+                    >
                       {mentor.nume}
                     </p>
                     {conversation.lastMessage && (
@@ -69,6 +78,7 @@ export function ConversationList({
                       </span>
                     )}
                   </div>
+                  {archived && <DeletedAccountBadge className="inline-block mt-1" />}
                   {conversation.program && (
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <p

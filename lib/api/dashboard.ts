@@ -19,9 +19,12 @@ export function getFdscDashboard() {
 
 export interface OngDashboardMentor {
   documentId: string;
+  /** `Anonim <documentId>` once the account is deleted. */
   nume: string;
   mentorJobTitle: string | null;
   avatar: { documentId: string; name: string; url: string } | null;
+  /** Deleted accounts stay listed (BR-34) but render greyed out. */
+  isDeleted: boolean;
   program: {
     documentId: string;
     name: string;

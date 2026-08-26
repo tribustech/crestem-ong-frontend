@@ -49,7 +49,7 @@ export function OrgEvaluationsTable({
       <table className="w-full text-sm">
         <thead>
           <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-            {["Evaluare", "Completat la", "Scorul meu", "Status", ""].map((h) => (
+            {["Evaluare", "Program", "Completat la", "Scorul meu", "Status", ""].map((h) => (
               <th
                 key={h}
                 className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
@@ -73,6 +73,9 @@ export function OrgEvaluationsTable({
                 <td className="px-5 py-3.5 font-semibold" style={{ color: "#162040" }}>
                   {evaluation.name ?? "Evaluare"}
                 </td>
+                <td className="px-5 py-3.5" style={{ color: "#475569" }}>
+                  {evaluation.report?.phases[0]?.program?.name ?? "Independentă"}
+                </td>
                 <td className="px-5 py-3.5" style={{ color: "#64748b" }}>
                   {formatDate(evaluation.completedAt)}
                 </td>
@@ -89,7 +92,7 @@ export function OrgEvaluationsTable({
                 </td>
                 <td className="px-5 py-3.5 text-right">
                   <Link
-                    href={`/dashboard/user-ong/${ongDocumentId}/evaluari/${evaluation.documentId}`}
+                    href={`/dashboard/${ongDocumentId}/evaluari/${evaluation.documentId}`}
                     className="text-xs font-semibold hover:underline"
                     style={{ color: "#2dbe8f" }}
                   >

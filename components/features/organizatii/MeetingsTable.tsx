@@ -6,6 +6,7 @@ import { getMediaUrl } from "@/lib/api/client";
 import { formatMeetingDateTime } from "@/lib/utils/date";
 import type { OngMeeting } from "@/lib/api/meetings";
 import type { Dimension } from "@/lib/api/dimensions";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 import { MeetingDetailsModal } from "./MeetingDetailsModal";
 import { MeetingFormModal } from "./MeetingFormModal";
 
@@ -93,7 +94,10 @@ export function MeetingsTable({
             return (
               <tr key={meeting.documentId} className="border-b border-border last:border-0">
                 <td className="px-5 py-3.5 font-semibold whitespace-nowrap" style={{ color: "#162040" }}>
-                  {meeting.mentor?.nume ?? "—"}
+                  <span className={meeting.mentor?.isDeleted ? "opacity-60" : ""}>
+                    {meeting.mentor?.nume ?? "—"}
+                  </span>
+                  {meeting.mentor?.isDeleted && <DeletedAccountBadge className="ml-2" />}
                 </td>
                 <td className="px-5 py-3.5 whitespace-nowrap" style={{ color: "#64748b" }}>
                   {formatMeetingDateTime(meeting.dataOra)}

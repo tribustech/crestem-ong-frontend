@@ -30,20 +30,20 @@ export default async function OngEvaluariPage() {
     <div>
       <EvaluationTabs
         active="evaluations"
-        basePath="/dashboard/ong/evaluari"
+        basePath="/dashboard/evaluari"
         currentEvaluationHref={
           activeReport
-            ? `/dashboard/ong/evaluari/${activeReport.documentId}`
-            : "/dashboard/ong/evaluari/curenta"
+            ? `/dashboard/evaluari/${activeReport.documentId}`
+            : "/dashboard/evaluari/curenta"
         }
-        comparisonHref="/dashboard/ong/evaluari/comparatie"
+        comparisonHref="/dashboard/evaluari/comparatie"
       />
 
       <div className="mb-6 flex items-start justify-between gap-4">
         <StartIndependentEvaluationButton ongMembers={membersRes.data} lock={independentLock} />
 
         <Link
-          href="/dashboard/ong/evaluari/model"
+          href="/dashboard/evaluari/model"
           className="shrink-0 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold border border-border hover:bg-slate-50 transition-colors"
           style={{ color: "#475569" }}
         >
@@ -97,7 +97,7 @@ export default async function OngEvaluariPage() {
                       </td>
                       <td className="px-4 py-3.5 text-right">
                         <Link
-                          href={`/dashboard/ong/evaluari/${report.documentId}`}
+                          href={`/dashboard/evaluari/${report.documentId}`}
                           className="text-xs font-semibold hover:underline"
                           style={{ color: "#2dbe8f" }}
                         >

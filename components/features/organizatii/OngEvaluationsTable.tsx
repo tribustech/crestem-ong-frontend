@@ -2,12 +2,17 @@ import Link from "next/link";
 import type { OngEvaluation } from "@/lib/api/ongs";
 
 function formatDate(iso: string) {
-  return new Intl.DateTimeFormat("ro-RO", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
+  return new Intl.DateTimeFormat("ro-RO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(iso));
 }
 
 function completionPeriod(evaluation: OngEvaluation) {
   const phase = evaluation.phases?.[0];
-  if (phase) return `${formatDate(phase.startDate)} – ${formatDate(phase.endDate)}`;
+  if (phase)
+    return `${formatDate(phase.startDate)} – ${formatDate(phase.endDate)}`;
   if (evaluation.finished && evaluation.finishedAt) {
     return `${formatDate(evaluation.createdAt)} – ${formatDate(evaluation.finishedAt)}`;
   }
@@ -27,7 +32,9 @@ export function OngEvaluationsTable({
   if (!evaluations || evaluations.length === 0) {
     return (
       <div className="bg-white rounded-xl border border-border p-8 text-center">
-        <p className="text-sm text-muted-foreground">Nu există nicio evaluare pentru această organizație.</p>
+        <p className="text-sm text-muted-foreground">
+          Nu există nicio evaluare pentru această organizație.
+        </p>
       </div>
     );
   }
@@ -36,8 +43,17 @@ export function OngEvaluationsTable({
     <div className="bg-white rounded-xl border border-border overflow-hidden overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-            {["Evaluare", "Perioada de completare", "Număr completări", "Scor obținut", "Status", ""].map((h) => (
+          <tr
+            style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}
+          >
+            {[
+              "Evaluare",
+              "Perioada de completare",
+              "Număr completări",
+              "Scor obținut",
+              "Status",
+              "",
+            ].map((h) => (
               <th
                 key={h}
                 className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider whitespace-nowrap"
@@ -53,10 +69,15 @@ export function OngEvaluationsTable({
             <tr
               key={evaluation.documentId}
               className="border-b border-border last:border-0 transition-colors"
-              style={evaluation.finished ? undefined : { background: "#f0faf6" }}
+              style={
+                evaluation.finished ? undefined : { background: "#f0faf6" }
+              }
             >
               <td className="px-5 py-3.5">
-                <span className="inline-flex items-center gap-2 font-semibold" style={{ color: "#162040" }}>
+                <span
+                  className="inline-flex items-center gap-2 font-semibold"
+                  style={{ color: "#162040" }}
+                >
                   {evaluation.name}
                   {!evaluation.finished && (
                     <span
@@ -68,14 +89,22 @@ export function OngEvaluationsTable({
                   )}
                 </span>
               </td>
-              <td className="px-5 py-3.5 whitespace-nowrap" style={{ color: "#64748b" }}>
+              <td
+                className="px-5 py-3.5 whitespace-nowrap"
+                style={{ color: "#64748b" }}
+              >
                 {completionPeriod(evaluation)}
               </td>
               <td className="px-5 py-3.5" style={{ color: "#475569" }}>
                 {evaluation.completedCount}/{evaluation.invitedCount}
               </td>
-              <td className="px-5 py-3.5 font-semibold" style={{ color: "#162040" }}>
-                {evaluation.scores?.overall != null ? `${evaluation.scores.overall}%` : "—"}
+              <td
+                className="px-5 py-3.5 font-semibold"
+                style={{ color: "#162040" }}
+              >
+                {evaluation.scores?.overall != null
+                  ? `${evaluation.scores.overall}%`
+                  : "—"}
               </td>
               <td className="px-5 py-3.5">
                 <span
@@ -91,11 +120,13 @@ export function OngEvaluationsTable({
               </td>
               <td className="px-5 py-3.5 text-right whitespace-nowrap">
                 <Link
-                  href={`${basePath}/evaluari/${evaluation.documentId}`}
+                  href={`/dashboard/organizatii/${ongDocumentId}/evaluari/${evaluation.documentId}`}
                   className="text-xs font-semibold hover:underline"
                   style={{ color: "#2dbe8f" }}
                 >
-                  {evaluation.finished ? "Vezi rezultatele →" : "Vezi evaluarea →"}
+                  {evaluation.finished
+                    ? "Vezi rezultatele →"
+                    : "Vezi evaluarea →"}
                 </Link>
               </td>
             </tr>

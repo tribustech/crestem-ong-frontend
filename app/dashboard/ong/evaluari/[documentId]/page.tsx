@@ -8,7 +8,7 @@ import { dimensionColor, dimensionPillStyle } from "@/lib/api/dimension-colors";
 import { ReportDetailActions } from "@/components/features/dashboard-ong/ReportDetailActions";
 import { ReportMembersTable } from "@/components/features/dashboard-ong/ReportMembersTable";
 
-const BASE_PATH = "/dashboard/ong/evaluari";
+const BASE_PATH = "/dashboard/evaluari";
 
 function formatDate(iso: string) {
   if (!iso) return "—";

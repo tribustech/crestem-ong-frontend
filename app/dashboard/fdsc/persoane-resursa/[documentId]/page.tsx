@@ -19,7 +19,7 @@ export default async function PersoanaResursaPage({
   return (
     <div>
       <Link
-        href="/dashboard/fdsc/persoane-resursa"
+        href="/dashboard/persoane-resursa"
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
         style={{ color: "#94a3b8" }}
       >

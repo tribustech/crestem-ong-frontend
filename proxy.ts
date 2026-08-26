@@ -1,14 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { refreshSession } from "@/lib/api/auth";
+import { refreshSession, getMe } from "@/lib/api/auth";
 import type { RefreshResponse } from "@/lib/api/auth";
 import { isJwtExpired } from "@/lib/api/jwt";
 import {
   SESSION_COOKIE,
   REFRESH_COOKIE,
+  ROLE_COOKIE,
   sessionCookieOptions,
   refreshCookieOptions,
+  roleCookieOptions,
 } from "@/lib/api/session-cookies";
+import {
+  DASHBOARD_ROOT,
+  addDashboardSegment,
+  dashboardSegmentForRole,
+  isDashboardSegment,
+  stripDashboardSegment,
+} from "@/lib/dashboard-routes";
 
 function mergedCookieHeader(request: NextRequest, overrides: Record<string, string>) {
   const cookies = new Map(request.cookies.getAll().map((c) => [c.name, c.value]));
@@ -34,10 +43,79 @@ function coalescedRefresh(refreshToken: string) {
   return promise;
 }
 
+function isDashboardRequest(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+  return path === DASHBOARD_ROOT || path.startsWith(`${DASHBOARD_ROOT}/`);
+}
+
+function redirectToLogin(request: NextRequest) {
+  const response = NextResponse.redirect(new URL("/autentificare", request.url));
+  response.cookies.delete(SESSION_COOKIE);
+  response.cookies.delete(REFRESH_COOKIE);
+  response.cookies.delete(ROLE_COOKIE);
+  return response;
+}
+
+/**
+ * Resolves which dashboard folder the session belongs in. The cookie set at
+ * login answers it for free; a session that predates the cookie (or had it
+ * dropped) pays one `/api/auth/me` call and gets it back.
+ */
+async function resolveSegment(request: NextRequest, jwt: string) {
+  const cached = request.cookies.get(ROLE_COOKIE)?.value;
+  if (isDashboardSegment(cached)) return { segment: cached!, cached: true };
+
+  try {
+    const me = await getMe(jwt);
+    const segment = dashboardSegmentForRole(me.data.role?.type);
+    return { segment, cached: false };
+  } catch {
+    return { segment: null, cached: false };
+  }
+}
+
+/**
+ * Keeps the role out of the address bar: the browser only ever sees
+ * `/dashboard/<page>`, which is rewritten onto `app/dashboard/<role>/<page>`.
+ * Pre-existing links that still carry the role segment are redirected to the
+ * role-less form so bookmarks keep working without leaking it back.
+ */
+async function routeDashboard(
+  request: NextRequest,
+  jwt: string,
+  requestHeaders?: Headers,
+): Promise<NextResponse> {
+  const next = () =>
+    requestHeaders ? NextResponse.next({ request: { headers: requestHeaders } }) : NextResponse.next();
+
+  if (!isDashboardRequest(request)) return next();
+
+  const url = request.nextUrl;
+  const stripped = stripDashboardSegment(url.pathname);
+  if (stripped !== url.pathname) {
+    const target = new URL(stripped, request.url);
+    target.search = url.search;
+    return NextResponse.redirect(target);
+  }
+
+  // Session looks valid but its role cannot be read (revoked account, backend
+  // down). Home rather than the login page, which would bounce right back here.
+  const { segment, cached } = await resolveSegment(request, jwt);
+  if (!segment) return NextResponse.redirect(new URL("/", request.url));
+
+  const target = new URL(addDashboardSegment(url.pathname, segment), request.url);
+  target.search = url.search;
+  const response = NextResponse.rewrite(target, requestHeaders ? { request: { headers: requestHeaders } } : undefined);
+  if (!cached) {
+    response.cookies.set(ROLE_COOKIE, segment, roleCookieOptions);
+  }
+  return response;
+}
+
 export async function proxy(request: NextRequest) {
   const jwt = request.cookies.get(SESSION_COOKIE)?.value;
   if (jwt && !isJwtExpired(jwt)) {
-    return NextResponse.next();
+    return routeDashboard(request, jwt);
   }
 
   const refreshToken = request.cookies.get(REFRESH_COOKIE)?.value;
@@ -57,7 +135,7 @@ export async function proxy(request: NextRequest) {
         }),
       );
 
-      const response = NextResponse.next({ request: { headers: requestHeaders } });
+      const response = await routeDashboard(request, fresh.jwt, requestHeaders);
       response.cookies.set(SESSION_COOKIE, fresh.jwt, sessionCookieOptions);
       response.cookies.set(REFRESH_COOKIE, fresh.refreshToken, refreshCookieOptions);
       return response;
@@ -68,15 +146,11 @@ export async function proxy(request: NextRequest) {
 
   // API calls: let the request through with no/stale cookies so the route
   // handler's own auth check returns a proper 401 instead of an HTML redirect.
-  if (!request.nextUrl.pathname.startsWith("/dashboard")) {
+  if (!isDashboardRequest(request)) {
     return NextResponse.next();
   }
 
-  const loginUrl = new URL("/autentificare", request.url);
-  const response = NextResponse.redirect(loginUrl);
-  response.cookies.delete(SESSION_COOKIE);
-  response.cookies.delete(REFRESH_COOKIE);
-  return response;
+  return redirectToLogin(request);
 }
 
 export const config = {

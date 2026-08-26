@@ -9,16 +9,28 @@ import { OrgHeaderCard } from "./OrgHeaderCard";
 const FDSC_TABS = [
   { key: "overview", label: "Overview", segment: "" },
   { key: "evaluari", label: "Evaluări", segment: "evaluari" },
-  { key: "evaluare-curenta", label: "Evaluare curentă", segment: "evaluare-curenta" },
+  {
+    key: "evaluare-curenta",
+    label: "Evaluare curentă",
+    segment: "evaluare-curenta",
+  },
   { key: "comparatie", label: "Comparație", segment: "comparatie" },
   { key: "rapoarte", label: "Rapoarte", segment: "rapoarte" },
-  { key: "persoane-resursa", label: "Persoane resursă", segment: "persoane-resursa" },
+  {
+    key: "persoane-resursa",
+    label: "Persoane resursă",
+    segment: "persoane-resursa",
+  },
 ] as const;
 
 const MENTOR_TABS = [
   { key: "overview", label: "Overview", segment: "" },
   { key: "evaluari", label: "Evaluări", segment: "evaluari" },
-  { key: "evaluare-curenta", label: "Evaluare curentă", segment: "evaluare-curenta" },
+  {
+    key: "evaluare-curenta",
+    label: "Evaluare curentă",
+    segment: "evaluare-curenta",
+  },
   { key: "comparatie", label: "Comparație", segment: "comparatie" },
   { key: "rapoarte", label: "Rapoarte", segment: "rapoarte" },
 ] as const;
@@ -46,11 +58,18 @@ export function OrgDetailChrome({
   const base =
     role === "mentor"
       ? `/dashboard/mentor/organizatii/${documentId}`
-      : `/dashboard/fdsc/organizatii/${documentId}`;
-  const backHref = role === "mentor" ? "/dashboard/mentor/programe" : "/dashboard/fdsc/organizatii";
-  const backLabel = role === "mentor" ? "Înapoi la programele mele" : "Înapoi la organizații";
+      : `/dashboard/organizatii/${documentId}`;
+  const backHref =
+    role === "mentor"
+      ? "/dashboard/mentor/programe"
+      : "/dashboard/fdsc/organizatii";
+  const backLabel =
+    role === "mentor" ? "Înapoi la programele mele" : "Înapoi la organizații";
   const TABS = role === "mentor" ? MENTOR_TABS : FDSC_TABS;
-  const tabs = TABS.map((tab) => ({ ...tab, href: tab.segment ? `${base}/${tab.segment}` : base }));
+  const tabs = TABS.map((tab) => ({
+    ...tab,
+    href: tab.segment ? `${base}/${tab.segment}` : base,
+  }));
   const activeTab = tabs.find((tab) => tab.href === pathname);
 
   if (!activeTab) {
@@ -60,7 +79,7 @@ export function OrgDetailChrome({
   return (
     <>
       <Link
-        href={backHref}
+        href="/dashboard/organizatii"
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6 print:hidden"
         style={{ color: "#94a3b8" }}
       >
@@ -81,7 +100,11 @@ export function OrgDetailChrome({
                   ? "pb-3 text-sm font-semibold border-b-2"
                   : "pb-3 text-sm font-medium hover:text-slate-700 transition-colors"
               }
-              style={isActive ? { color: "#2dbe8f", borderColor: "#2dbe8f" } : { color: "#64748b" }}
+              style={
+                isActive
+                  ? { color: "#2dbe8f", borderColor: "#2dbe8f" }
+                  : { color: "#64748b" }
+              }
             >
               {tab.label}
             </Link>

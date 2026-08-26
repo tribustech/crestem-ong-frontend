@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ROLE_SYNC_PATH } from "@/lib/dashboard-routes";
 import { getCurrentUser } from "@/lib/api/session-server";
 import { userDisplayName } from "@/lib/api/auth";
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
@@ -19,7 +20,7 @@ export default async function MemberDashboardLayout({
     redirect("/autentificare");
   }
   if (user.role?.type !== "ngo-member") {
-    redirect("/");
+    redirect(ROLE_SYNC_PATH);
   }
 
   return (

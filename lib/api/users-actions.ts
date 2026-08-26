@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateDashboardPath } from "./revalidate";
 import { serverApiFetch } from "./server";
 import { getCurrentUser } from "./session-server";
 import { getApiErrorMessage, parseApiError } from "./client";
@@ -55,8 +55,8 @@ export async function createFdscUserAction(
     return { error: parsed.message || undefined, fieldErrors: parsed.fieldErrors };
   }
 
-  revalidatePath("/dashboard/fdsc/utilizatori");
-  revalidatePath("/dashboard/fdsc/persoane-resursa");
+  revalidateDashboardPath("/dashboard/fdsc/utilizatori");
+  revalidateDashboardPath("/dashboard/fdsc/persoane-resursa");
   return {};
 }
 
@@ -104,9 +104,9 @@ export async function updateFdscUserAction(
     return { error: parsed.message || undefined, fieldErrors: parsed.fieldErrors };
   }
 
-  revalidatePath("/dashboard/fdsc/utilizatori");
-  revalidatePath("/dashboard/fdsc/persoane-resursa");
-  revalidatePath("/dashboard/fdsc/persoane-resursa/[documentId]", "page");
+  revalidateDashboardPath("/dashboard/fdsc/utilizatori");
+  revalidateDashboardPath("/dashboard/fdsc/persoane-resursa");
+  revalidateDashboardPath("/dashboard/fdsc/persoane-resursa/[documentId]", "page");
   return {};
 }
 

@@ -1,8 +1,11 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import { ROLE_SYNC_PATH } from "@/lib/dashboard-routes";
 import { getCurrentUser } from "@/lib/api/session-server";
 import { userDisplayName } from "@/lib/api/auth";
 import { DashboardSidebar } from "@/components/features/dashboard/DashboardSidebar";
 import { PageTransition } from "@/components/ui/PageTransition";
+import { FirstLoginProfilePrompt } from "@/components/features/dashboard/FirstLoginProfilePrompt";
 
 export default async function OngDashboardLayout({
   children,
@@ -19,7 +22,7 @@ export default async function OngDashboardLayout({
     redirect("/autentificare");
   }
   if (user.role?.type !== "ngo-admin") {
-    redirect("/");
+    redirect(ROLE_SYNC_PATH);
   }
 
   return (
@@ -28,6 +31,9 @@ export default async function OngDashboardLayout({
       <main className="flex-1 overflow-y-auto p-8" style={{ background: "#f8fafc" }}>
         <PageTransition>{children}</PageTransition>
       </main>
+      <Suspense fallback={null}>
+        <FirstLoginProfilePrompt />
+      </Suspense>
     </div>
   );
 }

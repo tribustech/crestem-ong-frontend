@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { getConversationMessagesAction, sendMessageAction } from "@/lib/api/conversations-actions";
 import type { ConversationListItem, ConversationMessage } from "@/lib/api/conversations";
 import { MessageComposer } from "./MessageComposer";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 
 const POLL_INTERVAL_MS = 30000;
 
@@ -72,20 +73,34 @@ export function ConversationThread({
   };
 
   const mentor = conversation.mentor;
+  // The person resource deleted their account: the history stays fully
+  // readable, only the chrome greys out and the composer goes. The backend
+  // refuses the send as well, so this is presentation, not the guard.
+  const archived = Boolean(mentor?.isDeleted);
 
   return (
     <div className="bg-white rounded-2xl border border-border flex flex-col h-[65vh]">
-      <div className="px-5 py-4 border-b border-border flex items-center gap-3">
+      <div
+        className={`px-5 py-4 border-b border-border flex items-center gap-3 ${
+          archived ? "opacity-60" : ""
+        }`}
+      >
         <div
           className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-          style={{ background: "#162040" }}
+          style={{ background: archived ? "#94a3b8" : "#162040" }}
         >
           {mentor ? initials(mentor.nume) : "?"}
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold truncate" style={{ color: "#162040" }}>
-            {mentor?.nume ?? "Mentor"}
-          </p>
+          <div className="flex items-center gap-2">
+            <p
+              className="text-sm font-semibold truncate"
+              style={{ color: archived ? "#64748b" : "#162040" }}
+            >
+              {mentor?.nume ?? "Mentor"}
+            </p>
+            {archived && <DeletedAccountBadge />}
+          </div>
           {mentor?.mentorOrganization && (
             <p className="text-xs text-muted-foreground truncate">{mentor.mentorOrganization}</p>
           )}
@@ -100,7 +115,11 @@ export function ConversationThread({
             {error}
           </p>
         ) : messages.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Nu aveți încă niciun mesaj. Scrie primul mesaj mai jos.</p>
+          <p className="text-sm text-muted-foreground">
+            {archived
+              ? "Nu există mesaje în această conversație."
+              : "Nu aveți încă niciun mesaj. Scrie primul mesaj mai jos."}
+          </p>
         ) : (
           <>
             {error && (
@@ -133,7 +152,16 @@ export function ConversationThread({
         <div ref={bottomRef} />
       </div>
 
-      <MessageComposer onSend={handleSend} />
+      {archived ? (
+        <div className="border-t border-border px-4 py-3">
+          <p className="text-sm text-muted-foreground">
+            Persoana resursă și-a șters contul. Conversația este arhivată și nu
+            mai poți trimite mesaje.
+          </p>
+        </div>
+      ) : (
+        <MessageComposer onSend={handleSend} />
+      )}
     </div>
   );
 }

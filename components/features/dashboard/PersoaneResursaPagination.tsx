@@ -19,7 +19,7 @@ export function PersoaneResursaPagination({
     if (program) params.set("program", program);
     if (targetPage > 1) params.set("page", String(targetPage));
     const qs = params.toString();
-    return `/dashboard/fdsc/persoane-resursa${qs ? `?${qs}` : ""}`;
+    return `/dashboard/persoane-resursa${qs ? `?${qs}` : ""}`;
   }
 
   const pages = Array.from({ length: pageCount }, (_, i) => i + 1);

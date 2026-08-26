@@ -14,10 +14,10 @@ import { buildOngDeletionWarning } from "./ong-deletion-copy";
  * with two differences: it is mounted by the menu instead of owning a trigger
  * of its own — so it survives the dropdown closing — and it redirects
  * afterwards. Deleting the organization ends the admin's membership, so
- * `/dashboard/ong/profil` is a page they may no longer be allowed to load;
+ * `/dashboard/profil` is a page they may no longer be allowed to load;
  * `deleteMyOngAction` reads their post-deletion role back from the API and
- * returns where they belong (`/dashboard/individual` for a demoted admin,
- * `/dashboard/ong` for one who still runs another organization).
+ * returns where they belong (`/dashboard` for a demoted admin,
+ * `/dashboard` for one who still runs another organization).
  *
  * Deliberately no typed confirmation: the confirm dialog stands on its own.
  */
@@ -42,7 +42,7 @@ export function DeleteOwnOngDialog({
         setError(result.error);
         return;
       }
-      router.replace(result.redirectTo ?? "/dashboard/individual");
+      router.replace(result.redirectTo ?? "/dashboard");
       router.refresh();
     });
   };

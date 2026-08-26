@@ -26,6 +26,7 @@ import { listOngEvaluations, type OngEvaluation } from "@/lib/api/ongs";
 import type { AssignedMentor, AssignedOng, PhaseEvaluation } from "@/lib/api/programs";
 import { isRetras } from "@/lib/api/ongs";
 import type { ActiveOng } from "@/lib/api/ongs";
+import { DeletedAccountBadge } from "@/components/ui/DeletedAccountBadge";
 
 function formatEvalPeriod(evaluation: OngEvaluation) {
   const start = new Date(evaluation.createdAt).toLocaleDateString("ro-RO", {
@@ -125,7 +126,7 @@ export function AssignOngsSection({
       assignedMentors.filter(
         (mentor) =>
           mentor.nume.toLowerCase().includes(mentorSearch.toLowerCase()) ||
-          mentor.email.toLowerCase().includes(mentorSearch.toLowerCase()),
+          (mentor.email ?? "").toLowerCase().includes(mentorSearch.toLowerCase()),
       ),
     [assignedMentors, mentorSearch],
   );
@@ -624,18 +625,30 @@ export function AssignOngsSection({
                           return (
                             <label
                               key={mentor.documentId}
-                              className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-slate-50 transition-colors"
+                              className={`flex items-center gap-3 px-4 py-3 transition-colors ${
+                                mentor.isDeleted
+                                  ? "opacity-60 cursor-default"
+                                  : "cursor-pointer hover:bg-slate-50"
+                              }`}
                             >
+                              {/* A deleted account cannot take on an organization,
+                                  and unticking one would detach the assignment its
+                                  history hangs off (BR-34). Shown, never toggled. */}
                               <input
                                 type="checkbox"
                                 checked={checked}
-                                disabled={mentorPending || readOnly}
+                                disabled={mentorPending || readOnly || mentor.isDeleted}
                                 onChange={() => handleToggleOngMentor(ong, mentor)}
                                 className="h-4 w-4 rounded border-border shrink-0"
                               />
                               <div className="min-w-0">
-                                <p className="text-sm font-medium truncate" style={{ color: "#162040" }}>{mentor.nume}</p>
-                                <p className="text-xs text-muted-foreground truncate">{mentor.email}</p>
+                                <div className="flex items-center gap-2">
+                                  <p className="text-sm font-medium truncate" style={{ color: "#162040" }}>{mentor.nume}</p>
+                                  {mentor.isDeleted && <DeletedAccountBadge />}
+                                </div>
+                                {mentor.email && (
+                                  <p className="text-xs text-muted-foreground truncate">{mentor.email}</p>
+                                )}
                               </div>
                             </label>
                           );
