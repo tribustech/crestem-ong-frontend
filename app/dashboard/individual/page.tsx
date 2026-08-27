@@ -1,9 +1,8 @@
-import { getCurrentUser } from "@/lib/api/session-server";
-import { userDisplayName } from "@/lib/api/auth";
+import { getIndividualProfile } from "@/lib/api/individual-profile";
 import { IndividualProfileSection } from "@/components/features/dashboard-individual/IndividualProfileSection";
 
 export default async function IndividualProfilePage() {
-  const user = await getCurrentUser();
+  const { data: profile } = await getIndividualProfile();
 
-  return <IndividualProfileSection nume={userDisplayName(user!)} email={user!.email} createdAt={user!.createdAt} />;
+  return <IndividualProfileSection profile={profile} />;
 }

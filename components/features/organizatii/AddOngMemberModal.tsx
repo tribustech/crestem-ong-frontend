@@ -96,7 +96,7 @@ export function AddOngMemberModal({ onClose }: { onClose: () => void }) {
 
           <div>
             <label htmlFor="member-rol" className="block text-sm font-semibold mb-1.5" style={{ color: "#334155" }}>
-              Rol în organizație <span style={{ color: "#2dbe8f" }}>*</span>
+              Rol în organizație
             </label>
             <input
               id="member-rol"
@@ -126,7 +126,7 @@ export function AddOngMemberModal({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={isPending || !nume.trim() || !email.trim() || rol.trim().length < 2}
+            disabled={isPending || !nume.trim() || !email.trim()}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white hover:opacity-90 transition-opacity disabled:opacity-70"
             style={{ background: "#2dbe8f" }}
           >

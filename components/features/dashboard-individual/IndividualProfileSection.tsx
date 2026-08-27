@@ -1,16 +1,9 @@
-import { ProfileHeaderCard } from "@/components/features/dashboard/ProfileHeaderCard";
+import { IndividualProfileDetailsCard } from "./IndividualProfileDetailsCard";
 import { ProfileActivitySections } from "@/components/features/dashboard/ProfileActivitySections";
 import { ProfileActionsMenu } from "@/components/features/dashboard/ProfileActionsMenu";
+import type { IndividualProfile } from "@/lib/api/individual-profile";
 
-export function IndividualProfileSection({
-  nume,
-  email,
-  createdAt,
-}: {
-  nume: string;
-  email: string;
-  createdAt: string;
-}) {
+export function IndividualProfileSection({ profile }: { profile: IndividualProfile }) {
   return (
     <div>
       <div className="mb-6 flex items-start justify-between gap-4">
@@ -25,7 +18,7 @@ export function IndividualProfileSection({
         <ProfileActionsMenu />
       </div>
 
-      <ProfileHeaderCard nume={nume} email={email} createdAt={createdAt} />
+      <IndividualProfileDetailsCard profile={profile} />
 
       <ProfileActivitySections />
     </div>

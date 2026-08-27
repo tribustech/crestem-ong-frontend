@@ -148,6 +148,40 @@ export async function updateMentorProfileAction(
   return {};
 }
 
+export interface UpdateIndividualProfileInput {
+  nume: string;
+  judet?: string;
+  localitate?: string;
+}
+
+/**
+ * The individual's own self-service edit. Gated on "caller is an individual"
+ * the same way `updateMentorProfileAction` is gated on "caller is a mentor" —
+ * the backend route (`PATCH /api/individuals/me`) updates the caller's own
+ * record regardless of what id is asked for.
+ */
+export async function updateIndividualProfileAction(
+  input: UpdateIndividualProfileInput,
+): Promise<{ error?: string; fieldErrors?: Record<string, string> }> {
+  const user = await getCurrentUser();
+  if (user?.role?.type !== "individual") {
+    return { error: FORBIDDEN_MESSAGE };
+  }
+
+  try {
+    await serverApiFetch("/api/individuals/me", {
+      method: "PATCH",
+      body: JSON.stringify(input),
+    });
+  } catch (err) {
+    const parsed = parseApiError(err, "Nu am putut actualiza profilul.");
+    return { error: parsed.message || undefined, fieldErrors: parsed.fieldErrors };
+  }
+
+  revalidatePath("/dashboard/individual");
+  return {};
+}
+
 export async function uploadUserAvatarAction(
   formData: FormData,
 ): Promise<{ error?: string; id?: number }> {
