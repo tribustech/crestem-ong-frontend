@@ -144,7 +144,7 @@ export async function updateMentorProfileAction(
     return { error: parsed.message || undefined, fieldErrors: parsed.fieldErrors };
   }
 
-  revalidatePath("/dashboard/mentor/profil");
+  revalidateDashboardPath("/dashboard/mentor/profil");
   return {};
 }
 
@@ -178,7 +178,7 @@ export async function updateIndividualProfileAction(
     return { error: parsed.message || undefined, fieldErrors: parsed.fieldErrors };
   }
 
-  revalidatePath("/dashboard/individual");
+  revalidateDashboardPath("/dashboard/individual");
   return {};
 }
 

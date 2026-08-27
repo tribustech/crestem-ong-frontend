@@ -17,7 +17,9 @@ const STATUS_BADGES: Record<AdminUser["accountStatus"], { label: string; bg: str
   deleted: { label: "Șters", bg: "#fef2f2", color: "#dc2626" },
 };
 
-const EDITABLE_ROLES = ["mentor", "super-admin", "editor-fdsc"];
+// Mentors are not editable from user administration — they maintain their own
+// profile from the mentor dashboard. FDSC staff accounts stay editable here.
+const EDITABLE_ROLES = ["super-admin", "editor-fdsc"];
 
 export function UtilizatoriTable({ users, dimensions }: { users: AdminUser[]; dimensions: Dimension[] }) {
   const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
