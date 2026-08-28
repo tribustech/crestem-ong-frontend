@@ -1,6 +1,8 @@
 import type { BlockCategory, BlockDefinition } from "./types";
 import { heroLargeSplitBlock } from "./blocks/hero-large-split";
 import { heroCenteredBlock } from "./blocks/hero-centered";
+import { heroIntroBlock } from "./blocks/hero-intro";
+import { heroStatisticsBlock } from "./blocks/hero-statistics";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -9,6 +11,8 @@ import { heroCenteredBlock } from "./blocks/hero-centered";
 export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [heroLargeSplitBlock.type]: heroLargeSplitBlock,
   [heroCenteredBlock.type]: heroCenteredBlock,
+  [heroIntroBlock.type]: heroIntroBlock,
+  [heroStatisticsBlock.type]: heroStatisticsBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [
@@ -51,15 +55,4 @@ export interface UpcomingBlock {
   category: BlockCategory;
 }
 
-export const UPCOMING_BLOCKS: UpcomingBlock[] = [
-  {
-    name: "Hero – Intro",
-    description: "Secțiune intro cu fundal colorat și text scurt",
-    category: "hero",
-  },
-  {
-    name: "Hero – Statistics",
-    description: "Hero cu contoare/statistici integrate",
-    category: "hero",
-  },
-];
+export const UPCOMING_BLOCKS: UpcomingBlock[] = [];
