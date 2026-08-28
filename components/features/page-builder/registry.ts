@@ -4,6 +4,7 @@ import { heroCenteredBlock } from "./blocks/hero-centered";
 import { heroIntroBlock } from "./blocks/hero-intro";
 import { heroStatisticsBlock } from "./blocks/hero-statistics";
 import { featureCardsBlock } from "./blocks/feature-cards";
+import { articleGridBlock } from "./blocks/article-grid";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -15,6 +16,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [heroIntroBlock.type]: heroIntroBlock,
   [heroStatisticsBlock.type]: heroStatisticsBlock,
   [featureCardsBlock.type]: featureCardsBlock,
+  [articleGridBlock.type]: articleGridBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [
@@ -69,11 +71,6 @@ export interface UpcomingBlock {
 }
 
 export const UPCOMING_BLOCKS: UpcomingBlock[] = [
-  {
-    name: "Article Grid",
-    description: "Grilă de articole din bibliotecă",
-    category: "cards",
-  },
   {
     name: "Programme Grid",
     description: "Grilă de programe disponibile",
