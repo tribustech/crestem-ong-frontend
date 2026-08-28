@@ -15,12 +15,15 @@ const COL_CLASS: Record<HeroStatisticsData["coloane"], string> = {
 function StatCell({ stat, className }: { stat: HeroStat; className: string }) {
   return (
     <div className={className}>
-      <p style={{ fontSize: "1.75rem", fontWeight: 700 }} className="text-white">
+      <p
+        style={{ fontSize: "1.75rem", fontWeight: 700 }}
+        className="text-white wrap-break-word"
+      >
         {stat.valoare}
       </p>
-      <p className="mt-1 text-sm text-white/60">{stat.eticheta}</p>
+      <p className="mt-1 text-sm text-white/60 wrap-break-word">{stat.eticheta}</p>
       {stat.descriere ? (
-        <p className="mt-1 text-xs text-white/40">{stat.descriere}</p>
+        <p className="mt-1 text-xs text-white/40 wrap-break-word">{stat.descriere}</p>
       ) : null}
     </div>
   );
@@ -92,22 +95,22 @@ export function HeroStatistics({ data }: { data: HeroStatisticsData }) {
           hasStats ? "lg:grid-cols-2" : ""
         }`}
       >
-        <div>
+        <div className="min-w-0">
           {supratitlu ? (
             <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6 max-w-full wrap-break-word"
               style={{
                 background: "rgba(45,190,143,0.15)",
                 color: "#2dbe8f",
                 border: "1px solid rgba(45,190,143,0.3)",
               }}
             >
-              <Star size={12} />
+              <Star size={12} className="shrink-0" />
               {supratitlu}
             </div>
           ) : null}
           <h1
-            className="mb-6 text-white font-heading"
+            className="mb-6 text-white font-heading wrap-break-word"
             style={{
               fontSize: "clamp(2.5rem, 5vw, 3.75rem)",
               fontWeight: 800,
@@ -118,7 +121,7 @@ export function HeroStatistics({ data }: { data: HeroStatisticsData }) {
           </h1>
           {subtitlu ? (
             <p
-              className="mb-8 leading-relaxed"
+              className="mb-8 leading-relaxed wrap-break-word"
               style={{
                 fontSize: "1.125rem",
                 color: "rgba(255,255,255,0.72)",

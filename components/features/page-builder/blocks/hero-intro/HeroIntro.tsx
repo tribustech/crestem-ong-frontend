@@ -78,14 +78,14 @@ export function HeroIntro({ data }: { data: HeroIntroData }) {
       >
         {supratitlu ? (
           <p
-            className="mb-4 text-xs font-semibold uppercase tracking-wider"
+            className="mb-4 text-xs font-semibold uppercase tracking-wider wrap-break-word"
             style={{ color: "#2dbe8f" }}
           >
             {supratitlu}
           </p>
         ) : null}
         <h1
-          className="mb-5 font-heading"
+          className="mb-5 font-heading wrap-break-word max-w-full"
           style={{
             fontSize: "clamp(2.5rem, 5vw, 3.75rem)",
             fontWeight: 800,
@@ -97,7 +97,7 @@ export function HeroIntro({ data }: { data: HeroIntroData }) {
         </h1>
         {textIntroductiv ? (
           <p
-            className="mb-8 leading-relaxed whitespace-pre-line"
+            className="mb-8 leading-relaxed whitespace-pre-line wrap-break-word"
             style={{
               fontSize: "1.125rem",
               color: isDark ? "rgba(255,255,255,0.72)" : "#475569",

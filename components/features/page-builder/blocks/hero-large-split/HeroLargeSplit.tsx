@@ -31,29 +31,29 @@ export function HeroLargeSplit({ data }: { data: HeroLargeSplitData }) {
   const imageOnLeft = imagePosition === "stanga";
 
   const textColumn = (
-    <div className={imageOnLeft ? "lg:order-2" : "lg:order-1"}>
+    <div className={`min-w-0 ${imageOnLeft ? "lg:order-2" : "lg:order-1"}`}>
       {supratitlu ? (
         <div
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6 max-w-full wrap-break-word"
           style={{
             background: "rgba(45,190,143,0.15)",
             color: "#2dbe8f",
             border: "1px solid rgba(45,190,143,0.3)",
           }}
         >
-          <Star size={12} />
+          <Star size={12} className="shrink-0" />
           {supratitlu}
         </div>
       ) : null}
       <h1
-        className="mb-6 text-white font-heading"
+        className="mb-6 text-white font-heading wrap-break-word"
         style={{ fontSize: "clamp(2.5rem, 5vw, 3.75rem)", fontWeight: 800, lineHeight: 1.1 }}
       >
         {titlu}
       </h1>
       {subtitlu ? (
         <p
-          className="mb-8 leading-relaxed"
+          className="mb-8 leading-relaxed wrap-break-word"
           style={{
             fontSize: "1.125rem",
             color: "rgba(255,255,255,0.72)",

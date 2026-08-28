@@ -6,6 +6,7 @@ import { ModalOverlay } from "@/components/ui/ModalOverlay";
 import {
   BLOCK_REGISTRY,
   CATEGORY_DOT,
+  CATEGORY_ICON,
   CATEGORY_LABELS,
   CATEGORY_ORDER,
   UPCOMING_BLOCKS,
@@ -149,6 +150,7 @@ export function AddBlockModal({
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {visibleCards.map((card) => {
                   const Icon = card.definition?.icon ?? LayoutGrid;
+                  const chip = CATEGORY_ICON[card.category];
                   if (!card.definition) {
                     return (
                       <div
@@ -156,7 +158,10 @@ export function AddBlockModal({
                         aria-disabled
                         className="flex cursor-not-allowed gap-3 rounded-xl border border-border p-4 opacity-60"
                       >
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#eff6ff] text-[#2563eb]">
+                        <span
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                          style={{ background: chip.bg, color: chip.fg }}
+                        >
                           <Icon size={18} />
                         </span>
                         <span className="min-w-0">
@@ -183,7 +188,10 @@ export function AddBlockModal({
                       onClick={() => onSelect(type)}
                       className="flex gap-3 rounded-xl border border-border p-4 text-left transition-colors hover:border-[#2dbe8f] hover:bg-[#f0fdf9]"
                     >
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#eff6ff] text-[#2563eb]">
+                      <span
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
+                        style={{ background: chip.bg, color: chip.fg }}
+                      >
                         <Icon size={18} />
                       </span>
                       <span className="min-w-0">

@@ -3,6 +3,7 @@ import { heroLargeSplitBlock } from "./blocks/hero-large-split";
 import { heroCenteredBlock } from "./blocks/hero-centered";
 import { heroIntroBlock } from "./blocks/hero-intro";
 import { heroStatisticsBlock } from "./blocks/hero-statistics";
+import { featureCardsBlock } from "./blocks/feature-cards";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -13,6 +14,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [heroCenteredBlock.type]: heroCenteredBlock,
   [heroIntroBlock.type]: heroIntroBlock,
   [heroStatisticsBlock.type]: heroStatisticsBlock,
+  [featureCardsBlock.type]: featureCardsBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [
@@ -45,6 +47,17 @@ export const CATEGORY_DOT: Record<BlockCategory, string> = {
   structure: "#94a3b8",
 };
 
+/** Icon-chip fill/foreground per category, matching the sidebar dot hue. */
+export const CATEGORY_ICON: Record<BlockCategory, { bg: string; fg: string }> = {
+  hero: { bg: "#eff6ff", fg: "#2563eb" },
+  text: { bg: "#f0fdf4", fg: "#16a34a" },
+  images: { bg: "#faf5ff", fg: "#9333ea" },
+  media: { bg: "#fff7ed", fg: "#ea580c" },
+  cards: { bg: "#fefce8", fg: "#ca8a04" },
+  dynamic: { bg: "#fdf2f8", fg: "#db2777" },
+  structure: { bg: "#f8fafc", fg: "#64748b" },
+};
+
 /**
  * Blocks shown in the picker but not yet implemented — they render as disabled
  * cards ("în curând"). Copy matches the design.
@@ -55,4 +68,25 @@ export interface UpcomingBlock {
   category: BlockCategory;
 }
 
-export const UPCOMING_BLOCKS: UpcomingBlock[] = [];
+export const UPCOMING_BLOCKS: UpcomingBlock[] = [
+  {
+    name: "Article Grid",
+    description: "Grilă de articole din bibliotecă",
+    category: "cards",
+  },
+  {
+    name: "Programme Grid",
+    description: "Grilă de programe disponibile",
+    category: "cards",
+  },
+  {
+    name: "People Grid",
+    description: "Grilă de persoane / echipă / mentori",
+    category: "cards",
+  },
+  {
+    name: "Category Grid",
+    description: "Grilă de categorii cu iconițe",
+    category: "cards",
+  },
+];
