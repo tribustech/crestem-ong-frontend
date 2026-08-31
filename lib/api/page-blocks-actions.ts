@@ -58,3 +58,56 @@ export async function uploadPageImageAction(
     return { error: getApiErrorMessage(err, "Nu am putut încărca imaginea.") };
   }
 }
+
+export interface UploadedPageVideo {
+  id: number;
+  url: string;
+  name: string;
+}
+
+/**
+ * Same as `uploadPageImageAction` but for a video file — Strapi's `/api/upload`
+ * is content-type agnostic, so this only differs in the user-facing wording and
+ * the return key. The Video block stores the returned `{ id, url }`.
+ */
+export async function uploadPageVideoAction(
+  formData: FormData,
+): Promise<{ error?: string; video?: UploadedPageVideo }> {
+  const user = await getCurrentUser();
+  if (!isFdscStaff(user?.role?.type)) {
+    return { error: "Nu ai permisiunea necesară pentru această acțiune." };
+  }
+
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const jwt = cookieStore.get(SESSION_COOKIE)?.value;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+  try {
+    const res = await fetch(`${API_URL}/api/upload`, {
+      method: "POST",
+      headers: jwt ? { Authorization: `Bearer ${jwt}` } : undefined,
+      body: formData,
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      const message = data?.error?.message ?? "Nu am putut încărca fișierul video.";
+      throw new ApiError(message, res.status, data?.error?.details);
+    }
+    const file = Array.isArray(data) ? data[0] : undefined;
+    if (typeof file?.id !== "number" || typeof file?.url !== "string") {
+      return { error: "Nu am putut încărca fișierul video." };
+    }
+    return {
+      video: {
+        id: file.id,
+        url: file.url,
+        name: typeof file.name === "string" ? file.name : "video",
+      },
+    };
+  } catch (err) {
+    return {
+      error: getApiErrorMessage(err, "Nu am putut încărca fișierul video."),
+    };
+  }
+}

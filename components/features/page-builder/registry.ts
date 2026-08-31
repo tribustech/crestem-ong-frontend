@@ -14,6 +14,7 @@ import { faqCollectionBlock } from "./blocks/faq-collection";
 import { richTextBlock } from "./blocks/rich-text";
 import { calloutBlock } from "./blocks/callout";
 import { quoteBlock } from "./blocks/quote";
+import { videoBlock } from "./blocks/video";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -35,6 +36,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [richTextBlock.type]: richTextBlock,
   [calloutBlock.type]: calloutBlock,
   [quoteBlock.type]: quoteBlock,
+  [videoBlock.type]: videoBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [
