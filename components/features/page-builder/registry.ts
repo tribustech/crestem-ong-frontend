@@ -5,6 +5,9 @@ import { heroIntroBlock } from "./blocks/hero-intro";
 import { heroStatisticsBlock } from "./blocks/hero-statistics";
 import { featureCardsBlock } from "./blocks/feature-cards";
 import { articleGridBlock } from "./blocks/article-grid";
+import { programmeGridBlock } from "./blocks/programme-grid";
+import { peopleGridBlock } from "./blocks/people-grid";
+import { categoryGridBlock } from "./blocks/category-grid";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -17,6 +20,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [heroStatisticsBlock.type]: heroStatisticsBlock,
   [featureCardsBlock.type]: featureCardsBlock,
   [articleGridBlock.type]: articleGridBlock,
+  [programmeGridBlock.type]: programmeGridBlock,
+  [peopleGridBlock.type]: peopleGridBlock,
+  [categoryGridBlock.type]: categoryGridBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [
@@ -70,20 +76,4 @@ export interface UpcomingBlock {
   category: BlockCategory;
 }
 
-export const UPCOMING_BLOCKS: UpcomingBlock[] = [
-  {
-    name: "Programme Grid",
-    description: "Grilă de programe disponibile",
-    category: "cards",
-  },
-  {
-    name: "People Grid",
-    description: "Grilă de persoane / echipă / mentori",
-    category: "cards",
-  },
-  {
-    name: "Category Grid",
-    description: "Grilă de categorii cu iconițe",
-    category: "cards",
-  },
-];
+export const UPCOMING_BLOCKS: UpcomingBlock[] = [];
