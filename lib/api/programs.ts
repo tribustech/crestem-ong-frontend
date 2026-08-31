@@ -44,14 +44,6 @@ export interface UpdateProgramPayload {
   removePhases?: string[];
 }
 
-export function listPrograms() {
-  return localApiFetch<{ data: Program[] }>("/api/programs");
-}
-
-export function getProgram(documentId: string) {
-  return localApiFetch<{ data: ProgramDetail }>(`/api/programs/${documentId}`);
-}
-
 export function createProgram(payload: CreateProgramPayload) {
   return localApiFetch<{ data: ProgramDetail }>("/api/programs", {
     method: "POST",
@@ -94,21 +86,9 @@ export interface AssignedOng {
   phaseEvaluations: PhaseEvaluation[];
 }
 
-export function getProgramOngs(documentId: string) {
-  return localApiFetch<{ data: { ongs: AssignedOng[] } }>(`/api/programs/${documentId}/ongs`);
-}
-
-export function getProgramMentors(documentId: string) {
-  return localApiFetch<{ data: AssignedMentor[] }>(`/api/programs/${documentId}/mentors`);
-}
-
 export interface ProgramStats {
   ongsCount: number;
   mentorsCount: number;
   inEvaluation: number;
   finalizedEvaluation: number;
-}
-
-export function getProgramStats(documentId: string) {
-  return localApiFetch<{ data: ProgramStats }>(`/api/programs/${documentId}/stats`);
 }

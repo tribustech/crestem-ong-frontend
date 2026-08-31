@@ -47,10 +47,8 @@ const MAX_VISIBLE_PROGRAMS = 4;
 
 function ProgramsCard({
   programs,
-  programsHref,
 }: {
   programs: { documentId: string; name: string }[];
-  programsHref: string;
 }) {
   const overflow = programs.length > MAX_VISIBLE_PROGRAMS;
   const visible = overflow ? programs.slice(0, MAX_VISIBLE_PROGRAMS) : programs;
@@ -112,16 +110,10 @@ export function OrgOverviewStats({
   documentId,
   overview,
   programs,
-  basePath = `/dashboard/fdsc/organizatii/${documentId}`,
-  programsHref = "/dashboard/fdsc/programe",
 }: {
   documentId: string;
   overview: OngOverview;
   programs: { documentId: string; name: string }[];
-  /** Base route for this org's detail tabs — defaults to the fdsc-admin path. */
-  basePath?: string;
-  /** "Vezi toate programele" overflow link — defaults to the fdsc-admin programs list. */
-  programsHref?: string;
 }) {
   const { totalEvaluations, currentEvaluation, lastFinalizedDate } = overview;
 
@@ -163,7 +155,7 @@ export function OrgOverviewStats({
         />
         <DisabledStatCard label="Număr de sesiuni de mentorat" value="—" />
         <DisabledStatCard label="E-Learning" value="—" />
-        <ProgramsCard programs={programs} programsHref={programsHref} />
+        <ProgramsCard programs={programs} />
         <StatCard
           label="Data finalizare evaluare"
           value={lastFinalizedDate ? formatDate(lastFinalizedDate) : "—"}

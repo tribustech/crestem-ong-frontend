@@ -10,19 +10,6 @@ function errorResponse(err: unknown) {
   return NextResponse.json({ message, details }, { status: status || 500 });
 }
 
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ documentId: string }> },
-) {
-  const { documentId } = await params;
-  try {
-    const data = await serverApiFetch(`/api/programs/${encodeURIComponent(documentId)}`);
-    return NextResponse.json(data);
-  } catch (err) {
-    return errorResponse(err);
-  }
-}
-
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ documentId: string }> },

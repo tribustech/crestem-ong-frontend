@@ -26,8 +26,6 @@ export default async function MentorOrganizatieOverviewPage({
         documentId={documentId}
         overview={overviewRes.data}
         programs={ong.programs}
-        basePath={`/dashboard/mentor/organizatii/${documentId}`}
-        programsHref="/dashboard/mentor/programe"
       />
 
       <div className="mt-6 flex flex-col gap-6">

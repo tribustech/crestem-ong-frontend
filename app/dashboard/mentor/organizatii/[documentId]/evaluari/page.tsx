@@ -25,11 +25,7 @@ export default async function MentorOrganizatieEvaluariPage({
         <MatrixModelButton dimensions={dimensionsRes} />
       </div>
 
-      <OngEvaluationsTable
-        ongDocumentId={documentId}
-        evaluations={evaluationsRes.data}
-        basePath={`/dashboard/mentor/organizatii/${documentId}`}
-      />
+      <OngEvaluationsTable ongDocumentId={documentId} evaluations={evaluationsRes.data} />
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default async function MentorOrganizatieEvaluareDetailPage({
   return (
     <div>
       <Link
-        href={`/dashboard/mentor/organizatii/${documentId}/evaluari`}
+        href={`/dashboard/organizatii/${documentId}/evaluari`}
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6"
         style={{ color: "#94a3b8" }}
       >

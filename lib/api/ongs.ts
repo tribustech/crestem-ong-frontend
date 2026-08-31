@@ -6,10 +6,6 @@ export interface ActiveOng {
   name: string;
 }
 
-export function listActiveOngs() {
-  return localApiFetch<{ data: ActiveOng[] }>("/api/ongs/active");
-}
-
 /**
  * An organization whose profile was deleted (`Șterge ONG`) keeps its reports,
  * evaluations and program enrollment (BR-33) and is shown as withdrawn wherever
@@ -45,10 +41,6 @@ export interface Ong {
   programs: { documentId: string; name: string }[];
   judet: { documentId: string; nume: string } | null;
   localitate: { documentId: string; nume: string } | null;
-}
-
-export function listOngs() {
-  return localApiFetch<{ data: Ong[] }>("/api/ongs");
 }
 
 export interface Domain {
