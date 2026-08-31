@@ -45,7 +45,7 @@ export default async function Page({ searchParams }: PageProps) {
 
       <PersoaneResursaFilters programs={programs} initialSearch={search} initialProgram={program} />
 
-      <PersoaneResursaTable mentors={mentors} dimensions={dimensions} canManage={canManage} />
+      <PersoaneResursaTable mentors={mentors} />
 
       <PersoaneResursaPagination pagination={meta.pagination} search={search} program={program} />
     </div>
