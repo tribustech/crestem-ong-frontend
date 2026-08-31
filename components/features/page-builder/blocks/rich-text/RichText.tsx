@@ -1,5 +1,5 @@
-import { RICH_TEXT_PROSE } from "./prose";
-import { sanitizeRichText } from "./sanitize";
+import { RICH_TEXT_PROSE } from "../../rich-text/prose";
+import { sanitizeRichText } from "../../rich-text/sanitize";
 import type { RichTextData } from "./schema";
 
 const ALIGN_CLASS: Record<RichTextData["aliniere"], string> = {

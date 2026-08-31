@@ -1,7 +1,7 @@
 "use client";
 
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
-import { RichTextField } from "./RichTextField";
+import { RichTextField } from "../../rich-text/RichTextField";
 import type { BlockFieldErrors } from "../../types";
 import type { RichTextData } from "./schema";
 

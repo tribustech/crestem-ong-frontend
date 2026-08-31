@@ -12,6 +12,8 @@ import { peopleCollectionBlock } from "./blocks/people-collection";
 import { testimonialsBlock } from "./blocks/testimonials";
 import { faqCollectionBlock } from "./blocks/faq-collection";
 import { richTextBlock } from "./blocks/rich-text";
+import { calloutBlock } from "./blocks/callout";
+import { quoteBlock } from "./blocks/quote";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -31,6 +33,8 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [testimonialsBlock.type]: testimonialsBlock,
   [faqCollectionBlock.type]: faqCollectionBlock,
   [richTextBlock.type]: richTextBlock,
+  [calloutBlock.type]: calloutBlock,
+  [quoteBlock.type]: quoteBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [

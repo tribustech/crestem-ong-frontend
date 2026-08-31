@@ -44,10 +44,10 @@ function ToolbarButton({
 }
 
 /**
- * TipTap rich-text surface for the Rich Text block editor. Emits an HTML string
- * on every change; the document is constrained to the StarterKit schema below
- * (paragraphs, bold, italic, H2/H3, bullet + ordered lists, links), so pasted
- * markup is filtered down to that known set.
+ * Shared TipTap rich-text surface for page-builder block editors. Emits an HTML
+ * string on every change; the document is constrained to the StarterKit schema
+ * below (paragraphs, bold, italic, H2/H3, bullet + ordered lists, links), so
+ * pasted markup is filtered down to that known set.
  */
 export function RichTextField({
   value,

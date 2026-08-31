@@ -1,10 +1,5 @@
 import { z } from "zod";
-import { sanitizeRichText } from "./sanitize";
-
-/** Strip tags + entities to test whether the HTML carries any real text. */
-function hasText(html: string): boolean {
-  return html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length > 0;
-}
+import { sanitizeRichText, hasRichText } from "../../rich-text/sanitize";
 
 export const richTextSchema = z
   .object({
@@ -19,7 +14,7 @@ export const richTextSchema = z
       .transform((html) => sanitizeRichText(html)),
     aliniere: z.enum(["stanga", "centru", "dreapta"]).default("stanga"),
   })
-  .refine((d) => hasText(d.continut), {
+  .refine((d) => hasRichText(d.continut), {
     path: ["continut"],
     message: "Conținutul nu poate fi gol",
   });
