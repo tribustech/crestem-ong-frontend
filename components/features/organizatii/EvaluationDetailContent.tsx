@@ -1,12 +1,38 @@
-import { CheckCircle2, Circle } from "lucide-react";
-import type { OngEvaluationDetail } from "@/lib/api/ongs";
+"use client";
+
+import { useState } from "react";
+import type { OngEvaluationDetail, OngEvaluationRespondent } from "@/lib/api/ongs";
 import type { Dimension } from "@/lib/api/dimensions";
-import { dimensionColor, dimensionPillStyle } from "@/lib/api/dimension-colors";
+import type { DimensionComment } from "@/lib/api/reports";
+import { DimensionsBreakdown } from "@/components/features/evaluari/DimensionsBreakdown";
 
 function formatDate(iso: string) {
   if (!iso) return "—";
   const [year, month, day] = iso.slice(0, 10).split("-");
   return `${day}.${month}.${year}`;
+}
+
+/**
+ * Arguments grouped by dimension, attributed. FDSC staff and mentors are the
+ * only readers of this payload, so respondents are named here — unlike the ONG
+ * admin's report page, which the API serves unattributed.
+ */
+function collectComments(
+  respondents: OngEvaluationRespondent[],
+): Record<string, DimensionComment[]> {
+  const byDimension: Record<string, DimensionComment[]> = {};
+  for (const respondent of respondents) {
+    for (const block of respondent.dimensions ?? []) {
+      const text = (block.comment ?? "").trim();
+      if (!block.submitted || !text) continue;
+      byDimension[block.dimensionKey] ??= [];
+      byDimension[block.dimensionKey].push({
+        author: respondent.user?.nume ?? null,
+        text,
+      });
+    }
+  }
+  return byDimension;
 }
 
 export function EvaluationDetailContent({
@@ -16,6 +42,8 @@ export function EvaluationDetailContent({
   evaluation: OngEvaluationDetail;
   dimensions: Dimension[];
 }) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
   const phase = evaluation.phases?.[0] ?? null;
   const programName = phase?.program?.name ?? "Evaluare independentă";
 
@@ -35,6 +63,16 @@ export function EvaluationDetailContent({
     evaluation.invitedCount > 0
       ? Math.round((evaluation.completedCount / evaluation.invitedCount) * 100)
       : 0;
+
+  // Only finished respondents can be inspected — a half-filled evaluation has no
+  // scores to show.
+  const respondents = (evaluation.evaluations ?? []).filter(
+    (respondent) => respondent.progress?.complete,
+  );
+  const selected = respondents.find((respondent) => respondent.documentId === selectedId) ?? null;
+
+  const shownScores = selected ? selected.scores : evaluation.scores;
+  const shownComments = collectComments(selected ? [selected] : respondents);
 
   return (
     <>
@@ -96,55 +134,48 @@ export function EvaluationDetailContent({
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-border p-6 mb-8">
-        <h2 className="font-bold text-base mb-5" style={{ color: "#162040" }}>
-          Dimensiuni evaluate
-        </h2>
-        <div className="space-y-0">
-          {dimensions.map((dimension) => {
-            const score = evaluation.scores?.dimensions?.[dimension.key] ?? null;
-            const color = dimensionColor(score);
-            const tags = Array.from(
-              new Set((dimension.quiz ?? []).map((q) => q.tag).filter((tag): tag is string => !!tag)),
-            );
+      {respondents.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setSelectedId(null)}
+            aria-pressed={selected == null}
+            className="px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors"
+            style={
+              selected == null
+                ? { background: "#2dbe8f", color: "#ffffff", borderColor: "#2dbe8f" }
+                : { background: "#ffffff", color: "#64748b", borderColor: "#e2e8f0" }
+            }
+          >
+            Rezultat general
+          </button>
+          {respondents.map((respondent) => {
+            const active = respondent.documentId === selectedId;
             return (
-              <div key={dimension.key} className="py-4 border-b border-border last:border-0">
-                <div className="flex items-center gap-3 mb-2">
-                  {score != null ? (
-                    <CheckCircle2 size={16} className="flex-shrink-0" style={{ color: "#2dbe8f" }} />
-                  ) : (
-                    <Circle size={16} className="flex-shrink-0" style={{ color: "#cbd5e1" }} />
-                  )}
-                  <span className="flex-1 text-sm font-semibold" style={{ color: "#162040" }}>
-                    {dimension.name}
-                  </span>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="w-28 h-2 rounded-full overflow-hidden" style={{ background: "#e2e8f0" }}>
-                      <div className="h-full rounded-full" style={{ width: `${score ?? 0}%`, background: color }} />
-                    </div>
-                    <span className="text-sm font-bold w-10 text-right" style={{ color }}>
-                      {score != null ? `${score}%` : "—"}
-                    </span>
-                  </div>
-                </div>
-                {tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 ml-7">
-                    {tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        style={dimensionPillStyle(score)}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <button
+                key={respondent.documentId}
+                type="button"
+                onClick={() => setSelectedId(respondent.documentId)}
+                aria-pressed={active}
+                className="px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors"
+                style={
+                  active
+                    ? { background: "#2dbe8f", color: "#ffffff", borderColor: "#2dbe8f" }
+                    : { background: "#ffffff", color: "#64748b", borderColor: "#e2e8f0" }
+                }
+              >
+                {respondent.user?.nume ?? "Membru șters"}
+              </button>
             );
           })}
         </div>
-      </div>
+      )}
+
+      <DimensionsBreakdown
+        dimensions={dimensions}
+        scores={shownScores}
+        comments={shownComments}
+      />
     </>
   );
 }

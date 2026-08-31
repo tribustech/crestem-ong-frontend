@@ -135,7 +135,15 @@ export interface ReportPhaseInfo {
 
 export interface ReportScores {
   dimensions: Record<string, number | null>;
+  /** Sub-indicator scores keyed by question id — one entry per quiz question. */
+  questions: Record<string, number | null>;
   overall: number | null;
+}
+
+export interface DimensionComment {
+  /** `null` when the payload withholds attribution, as the ONG admin's does. */
+  author: string | null;
+  text: string;
 }
 
 export interface ReportListItem {
@@ -169,6 +177,12 @@ export interface ReportDetail {
   invitedCount: number;
   completedCount: number;
   scores: ReportScores;
+  /**
+   * Members' written arguments per dimension, keyed by dimension key. Always
+   * unattributed on this endpoint — the ONG admin sees what was said, not who
+   * said it.
+   */
+  comments: Record<string, DimensionComment[]>;
 }
 
 export interface ReportMember {

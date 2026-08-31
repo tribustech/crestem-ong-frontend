@@ -1,5 +1,7 @@
 import { localApiFetch } from "./local";
 import { apiFetch } from "./client";
+import type { ReportScores } from "./reports";
+import type { EvaluationDimensionBlock, EvaluationProgress } from "./evaluations";
 
 export interface ActiveOng {
   documentId: string;
@@ -146,5 +148,20 @@ export interface OngEvaluationDetail {
   }[];
   invitedCount: number;
   completedCount: number;
-  scores: { dimensions: Record<string, number | null>; overall: number | null };
+  scores: ReportScores;
+  /**
+   * One entry per invited member, with their own scores and the arguments they
+   * wrote. Only FDSC staff and mentors reach this endpoint, so respondents are
+   * named here; the ONG admin's `/api/reports/:documentId` carries no
+   * per-member data at all.
+   */
+  evaluations: OngEvaluationRespondent[];
+}
+
+export interface OngEvaluationRespondent {
+  documentId: string;
+  user: { documentId: string; nume: string; email: string | null } | null;
+  progress: EvaluationProgress;
+  scores: ReportScores;
+  dimensions: EvaluationDimensionBlock[];
 }
