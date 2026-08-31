@@ -22,12 +22,9 @@ function completionPeriod(evaluation: OngEvaluation) {
 export function OngEvaluationsTable({
   ongDocumentId,
   evaluations,
-  basePath = `/dashboard/fdsc/organizatii/${ongDocumentId}`,
 }: {
   ongDocumentId: string;
   evaluations: OngEvaluation[];
-  /** Base route for this org's detail tabs — defaults to the fdsc-admin path. */
-  basePath?: string;
 }) {
   if (!evaluations || evaluations.length === 0) {
     return (

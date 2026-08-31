@@ -1,5 +1,3 @@
-import { localApiFetch } from "./local";
-
 export interface ActiveMentor {
   documentId: string;
   nume: string;
@@ -7,8 +5,4 @@ export interface ActiveMentor {
   mentorJobTitle: string | null;
   mentorOrganization: string | null;
   avatar: { documentId: string; name: string; url: string } | null;
-}
-
-export function listActiveMentors() {
-  return localApiFetch<{ data: ActiveMentor[] }>("/api/mentors/active");
 }

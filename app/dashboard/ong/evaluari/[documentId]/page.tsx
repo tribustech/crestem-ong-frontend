@@ -1,10 +1,9 @@
-import { CheckCircle2, Circle } from "lucide-react";
 import { serverApiFetch } from "@/lib/api/server";
 import { EvaluationTabs } from "@/components/features/overview/EvaluationTabs";
 import { findActiveReport } from "@/lib/api/reports";
 import type { ReportDetail, ReportMembers, OngMember, ReportsCurrent } from "@/lib/api/reports";
 import type { Dimension } from "@/lib/api/dimensions";
-import { dimensionColor, dimensionPillStyle } from "@/lib/api/dimension-colors";
+import { DimensionsBreakdown } from "@/components/features/evaluari/DimensionsBreakdown";
 import { ReportDetailActions } from "@/components/features/dashboard-ong/ReportDetailActions";
 import { ReportMembersTable } from "@/components/features/dashboard-ong/ReportMembersTable";
 
@@ -131,53 +130,11 @@ export default async function OngEvaluareDetailPage({
         </p>
       </div>
 
-      <div className="bg-white rounded-xl border border-border p-6 mb-8">
-        <h2 className="font-bold text-base mb-5" style={{ color: "#162040" }}>
-          Dimensiuni evaluate
-        </h2>
-        <div className="space-y-0">
-          {dimensionsRes.map((dimension) => {
-            const score = report.scores.dimensions[dimension.key] ?? null;
-            const color = dimensionColor(score);
-            const tags = Array.from(new Set(dimension.quiz.map((q) => q.tag).filter((tag): tag is string => !!tag)));
-            return (
-              <div key={dimension.key} className="py-4 border-b border-border last:border-0">
-                <div className="flex items-center gap-3 mb-2">
-                  {score != null ? (
-                    <CheckCircle2 size={16} className="flex-shrink-0" style={{ color: "#2dbe8f" }} />
-                  ) : (
-                    <Circle size={16} className="flex-shrink-0" style={{ color: "#cbd5e1" }} />
-                  )}
-                  <span className="flex-1 text-sm font-semibold" style={{ color: "#162040" }}>
-                    {dimension.name}
-                  </span>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <div className="w-28 h-2 rounded-full overflow-hidden" style={{ background: "#e2e8f0" }}>
-                      <div className="h-full rounded-full" style={{ width: `${score ?? 0}%`, background: color }} />
-                    </div>
-                    <span className="text-sm font-bold w-10 text-right" style={{ color }}>
-                      {score != null ? `${score}%` : "—"}
-                    </span>
-                  </div>
-                </div>
-                {tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 ml-7">
-                    {tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        style={dimensionPillStyle(score)}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <DimensionsBreakdown
+        dimensions={dimensionsRes}
+        scores={report.scores}
+        comments={report.comments}
+      />
 
       <ReportMembersTable
         reportId={documentId}

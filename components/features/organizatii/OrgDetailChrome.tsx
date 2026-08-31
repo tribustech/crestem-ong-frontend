@@ -55,14 +55,12 @@ export function OrgDetailChrome({
   role?: "fdsc" | "mentor";
 }) {
   const pathname = usePathname();
-  const base =
-    role === "mentor"
-      ? `/dashboard/mentor/organizatii/${documentId}`
-      : `/dashboard/organizatii/${documentId}`;
+  // Role-less, like every other in-app link: `usePathname()` reports the URL the
+  // browser shows, which the proxy has already stripped the role segment from.
+  // A role-carrying href here would never match, leaving the chrome unrendered.
+  const base = `/dashboard/organizatii/${documentId}`;
   const backHref =
-    role === "mentor"
-      ? "/dashboard/mentor/programe"
-      : "/dashboard/fdsc/organizatii";
+    role === "mentor" ? "/dashboard/programe" : "/dashboard/organizatii";
   const backLabel =
     role === "mentor" ? "Înapoi la programele mele" : "Înapoi la organizații";
   const TABS = role === "mentor" ? MENTOR_TABS : FDSC_TABS;
@@ -79,7 +77,7 @@ export function OrgDetailChrome({
   return (
     <>
       <Link
-        href="/dashboard/organizatii"
+        href={backHref}
         className="inline-flex items-center gap-1.5 text-sm font-medium mb-6 print:hidden"
         style={{ color: "#94a3b8" }}
       >

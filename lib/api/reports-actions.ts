@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidateDashboardPath } from "./revalidate";
-import { redirect } from "next/navigation";
 import { serverApiFetch } from "./server";
 import { getApiErrorMessage } from "./client";
 
@@ -53,15 +52,4 @@ export async function finishReportAction(reportId: string): Promise<{ error?: st
   revalidateDashboardPath("/dashboard/ong/evaluari");
   revalidateDashboardPath("/dashboard/ong/programe");
   return {};
-}
-
-export async function deleteReportAction(reportId: string): Promise<{ error?: string }> {
-  try {
-    await serverApiFetch(`/api/reports/${reportId}`, { method: "DELETE" });
-  } catch (err) {
-    return { error: getApiErrorMessage(err, "Nu am putut șterge runda.") };
-  }
-
-  revalidateDashboardPath("/dashboard/ong/evaluari");
-  redirect("/dashboard/evaluari");
 }

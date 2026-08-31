@@ -112,7 +112,7 @@ export function MentorProgramCard({ program }: { program: MentorProgram }) {
                   </td>
                   <td className="px-6 py-3.5 text-right whitespace-nowrap">
                     <Link
-                      href={`/dashboard/mentor/organizatii/${ong.documentId}`}
+                      href={`/dashboard/organizatii/${ong.documentId}`}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border hover:bg-slate-50 transition-colors"
                       style={{ color: "#475569" }}
                     >
