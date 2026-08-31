@@ -211,37 +211,32 @@ export function RegisterNgoForm() {
           className="mb-3 font-heading font-extrabold text-2xl"
           style={{ color: "#162040" }}
         >
-          Înregistrare trimisă cu succes!
+          Contul a fost creat cu succes!
         </h2>
         <p
           className="text-muted-foreground mb-2"
           style={{ maxWidth: 420, margin: "0 auto 0.5rem" }}
         >
-          Am primit cererea de înregistrare pentru{" "}
-          <strong style={{ color: "#162040" }}>{submittedNumeOng}</strong>.
+          Am creat contul pentru{" "}
+          <strong style={{ color: "#162040" }}>{submittedNumeOng}</strong>. Te poți
+          autentifica imediat folosind adresa{" "}
+          <strong style={{ color: "#162040" }}>{submittedEmail}</strong>.
         </p>
         <p
           className="text-muted-foreground mb-8"
           style={{ maxWidth: 420, marginLeft: "auto", marginRight: "auto" }}
         >
-          Un consultant Crestem te va contacta la{" "}
-          <strong style={{ color: "#162040" }}>{submittedEmail}</strong> în termen de
-          2–3 zile lucrătoare pentru a stabili detaliile sesiunii de evaluare.
+          După autentificare poți începe o evaluare independentă a organizației
+          tale, poți adăuga membri în echipă și poți participa la programele
+          alocate de echipa Crestem ONG.
         </p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link
-            href="/"
+            href="/autentificare"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white transition-all hover:opacity-90"
             style={{ background: "#162040" }}
           >
-            Înapoi la pagina principală
-          </Link>
-          <Link
-            href="/programe"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold border border-border transition-colors hover:bg-muted"
-            style={{ color: "#162040" }}
-          >
-            Explorează programele
+            Autentifică-te
           </Link>
         </div>
       </div>
