@@ -8,6 +8,9 @@ import { articleGridBlock } from "./blocks/article-grid";
 import { programmeGridBlock } from "./blocks/programme-grid";
 import { peopleGridBlock } from "./blocks/people-grid";
 import { categoryGridBlock } from "./blocks/category-grid";
+import { peopleCollectionBlock } from "./blocks/people-collection";
+import { testimonialsBlock } from "./blocks/testimonials";
+import { faqCollectionBlock } from "./blocks/faq-collection";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -23,6 +26,9 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [programmeGridBlock.type]: programmeGridBlock,
   [peopleGridBlock.type]: peopleGridBlock,
   [categoryGridBlock.type]: categoryGridBlock,
+  [peopleCollectionBlock.type]: peopleCollectionBlock,
+  [testimonialsBlock.type]: testimonialsBlock,
+  [faqCollectionBlock.type]: faqCollectionBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [
