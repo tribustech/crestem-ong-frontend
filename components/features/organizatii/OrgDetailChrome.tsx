@@ -8,7 +8,7 @@ import { OrgHeaderCard } from "./OrgHeaderCard";
 
 const FDSC_TABS = [
   { key: "overview", label: "Overview", segment: "" },
-  { key: "evaluari", label: "Evaluări", segment: "evaluari" },
+  { key: "evaluari", label: "Istoric evaluări", segment: "evaluari" },
   {
     key: "evaluare-curenta",
     label: "Evaluare curentă",
@@ -25,7 +25,7 @@ const FDSC_TABS = [
 
 const MENTOR_TABS = [
   { key: "overview", label: "Overview", segment: "" },
-  { key: "evaluari", label: "Evaluări", segment: "evaluari" },
+  { key: "evaluari", label: "Istoric evaluări", segment: "evaluari" },
   {
     key: "evaluare-curenta",
     label: "Evaluare curentă",
