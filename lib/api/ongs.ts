@@ -162,6 +162,8 @@ export interface OngEvaluationRespondent {
   documentId: string;
   user: { documentId: string; nume: string; email: string | null } | null;
   progress: EvaluationProgress;
+  /** `null` until the respondent has submitted every dimension. */
+  completedAt: string | null;
   scores: ReportScores;
   dimensions: EvaluationDimensionBlock[];
 }

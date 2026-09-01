@@ -1,36 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, CheckCircle2, Clock, AlertCircle, XCircle, Mail } from "lucide-react";
+import { Plus, AlertCircle, Mail } from "lucide-react";
 import { AddReportMembersModal } from "./AddReportMembersModal";
 import type { OngMember, ReportMember } from "@/lib/api/reports";
+import {
+  MEMBER_STATUS_COLORS,
+  MEMBER_STATUS_ICONS,
+  MEMBER_STATUS_LABELS,
+  MEMBER_TABLE_COLUMNS,
+} from "@/components/features/evaluari/evaluation-status";
 
 function formatDate(iso: string) {
   if (!iso) return "—";
   const [year, month, day] = iso.split("-");
   return `${day}.${month}.${year}`;
 }
-
-const MEMBER_STATUS_LABELS: Record<string, string> = {
-  neinceput: "Neînceput",
-  in_lucru: "În progres",
-  completat: "Completat",
-  nefinalizat: "Nefinalizat",
-};
-
-const MEMBER_STATUS_COLORS: Record<string, { bg: string; color: string }> = {
-  neinceput: { bg: "#f8fafc", color: "#94a3b8" },
-  in_lucru: { bg: "#fefce8", color: "#ca8a04" },
-  completat: { bg: "#f0fdf4", color: "#16a34a" },
-  nefinalizat: { bg: "#fff5f5", color: "#dc2626" },
-};
-
-const MEMBER_STATUS_ICONS: Record<string, typeof CheckCircle2> = {
-  neinceput: AlertCircle,
-  in_lucru: Clock,
-  completat: CheckCircle2,
-  nefinalizat: XCircle,
-};
 
 export function ReportMembersTable({
   reportId,
@@ -77,13 +62,13 @@ export function ReportMembersTable({
         <table className="w-full text-sm">
           <thead>
             <tr style={{ background: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-              {["Utilizator", "Status", "Completat la", "Acțiuni"].map((h) => (
+              {MEMBER_TABLE_COLUMNS.map(({ label, align }) => (
                 <th
-                  key={h}
-                  className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider"
+                  key={label}
+                  className={`px-5 py-3 text-xs font-semibold uppercase tracking-wider ${align}`}
                   style={{ color: "#94a3b8" }}
                 >
-                  {h}
+                  {label}
                 </th>
               ))}
             </tr>
@@ -98,7 +83,7 @@ export function ReportMembersTable({
                     <p className="font-semibold" style={{ color: "#162040" }}>{entry.user?.nume ?? "—"}</p>
                     <p className="text-xs text-muted-foreground">{entry.user?.email ?? "—"}</p>
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 text-center">
                     <span
                       className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
                       style={{ background: statusColor.bg, color: statusColor.color }}
@@ -106,10 +91,10 @@ export function ReportMembersTable({
                       <StatusIcon size={11} /> {MEMBER_STATUS_LABELS[entry.status] ?? entry.status}
                     </span>
                   </td>
-                  <td className="px-5 py-3.5" style={{ color: "#64748b" }}>
+                  <td className="px-5 py-3.5 text-center" style={{ color: "#64748b" }}>
                     {entry.completedAt ? formatDate(entry.completedAt.slice(0, 10)) : "—"}
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td className="px-5 py-3.5 text-center">
                     {entry.status !== "completat" && (
                       <button
                         type="button"

@@ -1,10 +1,8 @@
-"use client";
-
-import { useState } from "react";
-import type { OngEvaluationDetail, OngEvaluationRespondent } from "@/lib/api/ongs";
+import type { OngEvaluationDetail } from "@/lib/api/ongs";
 import type { Dimension } from "@/lib/api/dimensions";
-import type { DimensionComment } from "@/lib/api/reports";
 import { DimensionsBreakdown } from "@/components/features/evaluari/DimensionsBreakdown";
+import { EvaluationRespondentsTable } from "./EvaluationRespondentsTable";
+import { collectComments } from "./evaluation-comments";
 
 function formatDate(iso: string) {
   if (!iso) return "—";
@@ -13,37 +11,19 @@ function formatDate(iso: string) {
 }
 
 /**
- * Arguments grouped by dimension, attributed. FDSC staff and mentors are the
- * only readers of this payload, so respondents are named here — unlike the ONG
- * admin's report page, which the API serves unattributed.
+ * `anonymous` withholds who answered what: arguments lose their author and the
+ * respondents table becomes a numbered list of evaluations. Mentors read the
+ * evaluation this way; FDSC staff see the real people.
  */
-function collectComments(
-  respondents: OngEvaluationRespondent[],
-): Record<string, DimensionComment[]> {
-  const byDimension: Record<string, DimensionComment[]> = {};
-  for (const respondent of respondents) {
-    for (const block of respondent.dimensions ?? []) {
-      const text = (block.comment ?? "").trim();
-      if (!block.submitted || !text) continue;
-      byDimension[block.dimensionKey] ??= [];
-      byDimension[block.dimensionKey].push({
-        author: respondent.user?.nume ?? null,
-        text,
-      });
-    }
-  }
-  return byDimension;
-}
-
 export function EvaluationDetailContent({
   evaluation,
   dimensions,
+  anonymous = false,
 }: {
   evaluation: OngEvaluationDetail;
   dimensions: Dimension[];
+  anonymous?: boolean;
 }) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
   const phase = evaluation.phases?.[0] ?? null;
   const programName = phase?.program?.name ?? "Evaluare independentă";
 
@@ -64,15 +44,10 @@ export function EvaluationDetailContent({
       ? Math.round((evaluation.completedCount / evaluation.invitedCount) * 100)
       : 0;
 
-  // Only finished respondents can be inspected — a half-filled evaluation has no
-  // scores to show.
-  const respondents = (evaluation.evaluations ?? []).filter(
-    (respondent) => respondent.progress?.complete,
-  );
-  const selected = respondents.find((respondent) => respondent.documentId === selectedId) ?? null;
-
-  const shownScores = selected ? selected.scores : evaluation.scores;
-  const shownComments = collectComments(selected ? [selected] : respondents);
+  const respondents = evaluation.evaluations ?? [];
+  // Report-wide arguments come only from finished respondents — a half-filled
+  // evaluation has nothing to average in.
+  const completed = respondents.filter((respondent) => respondent.progress?.complete);
 
   return (
     <>
@@ -134,48 +109,13 @@ export function EvaluationDetailContent({
         </p>
       </div>
 
-      {respondents.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-4">
-          <button
-            type="button"
-            onClick={() => setSelectedId(null)}
-            aria-pressed={selected == null}
-            className="px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors"
-            style={
-              selected == null
-                ? { background: "#2dbe8f", color: "#ffffff", borderColor: "#2dbe8f" }
-                : { background: "#ffffff", color: "#64748b", borderColor: "#e2e8f0" }
-            }
-          >
-            Rezultat general
-          </button>
-          {respondents.map((respondent) => {
-            const active = respondent.documentId === selectedId;
-            return (
-              <button
-                key={respondent.documentId}
-                type="button"
-                onClick={() => setSelectedId(respondent.documentId)}
-                aria-pressed={active}
-                className="px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors"
-                style={
-                  active
-                    ? { background: "#2dbe8f", color: "#ffffff", borderColor: "#2dbe8f" }
-                    : { background: "#ffffff", color: "#64748b", borderColor: "#e2e8f0" }
-                }
-              >
-                {respondent.user?.nume ?? "Membru șters"}
-              </button>
-            );
-          })}
-        </div>
-      )}
-
       <DimensionsBreakdown
         dimensions={dimensions}
-        scores={shownScores}
-        comments={shownComments}
+        scores={evaluation.scores}
+        comments={collectComments(completed, { attributed: !anonymous })}
       />
+
+      <EvaluationRespondentsTable respondents={respondents} anonymous={anonymous} />
     </>
   );
 }

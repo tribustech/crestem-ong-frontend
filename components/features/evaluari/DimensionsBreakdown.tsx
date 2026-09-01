@@ -25,8 +25,14 @@ function ScoreBar({
   );
 }
 
-function CommentsToggle({ comments }: { comments: DimensionComment[] }) {
-  const [open, setOpen] = useState(false);
+function CommentsToggle({
+  comments,
+  defaultOpen,
+}: {
+  comments: DimensionComment[];
+  defaultOpen: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
 
   if (comments.length === 0) {
     return null;
@@ -77,15 +83,20 @@ function CommentsToggle({ comments }: { comments: DimensionComment[] }) {
  * the ONG admin report page and the FDSC/mentor organization pages, which differ
  * only in the data they hand in — the ONG admin's `comments` never carry an
  * author.
+ *
+ * `commentsOpen` expands every argument on mount, for the single-respondent page
+ * where the text a member wrote is the point of the page rather than an aside.
  */
 export function DimensionsBreakdown({
   dimensions,
   scores,
   comments,
+  commentsOpen = false,
 }: {
   dimensions: Dimension[];
   scores: ReportScores;
   comments: Record<string, DimensionComment[]>;
+  commentsOpen?: boolean;
 }) {
   return (
     <div className="bg-white rounded-xl border border-border p-6 mb-8">
@@ -137,7 +148,7 @@ export function DimensionsBreakdown({
                 })}
               </div>
 
-              <CommentsToggle comments={comments[dimension.key] ?? []} />
+              <CommentsToggle comments={comments[dimension.key] ?? []} defaultOpen={commentsOpen} />
             </div>
           );
         })}

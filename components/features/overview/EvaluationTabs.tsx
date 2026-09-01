@@ -41,7 +41,7 @@ export function EvaluationTabs({
         Overview
       </Link>
       <Link href={basePath} className={tabClass(active === "evaluations")}>
-        Evaluări
+        Istoric evaluări
       </Link>
       {currentEvaluationHref ? (
         <Link href={currentEvaluationHref} className={tabClass(active === "current")}>

@@ -28,7 +28,11 @@ export default async function MentorOrganizatieEvaluareCurentaPage({
   return (
     <div>
       {evaluationDetail && dimensions ? (
-        <EvaluationDetailContent evaluation={evaluationDetail.data} dimensions={dimensions} />
+        <EvaluationDetailContent
+          evaluation={evaluationDetail.data}
+          dimensions={dimensions}
+          anonymous
+        />
       ) : (
         <div className="bg-white rounded-xl border border-border p-8 text-center">
           <p className="text-sm text-muted-foreground">

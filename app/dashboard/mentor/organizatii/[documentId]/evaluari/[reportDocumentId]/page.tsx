@@ -29,7 +29,11 @@ export default async function MentorOrganizatieEvaluareDetailPage({
         <ArrowLeft size={14} /> Înapoi la evaluări
       </Link>
 
-      <EvaluationDetailContent evaluation={evaluationRes.data} dimensions={dimensionsRes} />
+      <EvaluationDetailContent
+        evaluation={evaluationRes.data}
+        dimensions={dimensionsRes}
+        anonymous
+      />
     </div>
   );
 }
