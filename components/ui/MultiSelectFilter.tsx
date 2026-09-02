@@ -12,6 +12,8 @@ interface OptionsResponse {
   data: FilterOption[];
   meta: {
     selected: FilterOption[];
+    /** Whether any round in scope sits outside every program. */
+    hasIndependent: boolean;
     pagination: { page: number; pageCount: number };
   };
 }
@@ -29,6 +31,7 @@ const SEARCH_DEBOUNCE_MS = 350;
  */
 export function MultiSelectFilter({
   kind,
+  scope,
   label,
   placeholder,
   selected,
@@ -36,6 +39,8 @@ export function MultiSelectFilter({
   extraOptions = [],
 }: {
   kind: "ongs" | "programs";
+  /** Which tab is asking: it decides which rounds the options are drawn from. */
+  scope: "evaluations" | "reports";
   label: string;
   placeholder: string;
   selected: string[];
@@ -51,6 +56,8 @@ export function MultiSelectFilter({
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [loading, setLoading] = useState(false);
+  // Hidden until the first response says such a round exists.
+  const [extrasAllowed, setExtrasAllowed] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +65,7 @@ export function MultiSelectFilter({
     async (targetPage: number, term: string) => {
       setLoading(true);
       try {
-        const query = new URLSearchParams();
+        const query = new URLSearchParams({ scope });
         if (term) query.set("search", term);
         if (targetPage > 1) query.set("page", String(targetPage));
         if (targetPage === 1 && selected.length > 0) {
@@ -72,6 +79,7 @@ export function MultiSelectFilter({
         );
         setPageCount(body.meta.pagination.pageCount);
         setPage(body.meta.pagination.page);
+        setExtrasAllowed(Boolean(body.meta.hasIndependent));
         setNames((current) => {
           const next = { ...current };
           for (const option of [...body.data, ...(body.meta.selected ?? [])]) {
@@ -83,7 +91,7 @@ export function MultiSelectFilter({
         setLoading(false);
       }
     },
-    [kind, selected],
+    [kind, scope, selected],
   );
 
   // Open loads the first page; typing reloads it debounced.
@@ -132,7 +140,7 @@ export function MultiSelectFilter({
   }
 
   const visible = [
-    ...extraOptions.filter(
+    ...(extrasAllowed ? extraOptions : []).filter(
       (option) => !search || option.name.toLowerCase().includes(search.toLowerCase()),
     ),
     ...options,

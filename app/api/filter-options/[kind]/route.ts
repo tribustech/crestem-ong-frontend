@@ -25,7 +25,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ kind
 
   const incoming = new URL(request.url).searchParams;
   const query = new URLSearchParams();
-  for (const key of ["search", "page", "selected"]) {
+  for (const key of ["search", "page", "selected", "scope"]) {
     const value = incoming.get(key);
     if (value) query.set(key, value);
   }

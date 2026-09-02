@@ -45,6 +45,9 @@ export function EvaluariFilters({
   const [programs, setPrograms] = useState(initialPrograms);
   const [status, setStatus] = useState(initialStatus);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // The rounds tab lists rounds, the users tab the responses inside them, so the
+  // filters offer whichever of those two actually has rows.
+  const scope = tab === "organizatii" ? "reports" : "evaluations";
 
   useEffect(() => {
     return () => {
@@ -100,6 +103,7 @@ export function EvaluariFilters({
       <div className="lg:w-56">
         <MultiSelectFilter
           kind="ongs"
+          scope={scope}
           label="Organizații"
           placeholder="Toate organizațiile"
           selected={ongs}
@@ -110,6 +114,7 @@ export function EvaluariFilters({
       <div className="lg:w-56">
         <MultiSelectFilter
           kind="programs"
+          scope={scope}
           label="Programe"
           placeholder="Toate programele"
           selected={programs}
