@@ -2,8 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ChevronRight, Star } from "lucide-react";
 import type { HeroStat, HeroStatisticsData } from "./schema";
 
-const NAVY_GRADIENT =
-  "linear-gradient(135deg, #0d1b35 0%, #162040 60%, #1a3a5c 100%)";
+const NAVY_BG = "#162040";
 
 const COL_CLASS: Record<HeroStatisticsData["coloane"], string> = {
   "1": "sm:grid-cols-1 lg:grid-cols-1",
@@ -31,7 +30,7 @@ function StatCell({ stat, className }: { stat: HeroStat; className: string }) {
 
 /**
  * "Hero – Statistics" — headline, copy and up to two CTAs on the left; a grid of
- * value/label stat cards on the right, over the navy gradient. Pure (no hooks,
+ * value/label stat cards on the right, over the navy background. Pure (no hooks,
  * no `"use client"`) so it can render on the public page unchanged once a backend
  * feeds it the same data shape.
  */
@@ -61,35 +60,8 @@ export function HeroStatistics({ data }: { data: HeroStatisticsData }) {
   return (
     <section
       className="flex items-center relative overflow-hidden"
-      style={{ background: NAVY_GRADIENT }}
+      style={{ background: NAVY_BG }}
     >
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-1/4 right-0 w-150 h-150 rounded-full opacity-10"
-          style={{
-            background: "radial-gradient(circle, #2dbe8f, transparent 70%)",
-          }}
-        />
-        <svg className="absolute inset-0 w-full h-full opacity-5">
-          <defs>
-            <pattern
-              id="hero-statistics-grid"
-              width="40"
-              height="40"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 40 0 L 0 0 0 40"
-                fill="none"
-                stroke="white"
-                strokeWidth="0.5"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#hero-statistics-grid)" />
-        </svg>
-      </div>
-
       <div
         className={`relative max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 gap-16 items-center w-full ${
           hasStats ? "lg:grid-cols-2" : ""

@@ -25,7 +25,7 @@ export function Quote({ data }: { data: QuoteData }) {
   const hasCaption = Boolean(autor || meta || sursa);
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-3xl px-6 py-16">
         <figure
           className={`flex flex-col ${COLUMN_ALIGN[aliniere]} ${

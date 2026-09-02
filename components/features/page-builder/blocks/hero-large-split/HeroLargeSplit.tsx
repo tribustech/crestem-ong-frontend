@@ -107,24 +107,8 @@ export function HeroLargeSplit({ data }: { data: HeroLargeSplitData }) {
   return (
     <section
       className="flex items-center relative overflow-hidden"
-      style={{
-        background: "linear-gradient(135deg, #0d1b35 0%, #162040 60%, #1a3a5c 100%)",
-      }}
+      style={{ background: "#162040" }}
     >
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute top-1/4 right-0 w-150 h-150 rounded-full opacity-10"
-          style={{ background: "radial-gradient(circle, #2dbe8f, transparent 70%)" }}
-        />
-        <svg className="absolute inset-0 w-full h-full opacity-5">
-          <defs>
-            <pattern id="hero-large-split-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#hero-large-split-grid)" />
-        </svg>
-      </div>
       <div
         className={`relative max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 gap-16 items-center w-full ${
           image ? "lg:grid-cols-2" : ""

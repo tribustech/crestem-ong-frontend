@@ -21,7 +21,7 @@ export function Testimonials({ data }: { data: TestimonialsData }) {
   const { titlu, modAfisare, autoplay, afiseazaNavigarea, testimoniale } = data;
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-7xl px-6 py-20">
         {titlu ? (
           <h2

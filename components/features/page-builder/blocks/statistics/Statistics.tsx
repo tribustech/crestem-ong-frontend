@@ -63,7 +63,7 @@ export function Statistics({ data }: { data: StatisticsData }) {
     : "rounded-2xl border border-border bg-slate-50/60 p-6";
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-7xl px-6 py-16">
         {hasHeader ? (
           <div className="mb-10">

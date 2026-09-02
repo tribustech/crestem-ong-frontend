@@ -77,7 +77,7 @@ export function ArticleGrid({ data }: { data: ArticleGridData }) {
   const articles = resolveArticles(data);
 
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative overflow-hidden">
       <div className="relative mx-auto max-w-7xl px-6 py-20">
         <div className="mx-auto mb-12 max-w-2xl text-center">
           <h2

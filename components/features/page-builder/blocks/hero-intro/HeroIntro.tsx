@@ -8,8 +8,7 @@ const ALIGN_CLASS: Record<HeroIntroData["horizontalAlign"], string> = {
   dreapta: "items-end text-right",
 };
 
-const NAVY_GRADIENT =
-  "linear-gradient(135deg, #0d1b35 0%, #162040 60%, #1a3a5c 100%)";
+const NAVY_BG = "#162040";
 
 /**
  * "Hero – Intro" — a short intro section: uppercase supratitlu, headline,
@@ -34,7 +33,7 @@ export function HeroIntro({ data }: { data: HeroIntroData }) {
 
   const sectionStyle: React.CSSProperties =
     background === "accent"
-      ? { background: NAVY_GRADIENT }
+      ? { background: NAVY_BG }
       : background === "light"
         ? { background: "#eefaf4" }
         : { background: "#ffffff" };
@@ -44,35 +43,6 @@ export function HeroIntro({ data }: { data: HeroIntroData }) {
       className="flex items-center relative overflow-hidden"
       style={sectionStyle}
     >
-      {isDark ? (
-        <div className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute top-1/4 right-0 w-150 h-150 rounded-full opacity-10"
-            style={{
-              background: "radial-gradient(circle, #2dbe8f, transparent 70%)",
-            }}
-          />
-          <svg className="absolute inset-0 w-full h-full opacity-5">
-            <defs>
-              <pattern
-                id="hero-intro-grid"
-                width="40"
-                height="40"
-                patternUnits="userSpaceOnUse"
-              >
-                <path
-                  d="M 40 0 L 0 0 0 40"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="0.5"
-                />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#hero-intro-grid)" />
-          </svg>
-        </div>
-      ) : null}
-
       <div
         className={`relative max-w-3xl mx-auto px-6 py-20 flex flex-col w-full ${ALIGN_CLASS[horizontalAlign]}`}
       >

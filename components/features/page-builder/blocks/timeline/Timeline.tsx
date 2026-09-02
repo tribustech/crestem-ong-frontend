@@ -82,7 +82,7 @@ export function Timeline({ data }: { data: TimelineData }) {
   const isHorizontal = orientatie === "orizontal";
 
   return (
-    <section className="bg-white">
+    <section>
       <div
         className={
           isHorizontal

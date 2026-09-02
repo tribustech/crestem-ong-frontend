@@ -13,7 +13,7 @@ export function Gallery({ data }: { data: GalleryData }) {
   const { titlu, descriere, imagini, stil, coloane, lightbox } = data;
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-7xl px-6 py-16">
         {titlu ? (
           <h2

@@ -44,7 +44,7 @@ export function ImageCaption({ data }: { data: ImageCaptionData }) {
 
   if (!image) {
     return (
-      <section className="bg-white">
+      <section>
         <div className="mx-auto max-w-3xl px-6 py-16">
           <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center text-sm text-[#94a3b8]">
             Adaugă o imagine.
@@ -62,7 +62,7 @@ export function ImageCaption({ data }: { data: ImageCaptionData }) {
   const hasCaption = Boolean(legenda || credit);
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="px-6 py-16">
         <figure className={`${WIDTH_CLASS[latime]} ${ALIGN_CLASS[aliniere]}`}>
           {aspectClass ? (

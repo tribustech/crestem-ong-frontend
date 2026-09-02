@@ -21,9 +21,15 @@ interface Card {
   definition?: BlockDefinition;
 }
 
-function cardsForCategory(category: BlockCategory): Card[] {
+function cardsForCategory(
+  category: BlockCategory,
+  excludeTypes: string[] = [],
+): Card[] {
   const working: Card[] = Object.values(BLOCK_REGISTRY)
-    .filter((block) => block.category === category)
+    .filter(
+      (block) =>
+        block.category === category && !excludeTypes.includes(block.type),
+    )
     .map((definition) => ({
       key: definition.type,
       name: definition.name,
@@ -32,7 +38,9 @@ function cardsForCategory(category: BlockCategory): Card[] {
       definition,
     }));
   const upcoming: Card[] = UPCOMING_BLOCKS.filter(
-    (block) => block.category === category,
+    (block) =>
+      block.category === category &&
+      !excludeTypes.includes(block.name.toLowerCase()),
   ).map((block) => ({
     key: `${block.category}:${block.name}`,
     name: block.name,
@@ -45,12 +53,17 @@ function cardsForCategory(category: BlockCategory): Card[] {
 export function AddBlockModal({
   onSelect,
   onClose,
+  excludeTypes,
 }: {
   onSelect: (type: string) => void;
   onClose: () => void;
+  /** Block types to hide from the picker — e.g. `["section"]` when adding
+   *  inside a section, so a section can't nest another section. */
+  excludeTypes?: string[];
 }) {
   const [activeCategory, setActiveCategory] = useState<BlockCategory>("hero");
   const [query, setQuery] = useState("");
+  const excludeKey = (excludeTypes ?? []).join(",");
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -63,13 +76,16 @@ export function AddBlockModal({
   const trimmedQuery = query.trim().toLowerCase();
 
   const visibleCards = useMemo(() => {
-    if (!trimmedQuery) return cardsForCategory(activeCategory);
-    return CATEGORY_ORDER.flatMap(cardsForCategory).filter(
+    const exclude = excludeKey ? excludeKey.split(",") : [];
+    if (!trimmedQuery) return cardsForCategory(activeCategory, exclude);
+    return CATEGORY_ORDER.flatMap((category) =>
+      cardsForCategory(category, exclude),
+    ).filter(
       (card) =>
         card.name.toLowerCase().includes(trimmedQuery) ||
         card.description.toLowerCase().includes(trimmedQuery),
     );
-  }, [activeCategory, trimmedQuery]);
+  }, [activeCategory, trimmedQuery, excludeKey]);
 
   return (
     <ModalOverlay labelledBy="add-block-title">

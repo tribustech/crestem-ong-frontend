@@ -19,7 +19,7 @@ export function SectionHeader({ data }: { data: SectionHeaderData }) {
   if (!titlu) return null;
 
   return (
-    <section className="bg-white">
+    <section>
       <div className={`mx-auto max-w-3xl px-6 py-16 ${ALIGN_CLASS[aliniere]}`}>
         <h2
           className="font-heading wrap-break-word"

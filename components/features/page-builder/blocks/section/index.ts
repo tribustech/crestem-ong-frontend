@@ -1,4 +1,4 @@
-import { RectangleHorizontal } from "lucide-react";
+import { Layers } from "lucide-react";
 import { defineBlock } from "../../types";
 import { SectionEditor } from "./Editor";
 import { SectionBlock } from "./SectionBlock";
@@ -8,8 +8,8 @@ export const sectionBlock = defineBlock({
   type: "section",
   category: "structure",
   name: "Section",
-  description: "Bandă de secțiune cu fundal, spațiere și titlu opțional",
-  icon: RectangleHorizontal,
+  description: "Container de grupare pentru blocuri de conținut înrudite",
+  icon: Layers,
   schema: sectionSchema,
   defaults: SECTION_DEFAULTS,
   Editor: SectionEditor,

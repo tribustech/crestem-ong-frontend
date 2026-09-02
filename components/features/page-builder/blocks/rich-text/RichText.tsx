@@ -21,7 +21,7 @@ export function RichText({ data }: { data: RichTextData }) {
   const continut = sanitizeRichText(data.continut);
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-3xl px-6 py-16">
         {titlu ? (
           <h2

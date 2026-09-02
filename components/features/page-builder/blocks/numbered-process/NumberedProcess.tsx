@@ -10,7 +10,7 @@ export function NumberedProcess({ data }: { data: NumberedProcessData }) {
   const { titlu, pasi } = data;
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-3xl px-6 py-16">
         {titlu ? (
           <h2

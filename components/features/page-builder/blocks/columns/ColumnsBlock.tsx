@@ -12,7 +12,7 @@ export function ColumnsBlock({ data }: { data: ColumnsData }) {
   if (coloane.length === 0) return null;
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-5xl px-6 py-16">
         <div
           className={

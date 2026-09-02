@@ -10,6 +10,7 @@ export const heroCenteredBlock = defineBlock({
   name: "Hero – Centered",
   description: "Titlu centrat, subtitlu și butoane de acțiune",
   icon: AlignCenter,
+  fullBleed: true,
   schema: heroCenteredSchema,
   defaults: HERO_CENTERED_DEFAULTS,
   Editor: HeroCenteredEditor,

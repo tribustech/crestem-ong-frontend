@@ -10,6 +10,7 @@ export const dividerBlock = defineBlock({
   name: "Divider",
   description: "Linie separatoare cu stil personalizabil",
   icon: Minus,
+  bare: true,
   schema: dividerSchema,
   defaults: DIVIDER_DEFAULTS,
   Editor: DividerEditor,

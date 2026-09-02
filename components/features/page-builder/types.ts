@@ -45,6 +45,19 @@ export interface BlockDefinition {
   name: string;
   description: string;
   icon: LucideIcon;
+  /**
+   * Render on the canvas without the card frame (border / radius / white fill).
+   * For structural blocks that are themselves just whitespace or a rule, where
+   * the frame reads as an empty card — e.g. Spacer, Divider.
+   */
+  bare: boolean;
+  /**
+   * When placed inside a Section, render edge-to-edge — no content-width
+   * container, no horizontal padding, and (when it is the first/last child) no
+   * section top/bottom spacing. For blocks that are their own full-width band,
+   * e.g. the hero blocks.
+   */
+  fullBleed: boolean;
   defaults: unknown;
   /** Validate raw block data, returning either parsed data or field errors. */
   parse: (data: unknown) => BlockParseResult;
@@ -69,6 +82,10 @@ interface DefineBlockConfig<TData> {
   name: string;
   description: string;
   icon: LucideIcon;
+  /** See `BlockDefinition.bare`. Defaults to `false`. */
+  bare?: boolean;
+  /** See `BlockDefinition.fullBleed`. Defaults to `false`. */
+  fullBleed?: boolean;
   schema: ZodType<TData>;
   defaults: TData;
   Editor: ComponentType<{
@@ -105,6 +122,8 @@ export function defineBlock<TData>(
     name: config.name,
     description: config.description,
     icon: config.icon,
+    bare: config.bare ?? false,
+    fullBleed: config.fullBleed ?? false,
     defaults: config.defaults,
     parse: (data) => {
       const result = schema.safeParse(data);

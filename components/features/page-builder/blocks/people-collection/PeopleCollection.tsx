@@ -123,7 +123,7 @@ function PeopleCollectionSkeleton({
   rows: number;
 }) {
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-7xl px-6 py-20">
         {data.titlu ? (
           <div className="mx-auto mb-12 h-10 max-w-sm animate-pulse rounded bg-muted" />

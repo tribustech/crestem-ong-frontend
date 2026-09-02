@@ -75,7 +75,7 @@ export function Video({ data }: { data: VideoData }) {
       : ASPECT_CLASS[raport];
 
   return (
-    <section className="bg-white">
+    <section>
       <div className={`mx-auto px-6 py-16 ${WIDTH_CLASS[latime]}`}>
         {titlu && (
           <h2 className="text-2xl font-bold text-[#162040]">{titlu}</h2>

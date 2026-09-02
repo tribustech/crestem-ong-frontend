@@ -5,8 +5,7 @@ import { sanitizeRichText, hasRichText } from "../../rich-text/sanitize";
 import { CALLOUT_ICONS } from "./icons";
 import type { CalloutData } from "./schema";
 
-const NAVY_GRADIENT =
-  "linear-gradient(135deg, #0d1b35 0%, #162040 60%, #1a3a5c 100%)";
+const NAVY_BG = "#162040";
 
 const COLUMN_ALIGN: Record<CalloutData["aliniere"], string> = {
   stanga: "items-start text-left",
@@ -21,7 +20,7 @@ const CTA_JUSTIFY: Record<CalloutData["aliniere"], string> = {
 };
 
 /**
- * "Callout" — an attention card on a navy gradient: an optional icon, an
+ * "Callout" — an attention card on a navy background: an optional icon, an
  * optional headline, a body of formatted copy and up to two CTAs. Pure (no
  * hooks, no `"use client"`) so it renders on the public page unchanged once a
  * backend feeds it the same shape.
@@ -39,19 +38,12 @@ export function Callout({ data }: { data: CalloutData }) {
   const hasSecondary = Boolean(secondaryCta.label && secondaryCta.href);
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-4xl px-6 py-16">
         <div
           className="relative overflow-hidden rounded-3xl px-8 py-14 shadow-xl sm:px-14"
-          style={{ background: NAVY_GRADIENT }}
+          style={{ background: NAVY_BG }}
         >
-          <div
-            className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full opacity-20"
-            style={{
-              background: "radial-gradient(circle, #2dbe8f, transparent 70%)",
-            }}
-          />
-
           <div className={`relative flex flex-col ${COLUMN_ALIGN[aliniere]}`}>
             {showIcon ? (
               <span className="mb-6 inline-flex rounded-2xl bg-white/10 p-3.5 text-[#2dbe8f]">

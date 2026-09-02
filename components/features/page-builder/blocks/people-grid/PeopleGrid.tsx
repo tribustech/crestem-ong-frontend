@@ -69,7 +69,7 @@ function PersonCard({ person }: { person: Person }) {
  */
 export function PeopleGrid({ data }: { data: PeopleGridData }) {
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative overflow-hidden">
       <div className="relative mx-auto max-w-7xl px-6 py-20">
         {data.titlu ? (
           <div className="mx-auto mb-12 max-w-2xl text-center">

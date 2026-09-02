@@ -1,8 +1,8 @@
 "use client";
 
-import type { HeroCenteredData } from "./schema";
+import type { SectionData } from "./schema";
 
-type Background = HeroCenteredData["background"];
+type Background = SectionData["fundal"];
 
 /** Small preview swatch shown inside each card. */
 const SWATCH_STYLE: Record<Background, React.CSSProperties> = {
@@ -20,8 +20,8 @@ const OPTIONS: { value: Background; label: string }[] = [
 ];
 
 /**
- * The "Fundal" field for Hero – Centered: a 4-up grid of swatch cards, the
- * selected one outlined in blue. Feature-specific, so co-located with the block.
+ * The "Fundal" field: a 4-up grid of swatch cards, the selected one outlined in
+ * blue. Mirrors the hero blocks' picker; co-located per the existing convention.
  */
 export function BackgroundPicker({
   value,

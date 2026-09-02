@@ -10,6 +10,7 @@ export const heroStatisticsBlock = defineBlock({
   name: "Hero – Statistics",
   description: "Hero cu contoare/statistici integrate",
   icon: BarChart3,
+  fullBleed: true,
   schema: heroStatisticsSchema,
   defaults: HERO_STATISTICS_DEFAULTS,
   Editor: HeroStatisticsEditor,

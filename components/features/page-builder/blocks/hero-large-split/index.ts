@@ -10,6 +10,7 @@ export const heroLargeSplitBlock = defineBlock({
   name: "Hero – Large Split",
   description: "Imagine mare + text alăturat, CTA proeminent",
   icon: LayoutTemplate,
+  fullBleed: true,
   schema: heroLargeSplitSchema,
   defaults: HERO_LARGE_SPLIT_DEFAULTS,
   Editor: HeroLargeSplitEditor,

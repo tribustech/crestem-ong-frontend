@@ -12,6 +12,7 @@ export function BlockConfigDrawer({
   onChange,
   onCancel,
   onSubmit,
+  submitLabel = "Adaugă blocul",
 }: {
   definition: BlockDefinition;
   draft: unknown;
@@ -19,6 +20,7 @@ export function BlockConfigDrawer({
   onChange: (next: unknown) => void;
   onCancel: () => void;
   onSubmit: () => void;
+  submitLabel?: string;
 }) {
   const { Editor } = definition;
   const [entered, setEntered] = useState(false);
@@ -93,7 +95,7 @@ export function BlockConfigDrawer({
               className="flex-1 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
               style={{ background: "#2dbe8f" }}
             >
-              Adaugă blocul
+              {submitLabel}
             </button>
           </div>
         </div>

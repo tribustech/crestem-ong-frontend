@@ -10,7 +10,7 @@ export function FaqCollection({ data }: { data: FaqCollectionData }) {
   const { titlu, primaDeschisa, intrebari } = data;
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-7xl px-6 py-20">
         {titlu ? (
           <h2

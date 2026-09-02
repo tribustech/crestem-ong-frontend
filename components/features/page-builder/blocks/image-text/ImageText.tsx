@@ -131,7 +131,7 @@ export function ImageText({ data }: { data: ImageTextData }) {
   );
 
   return (
-    <section className="bg-white">
+    <section>
       <div className="mx-auto max-w-6xl px-6 py-16">
         {stacked ? (
           <div className="mx-auto max-w-3xl">

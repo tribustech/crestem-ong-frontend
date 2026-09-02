@@ -8,9 +8,7 @@ type Background = FeatureCardsData["background"];
 const SWATCH_STYLE: Record<Background, React.CSSProperties> = {
   default: { background: "#ffffff", border: "1px solid #e2e8f0" },
   light: { background: "#eefaf4", border: "1px solid rgba(45,190,143,0.45)" },
-  accent: {
-    background: "linear-gradient(135deg, #0d1b35 0%, #162040 60%, #1a3a5c 100%)",
-  },
+  accent: { background: "#162040" },
 };
 
 const OPTIONS: { value: Background; label: string }[] = [

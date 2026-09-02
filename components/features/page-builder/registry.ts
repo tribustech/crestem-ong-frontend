@@ -19,10 +19,12 @@ import { imageBlock } from "./blocks/image";
 import { imageCaptionBlock } from "./blocks/image-caption";
 import { imageTextBlock } from "./blocks/image-text";
 import { galleryBlock } from "./blocks/gallery";
+import { sectionBlock } from "./blocks/section";
 import { sectionHeaderBlock } from "./blocks/section-header";
 import { timelineBlock } from "./blocks/timeline";
 import { numberedProcessBlock } from "./blocks/numbered-process";
 import { statisticsBlock } from "./blocks/statistics";
+import { spacerBlock } from "./blocks/spacer";
 import { dividerBlock } from "./blocks/divider";
 
 /**
@@ -50,10 +52,12 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [imageCaptionBlock.type]: imageCaptionBlock,
   [imageTextBlock.type]: imageTextBlock,
   [galleryBlock.type]: galleryBlock,
+  [sectionBlock.type]: sectionBlock,
   [sectionHeaderBlock.type]: sectionHeaderBlock,
   [timelineBlock.type]: timelineBlock,
   [numberedProcessBlock.type]: numberedProcessBlock,
   [statisticsBlock.type]: statisticsBlock,
+  [spacerBlock.type]: spacerBlock,
   [dividerBlock.type]: dividerBlock,
 };
 
@@ -102,10 +106,9 @@ export const CATEGORY_ICON: Record<BlockCategory, { bg: string; fg: string }> = 
  * Blocks shown in the picker but not yet implemented — they render as disabled
  * cards ("în curând"). Copy matches the Figma design.
  *
- * `section` / `columns` / `spacer` are built (see their folders under `blocks/`)
- * but parked here: the client hasn't decided how `section` / `columns` should
- * wrap other blocks, so they're disabled until that's settled. Re-enable by
- * importing the block and adding it to `BLOCK_REGISTRY`.
+ * `columns` is built (see `blocks/columns/`) but parked here: the client hasn't
+ * decided how it should wrap other blocks. Re-enable by importing the block and
+ * adding it to `BLOCK_REGISTRY`.
  */
 export interface UpcomingBlock {
   name: string;
@@ -115,18 +118,8 @@ export interface UpcomingBlock {
 
 export const UPCOMING_BLOCKS: UpcomingBlock[] = [
   {
-    name: "Section",
-    description: "Container pentru gruparea mai multor blocuri de conținut",
-    category: "structure",
-  },
-  {
     name: "Columns",
     description: "Layout cu două sau trei coloane pentru combinarea blocurilor",
-    category: "structure",
-  },
-  {
-    name: "Spacer",
-    description: "Spațiu vertical configurabil",
     category: "structure",
   },
 ];
