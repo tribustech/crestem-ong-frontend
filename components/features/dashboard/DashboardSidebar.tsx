@@ -63,6 +63,7 @@ const FDSC_NAV_SECTIONS: DashboardNavSection[] = [
     items: [
       { href: "/dashboard/programe", label: "Management programe", icon: Layers },
       { href: "/dashboard/organizatii", label: "Organizații", icon: Building2 },
+      { href: "/dashboard/evaluari", label: "Evaluări", icon: ClipboardList },
       { href: "/dashboard/persoane-resursa", label: "Persoane resursă", icon: UserCog },
     ],
   },
