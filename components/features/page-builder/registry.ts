@@ -19,7 +19,11 @@ import { imageBlock } from "./blocks/image";
 import { imageCaptionBlock } from "./blocks/image-caption";
 import { imageTextBlock } from "./blocks/image-text";
 import { galleryBlock } from "./blocks/gallery";
+import { sectionHeaderBlock } from "./blocks/section-header";
+import { timelineBlock } from "./blocks/timeline";
+import { numberedProcessBlock } from "./blocks/numbered-process";
 import { statisticsBlock } from "./blocks/statistics";
+import { dividerBlock } from "./blocks/divider";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -46,7 +50,11 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [imageCaptionBlock.type]: imageCaptionBlock,
   [imageTextBlock.type]: imageTextBlock,
   [galleryBlock.type]: galleryBlock,
+  [sectionHeaderBlock.type]: sectionHeaderBlock,
+  [timelineBlock.type]: timelineBlock,
+  [numberedProcessBlock.type]: numberedProcessBlock,
   [statisticsBlock.type]: statisticsBlock,
+  [dividerBlock.type]: dividerBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [
@@ -92,7 +100,12 @@ export const CATEGORY_ICON: Record<BlockCategory, { bg: string; fg: string }> = 
 
 /**
  * Blocks shown in the picker but not yet implemented — they render as disabled
- * cards ("în curând"). Copy matches the design.
+ * cards ("în curând"). Copy matches the Figma design.
+ *
+ * `section` / `columns` / `spacer` are built (see their folders under `blocks/`)
+ * but parked here: the client hasn't decided how `section` / `columns` should
+ * wrap other blocks, so they're disabled until that's settled. Re-enable by
+ * importing the block and adding it to `BLOCK_REGISTRY`.
  */
 export interface UpcomingBlock {
   name: string;
@@ -112,28 +125,8 @@ export const UPCOMING_BLOCKS: UpcomingBlock[] = [
     category: "structure",
   },
   {
-    name: "Section Header",
-    description: "Titlu de secțiune cu subtitlu opțional",
-    category: "structure",
-  },
-  {
-    name: "Timeline",
-    description: "Linie de timp verticală sau orizontală",
-    category: "structure",
-  },
-  {
-    name: "Numbered Process",
-    description: "Pași numerotați pentru procese",
-    category: "structure",
-  },
-  {
     name: "Spacer",
     description: "Spațiu vertical configurabil",
-    category: "structure",
-  },
-  {
-    name: "Divider",
-    description: "Linie separatoare cu stil personalizabil",
     category: "structure",
   },
 ];
