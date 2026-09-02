@@ -2,9 +2,11 @@
 
 import { useRef, useState, useTransition } from "react";
 import { Film, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { Toggle } from "@/components/ui/Toggle";
 import { uploadPageVideoAction } from "@/lib/api/page-blocks-actions";
+import { MAX_UPLOAD_BYTES, MAX_UPLOAD_LABEL } from "../../upload";
 import type { BlockFieldErrors } from "../../types";
 import type { VideoData } from "./schema";
 
@@ -41,18 +43,29 @@ export function VideoEditor({
     event.target.value = "";
     if (!file) return;
     setUploadError(null);
+    if (file.size > MAX_UPLOAD_BYTES) {
+      const message = `Fișierul depășește limita de ${MAX_UPLOAD_LABEL}. Alege un fișier mai mic.`;
+      setUploadError(message);
+      toast.error(message);
+      return;
+    }
     startUpload(async () => {
       const form = new FormData();
       form.append("files", file);
       try {
         const result = await uploadPageVideoAction(form);
         if (result.error || !result.video) {
-          setUploadError(result.error ?? "Nu am putut încărca fișierul video.");
+          const message =
+            result.error ?? "Nu am putut încărca fișierul video.";
+          setUploadError(message);
+          toast.error(message);
           return;
         }
         set({ fisier: result.video });
       } catch {
-        setUploadError("Nu am putut încărca fișierul video.");
+        const message = "Nu am putut încărca fișierul video.";
+        setUploadError(message);
+        toast.error(message);
       }
     });
   };

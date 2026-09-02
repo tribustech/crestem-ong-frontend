@@ -3,26 +3,28 @@
 import { ImagePlus, Loader2 } from "lucide-react";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { getMediaUrl } from "@/lib/api/client";
+import { RichTextField } from "../../rich-text/RichTextField";
 import { usePageImageUpload } from "../../upload";
 import type { BlockFieldErrors } from "../../types";
-import type { HeroLargeSplitData } from "./schema";
+import type { ImageTextData } from "./schema";
 
 const labelClass =
   "block text-xs font-semibold uppercase tracking-wide mb-1.5 text-[#475569]";
 const inputClass =
   "w-full px-4 py-2.5 rounded-xl border border-border text-sm focus:outline-none focus:ring-2 focus:ring-[#2dbe8f]/30 focus:border-[#2dbe8f] transition-colors disabled:opacity-60";
 const errorClass = "mt-1 text-xs text-[#ef4444]";
+const optionalHint = "ml-1.5 font-normal normal-case text-[#94a3b8]";
 
-export function HeroLargeSplitEditor({
+export function ImageTextEditor({
   value,
   onChange,
   errors,
 }: {
-  value: HeroLargeSplitData;
-  onChange: (next: HeroLargeSplitData) => void;
+  value: ImageTextData;
+  onChange: (next: ImageTextData) => void;
   errors: BlockFieldErrors;
 }) {
-  const set = (patch: Partial<HeroLargeSplitData>) => onChange({ ...value, ...patch });
+  const set = (patch: Partial<ImageTextData>) => onChange({ ...value, ...patch });
 
   const {
     onFileInputChange,
@@ -33,48 +35,6 @@ export function HeroLargeSplitEditor({
 
   return (
     <div className="space-y-5">
-      <div>
-        <label htmlFor="hls-supratitlu" className={labelClass}>
-          Supratitlu
-        </label>
-        <input
-          id="hls-supratitlu"
-          className={inputClass}
-          value={value.supratitlu}
-          onChange={(e) => set({ supratitlu: e.target.value })}
-          placeholder="Platforma #1 pentru organizații din România"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="hls-titlu" className={labelClass}>
-          Titlu <span className="text-[#ef4444]">*</span>
-        </label>
-        <input
-          id="hls-titlu"
-          className={inputClass}
-          value={value.titlu}
-          onChange={(e) => set({ titlu: e.target.value })}
-          placeholder="Creștem capacitatea organizațiilor care schimbă România"
-          aria-invalid={Boolean(errors.titlu)}
-        />
-        {errors.titlu && <p className={errorClass}>{errors.titlu}</p>}
-      </div>
-
-      <div>
-        <label htmlFor="hls-subtitlu" className={labelClass}>
-          Subtitlu (opțional)
-        </label>
-        <textarea
-          id="hls-subtitlu"
-          rows={3}
-          className={inputClass}
-          value={value.subtitlu}
-          onChange={(e) => set({ subtitlu: e.target.value })}
-          placeholder="Instrumente, resurse și sprijin pentru organizații care construiesc comunități mai puternice."
-        />
-      </div>
-
       <div>
         <span className={labelClass}>Imagine</span>
         {value.image ? (
@@ -138,46 +98,105 @@ export function HeroLargeSplitEditor({
         >
           Alege din Media Library · în curând
         </button>
+        {errors.image && <p className={errorClass}>{errors.image}</p>}
         {uploadError && <p className={errorClass}>{uploadError}</p>}
       </div>
 
       <div>
-        <label htmlFor="hls-alt" className={labelClass}>
+        <label htmlFor="image-text-alt" className={labelClass}>
           Alt text imagine
         </label>
         <input
-          id="hls-alt"
+          id="image-text-alt"
           className={inputClass}
-          value={value.imageAlt}
-          onChange={(e) => set({ imageAlt: e.target.value })}
+          value={value.altText}
+          onChange={(e) => set({ altText: e.target.value })}
           placeholder="Descriere accesibilă a imaginii"
-          aria-invalid={Boolean(errors.imageAlt)}
+          aria-invalid={Boolean(errors.altText)}
         />
-        {errors.imageAlt && <p className={errorClass}>{errors.imageAlt}</p>}
+        {errors.altText && <p className={errorClass}>{errors.altText}</p>}
       </div>
 
       <div>
-        <span className={labelClass}>Poziție imagine</span>
+        <label htmlFor="image-text-supratitlu" className={labelClass}>
+          Supratitlu<span className={optionalHint}>(opțional)</span>
+        </label>
+        <input
+          id="image-text-supratitlu"
+          className={inputClass}
+          value={value.supratitlu}
+          onChange={(e) => set({ supratitlu: e.target.value })}
+          placeholder="ex. Cum funcționează"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="image-text-titlu" className={labelClass}>
+          Titlu<span className={optionalHint}>(opțional)</span>
+        </label>
+        <input
+          id="image-text-titlu"
+          className={inputClass}
+          value={value.titlu}
+          onChange={(e) => set({ titlu: e.target.value })}
+          placeholder="ex. Un parcurs adaptat fiecărei organizații"
+        />
+      </div>
+
+      <div>
+        <span className={labelClass}>
+          Text <span className="text-[#ef4444]">*</span>
+        </span>
+        <RichTextField
+          value={value.text}
+          onChange={(text) => set({ text })}
+          invalid={Boolean(errors.text)}
+        />
+        {errors.text && <p className={errorClass}>{errors.text}</p>}
+      </div>
+
+      <div>
+        <span className={labelClass}>Aliniere</span>
         <SegmentedControl
-          ariaLabel="Poziție imagine"
-          value={value.imagePosition}
-          onChange={(imagePosition) => set({ imagePosition })}
+          ariaLabel="Aliniere"
+          value={value.aliniere}
+          onChange={(aliniere) => set({ aliniere })}
           options={[
-            { value: "dreapta", label: "Imagine dreapta" },
-            { value: "stanga", label: "Imagine stânga" },
+            { value: "stanga", label: "Stânga" },
+            { value: "centru", label: "Centru" },
+            { value: "dreapta", label: "Dreapta" },
           ]}
         />
       </div>
 
       <div>
-        <span className={labelClass}>Aliniere verticală</span>
+        <span className={labelClass}>Proporție coloane</span>
         <SegmentedControl
-          ariaLabel="Aliniere verticală"
-          value={value.verticalAlign}
-          onChange={(verticalAlign) => set({ verticalAlign })}
+          ariaLabel="Proporție coloane"
+          value={value.proportie}
+          onChange={(proportie) => set({ proportie })}
           options={[
-            { value: "centru", label: "Centru" },
-            { value: "sus", label: "Sus" },
+            { value: "50-50", label: "50 / 50" },
+            { value: "40-60", label: "40 / 60" },
+            { value: "60-40", label: "60 / 40" },
+          ]}
+        />
+        {value.aliniere === "centru" && (
+          <p className="mt-1 text-xs text-[#94a3b8]">
+            Se aplică doar când imaginea e la stânga sau la dreapta.
+          </p>
+        )}
+      </div>
+
+      <div>
+        <span className={labelClass}>Colțuri</span>
+        <SegmentedControl
+          ariaLabel="Colțuri"
+          value={value.colturi}
+          onChange={(colturi) => set({ colturi })}
+          options={[
+            { value: "default", label: "Default" },
+            { value: "drepte", label: "Fără rotunjire" },
           ]}
         />
       </div>
@@ -188,15 +207,19 @@ export function HeroLargeSplitEditor({
           <input
             className={inputClass}
             value={value.primaryCta.label}
-            onChange={(e) => set({ primaryCta: { ...value.primaryCta, label: e.target.value } })}
-            placeholder="Descoperă programele"
+            onChange={(e) =>
+              set({ primaryCta: { ...value.primaryCta, label: e.target.value } })
+            }
+            placeholder="Descoperă programul"
             aria-label="Text primul buton"
           />
           <input
             className={inputClass}
             value={value.primaryCta.href}
-            onChange={(e) => set({ primaryCta: { ...value.primaryCta, href: e.target.value } })}
-            placeholder="/programe"
+            onChange={(e) =>
+              set({ primaryCta: { ...value.primaryCta, href: e.target.value } })
+            }
+            placeholder="/programe/..."
             aria-label="Link primul buton"
           />
         </div>
@@ -204,24 +227,36 @@ export function HeroLargeSplitEditor({
       </fieldset>
 
       <fieldset>
-        <legend className={labelClass}>Al doilea buton (opțional)</legend>
+        <legend className={labelClass}>
+          Al doilea buton<span className={optionalHint}>(opțional)</span>
+        </legend>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input
             className={inputClass}
             value={value.secondaryCta.label}
-            onChange={(e) => set({ secondaryCta: { ...value.secondaryCta, label: e.target.value } })}
+            onChange={(e) =>
+              set({
+                secondaryCta: { ...value.secondaryCta, label: e.target.value },
+              })
+            }
             placeholder="Află mai multe"
             aria-label="Text al doilea buton"
           />
           <input
             className={inputClass}
             value={value.secondaryCta.href}
-            onChange={(e) => set({ secondaryCta: { ...value.secondaryCta, href: e.target.value } })}
+            onChange={(e) =>
+              set({
+                secondaryCta: { ...value.secondaryCta, href: e.target.value },
+              })
+            }
             placeholder="/despre-noi"
             aria-label="Link al doilea buton"
           />
         </div>
-        {errors.secondaryCta && <p className={errorClass}>{errors.secondaryCta}</p>}
+        {errors.secondaryCta && (
+          <p className={errorClass}>{errors.secondaryCta}</p>
+        )}
       </fieldset>
     </div>
   );

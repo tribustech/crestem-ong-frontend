@@ -15,6 +15,11 @@ import { richTextBlock } from "./blocks/rich-text";
 import { calloutBlock } from "./blocks/callout";
 import { quoteBlock } from "./blocks/quote";
 import { videoBlock } from "./blocks/video";
+import { imageBlock } from "./blocks/image";
+import { imageCaptionBlock } from "./blocks/image-caption";
+import { imageTextBlock } from "./blocks/image-text";
+import { galleryBlock } from "./blocks/gallery";
+import { statisticsBlock } from "./blocks/statistics";
 
 /**
  * Every working block, keyed by `type`. Adding another is a new folder under
@@ -37,6 +42,11 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [calloutBlock.type]: calloutBlock,
   [quoteBlock.type]: quoteBlock,
   [videoBlock.type]: videoBlock,
+  [imageBlock.type]: imageBlock,
+  [imageCaptionBlock.type]: imageCaptionBlock,
+  [imageTextBlock.type]: imageTextBlock,
+  [galleryBlock.type]: galleryBlock,
+  [statisticsBlock.type]: statisticsBlock,
 };
 
 export const CATEGORY_ORDER: BlockCategory[] = [
@@ -90,4 +100,40 @@ export interface UpcomingBlock {
   category: BlockCategory;
 }
 
-export const UPCOMING_BLOCKS: UpcomingBlock[] = [];
+export const UPCOMING_BLOCKS: UpcomingBlock[] = [
+  {
+    name: "Section",
+    description: "Container pentru gruparea mai multor blocuri de conținut",
+    category: "structure",
+  },
+  {
+    name: "Columns",
+    description: "Layout cu două sau trei coloane pentru combinarea blocurilor",
+    category: "structure",
+  },
+  {
+    name: "Section Header",
+    description: "Titlu de secțiune cu subtitlu opțional",
+    category: "structure",
+  },
+  {
+    name: "Timeline",
+    description: "Linie de timp verticală sau orizontală",
+    category: "structure",
+  },
+  {
+    name: "Numbered Process",
+    description: "Pași numerotați pentru procese",
+    category: "structure",
+  },
+  {
+    name: "Spacer",
+    description: "Spațiu vertical configurabil",
+    category: "structure",
+  },
+  {
+    name: "Divider",
+    description: "Linie separatoare cu stil personalizabil",
+    category: "structure",
+  },
+];
