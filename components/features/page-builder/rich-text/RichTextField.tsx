@@ -1,12 +1,14 @@
 "use client";
 
-import { useCallback, useState, type ReactNode } from "react";
+import { useCallback, useRef, useState, type ReactNode } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import ImageExtension from "@tiptap/extension-image";
 import {
   Bold,
   Heading2,
   Heading3,
+  ImagePlus,
   Italic,
   Link as LinkIcon,
   List,
@@ -18,6 +20,33 @@ import { RICH_TEXT_PROSE } from "./prose";
 const btnBase =
   "flex h-8 w-8 items-center justify-center rounded-lg text-[#475569] transition-colors hover:bg-slate-200/70 disabled:opacity-40";
 const btnActive = "bg-[#2dbe8f]/15 text-[#162040]";
+
+/**
+ * The official image extension renders whatever size the file happens to be,
+ * with no way to change it. Adding a `width` attribute — the plain HTML one, so
+ * it survives sanitising without inline styles — lets the toolbar offer sizes
+ * while a picture is selected.
+ */
+const ResizableImage = ImageExtension.extend({
+  addAttributes() {
+    return {
+      ...this.parent?.(),
+      width: {
+        default: null,
+        parseHTML: (element) => element.getAttribute("width"),
+        renderHTML: (attributes) =>
+          attributes.width ? { width: attributes.width } : {},
+      },
+    };
+  },
+});
+
+const IMAGE_WIDTHS: { label: string; title: string; width: number | null }[] = [
+  { label: "S", title: "Imagine mică", width: 160 },
+  { label: "M", title: "Imagine medie", width: 280 },
+  { label: "L", title: "Imagine mare", width: 480 },
+  { label: "100%", title: "Lățime completă", width: null },
+];
 
 function ToolbarButton({
   label,
@@ -53,13 +82,25 @@ export function RichTextField({
   value,
   onChange,
   invalid,
+  allowImages = false,
+  onUploadImage,
 }: {
   value: string;
   onChange: (html: string) => void;
   invalid?: boolean;
+  /**
+   * Off by default: the page-builder's `sanitizeRichText` strips `<img>`, so a
+   * surface that allows images must also be rendered through a sanitiser that
+   * keeps them.
+   */
+  allowImages?: boolean;
+  /** Returns the stored file's URL, or null when the upload failed. */
+  onUploadImage?: (file: File) => Promise<string | null>;
 }) {
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const imageInput = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -82,11 +123,18 @@ export function RichTextField({
           },
         },
       }),
+      ...(allowImages
+        ? [ResizableImage.configure({ inline: false, allowBase64: false })]
+        : []),
     ],
     content: value,
     editorProps: {
       attributes: {
-        class: `min-h-[180px] px-4 py-3 focus:outline-none ${RICH_TEXT_PROSE}`,
+        class: `min-h-[180px] px-4 py-3 focus:outline-none ${RICH_TEXT_PROSE}${
+          allowImages
+            ? " [&_img]:my-3 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-lg [&_img.ProseMirror-selectednode]:outline [&_img.ProseMirror-selectednode]:outline-2 [&_img.ProseMirror-selectednode]:outline-offset-2 [&_img.ProseMirror-selectednode]:outline-[#2dbe8f]"
+            : ""
+        }`,
       },
     },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -97,6 +145,18 @@ export function RichTextField({
     setLinkUrl((editor.getAttributes("link").href as string) ?? "");
     setLinkOpen(true);
   }, [editor]);
+
+  const insertImage = useCallback(
+    async (file: File) => {
+      if (!editor || !onUploadImage) return;
+      setUploading(true);
+      const url = await onUploadImage(file);
+      setUploading(false);
+      if (!url) return;
+      editor.chain().focus().setImage({ src: url, alt: file.name }).run();
+    },
+    [editor, onUploadImage],
+  );
 
   const applyLink = useCallback(() => {
     if (!editor) return;
@@ -187,6 +247,63 @@ export function RichTextField({
           >
             <Unlink size={16} />
           </ToolbarButton>
+        ) : null}
+
+        {allowImages && onUploadImage ? (
+          <>
+            <span className="mx-1 h-5 w-px bg-border" />
+            <ToolbarButton
+              label={uploading ? "Se încarcă imaginea" : "Adaugă imagine"}
+              onClick={() => imageInput.current?.click()}
+            >
+              <ImagePlus size={16} className={uploading ? "animate-pulse" : undefined} />
+            </ToolbarButton>
+            <input
+              ref={imageInput}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void insertImage(file);
+                event.target.value = "";
+              }}
+            />
+
+            {/* Sizes appear only with a picture selected — click it in the
+                editor first. */}
+            {editor.isActive("image")
+              ? IMAGE_WIDTHS.map((size) => (
+                  <button
+                    key={size.label}
+                    type="button"
+                    aria-label={size.title}
+                    title={size.title}
+                    aria-pressed={
+                      (editor.getAttributes("image").width ?? null) ===
+                      (size.width === null ? null : String(size.width))
+                    }
+                    onClick={() =>
+                      editor
+                        .chain()
+                        .focus()
+                        .updateAttributes("image", {
+                          width: size.width === null ? null : String(size.width),
+                        })
+                        .run()
+                    }
+                    className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 text-xs font-semibold text-[#475569] transition-colors hover:bg-slate-200/70 ${
+                      (editor.getAttributes("image").width ?? null) ===
+                      (size.width === null ? null : String(size.width))
+                        ? btnActive
+                        : ""
+                    }`}
+                  >
+                    {size.label}
+                  </button>
+                ))
+              : null}
+          </>
         ) : null}
       </div>
 
