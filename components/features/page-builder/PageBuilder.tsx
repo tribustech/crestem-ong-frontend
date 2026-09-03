@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Eye, GripVertical, Plus, X } from "lucide-react";
 import {
   DndContext,
+  DragOverlay,
   KeyboardSensor,
   PointerSensor,
   closestCenter,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -21,9 +23,15 @@ import { ModalPortal } from "@/components/ui/ModalPortal";
 import { AddBlockModal } from "./AddBlockModal";
 import { BlockConfigDrawer } from "./BlockConfigDrawer";
 import { BLOCK_REGISTRY } from "./registry";
-import { SortableBlock } from "./SortableBlock";
-import { SectionCanvas } from "./blocks/section/SectionCanvas";
-import { ColumnsCanvas } from "./blocks/columns/ColumnsCanvas";
+import { SortableBlock, type DragHandle } from "./SortableBlock";
+import {
+  SectionCanvas,
+  type SectionCanvasActions,
+} from "./blocks/section/SectionCanvas";
+import {
+  ColumnsCanvas,
+  type ColumnsCanvasActions,
+} from "./blocks/columns/ColumnsCanvas";
 import type { SectionData } from "./blocks/section/schema";
 import type { ColumnsData } from "./blocks/columns/schema";
 import type { BlockFieldErrors, BlockInstance } from "./types";
@@ -41,6 +49,37 @@ type EditRef = { id: string; parent: ChildPath | null } | null;
 
 /** Types that may never be nested inside a container (containers stay top-level). */
 const CONTAINER_TYPES = ["section", "columns"];
+
+/** Inert actions for the static container copy shown inside the <DragOverlay>. */
+const NOOP = () => {};
+const NOOP_SECTION_ACTIONS: SectionCanvasActions = {
+  onEdit: NOOP,
+  onDuplicate: NOOP,
+  onMove: NOOP,
+  onDelete: NOOP,
+  canMoveUp: false,
+  canMoveDown: false,
+  onAddChild: NOOP,
+  onEditChild: NOOP,
+  onDuplicateChild: NOOP,
+  onMoveChild: NOOP,
+  onReorderChildren: NOOP,
+  onDeleteChild: NOOP,
+};
+const NOOP_COLUMNS_ACTIONS: ColumnsCanvasActions = {
+  onEdit: NOOP,
+  onDuplicate: NOOP,
+  onMove: NOOP,
+  onDelete: NOOP,
+  canMoveUp: false,
+  canMoveDown: false,
+  onAddChild: NOOP,
+  onEditChild: NOOP,
+  onDuplicateChild: NOOP,
+  onMoveChild: NOOP,
+  onReorderChildren: NOOP,
+  onDeleteChild: NOOP,
+};
 
 function isSectionData(value: unknown): value is SectionData {
   return (
@@ -127,9 +166,15 @@ export function PageBuilder() {
   const [draftErrors, setDraftErrors] = useState<BlockFieldErrors>({});
   const [editRef, setEditRef] = useState<EditRef>(null);
   const [preview, setPreview] = useState(false);
+  /** The block currently being dragged at the top level, shown in the overlay. */
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const draftDefinition = draftType ? BLOCK_REGISTRY[draftType] : undefined;
   const isEditing = editRef !== null;
+  const activeIndex = activeId
+    ? blocks.findIndex((b) => b.id === activeId)
+    : -1;
+  const activeBlock = activeIndex >= 0 ? blocks[activeIndex] : null;
 
   useEffect(() => {
     if (!preview) return;
@@ -296,7 +341,11 @@ export function PageBuilder() {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+  const handleTopDragStart = (event: DragStartEvent) => {
+    setActiveId(String(event.active.id));
+  };
   const handleTopDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     setBlocks((current) => {
@@ -306,6 +355,117 @@ export function PageBuilder() {
         ? current
         : arrayMove(current, from, to);
     });
+  };
+
+  /**
+   * One top-level block's canvas node. `dragHandle` is the live sortable handle
+   * for the in-flow row, or `null` for the static copy rendered in the
+   * <DragOverlay> (which gets inert actions and no grip).
+   */
+  const renderBlockNode = (
+    block: BlockInstance,
+    index: number,
+    dragHandle: DragHandle | null,
+  ): ReactNode => {
+    const definition = BLOCK_REGISTRY[block.type];
+    if (!definition) return null;
+
+    if (definition.container && isSectionData(block.data)) {
+      return (
+        <SectionCanvas
+          data={block.data}
+          dragHandle={dragHandle ?? undefined}
+          actions={
+            dragHandle
+              ? {
+                  onEdit: () => handleEditBlock(block.id, null),
+                  onDuplicate: () => duplicateBlock(block.id),
+                  onMove: (dir) => moveBlock(block.id, dir),
+                  onDelete: () => deleteBlock(block.id),
+                  canMoveUp: index > 0,
+                  canMoveDown: index < blocks.length - 1,
+                  onAddChild: () =>
+                    openPickerForContainer({ blockId: block.id }),
+                  onEditChild: (childId) =>
+                    handleEditBlock(childId, { blockId: block.id }),
+                  onDuplicateChild: (childId) =>
+                    duplicateChild({ blockId: block.id }, childId),
+                  onMoveChild: (childId, dir) =>
+                    moveChild({ blockId: block.id }, childId, dir),
+                  onReorderChildren: (from, to) =>
+                    reorderChildren({ blockId: block.id }, from, to),
+                  onDeleteChild: (childId) =>
+                    deleteChild({ blockId: block.id }, childId),
+                }
+              : NOOP_SECTION_ACTIONS
+          }
+        />
+      );
+    }
+
+    if (definition.container && isColumnsData(block.data)) {
+      return (
+        <ColumnsCanvas
+          data={block.data}
+          dragHandle={dragHandle ?? undefined}
+          actions={
+            dragHandle
+              ? {
+                  onEdit: () => handleEditBlock(block.id, null),
+                  onDuplicate: () => duplicateBlock(block.id),
+                  onMove: (dir) => moveBlock(block.id, dir),
+                  onDelete: () => deleteBlock(block.id),
+                  canMoveUp: index > 0,
+                  canMoveDown: index < blocks.length - 1,
+                  onAddChild: (columnIndex) =>
+                    openPickerForContainer({ blockId: block.id, columnIndex }),
+                  onEditChild: (columnIndex, childId) =>
+                    handleEditBlock(childId, { blockId: block.id, columnIndex }),
+                  onDuplicateChild: (columnIndex, childId) =>
+                    duplicateChild({ blockId: block.id, columnIndex }, childId),
+                  onMoveChild: (columnIndex, childId, dir) =>
+                    moveChild({ blockId: block.id, columnIndex }, childId, dir),
+                  onReorderChildren: (columnIndex, from, to) =>
+                    reorderChildren(
+                      { blockId: block.id, columnIndex },
+                      from,
+                      to,
+                    ),
+                  onDeleteChild: (columnIndex, childId) =>
+                    deleteChild({ blockId: block.id, columnIndex }, childId),
+                }
+              : NOOP_COLUMNS_ACTIONS
+          }
+        />
+      );
+    }
+
+    const { Renderer } = definition;
+    return (
+      <div className="group relative">
+        {dragHandle ? (
+          <button
+            type="button"
+            ref={dragHandle.setActivatorNodeRef}
+            {...dragHandle.attributes}
+            {...(dragHandle.listeners ?? {})}
+            aria-label="Trage pentru reordonare"
+            className="absolute left-3 top-3 z-10 cursor-grab touch-none rounded-md bg-white/90 p-1 text-[#94a3b8] opacity-0 shadow-sm transition-opacity hover:text-[#64748b] group-hover:opacity-100"
+          >
+            <GripVertical size={16} aria-hidden="true" />
+          </button>
+        ) : null}
+        <div
+          className={
+            definition.bare
+              ? undefined
+              : "overflow-hidden rounded-2xl border border-border bg-white"
+          }
+        >
+          <Renderer data={block.data} />
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -351,136 +511,31 @@ export function PageBuilder() {
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
+          onDragStart={handleTopDragStart}
           onDragEnd={handleTopDragEnd}
+          onDragCancel={() => setActiveId(null)}
         >
           <SortableContext
             items={blocks.map((b) => b.id)}
             strategy={verticalListSortingStrategy}
           >
             <div className="space-y-6">
-              {blocks.map((block, index) => {
-                const definition = BLOCK_REGISTRY[block.type];
-                if (!definition) return null;
-
-                if (definition.container && isSectionData(block.data)) {
-                  const sectionData = block.data;
-                  return (
-                    <SortableBlock key={block.id} id={block.id}>
-                      {(dragHandle) => (
-                        <SectionCanvas
-                          data={sectionData}
-                          dragHandle={dragHandle}
-                          actions={{
-                            onEdit: () => handleEditBlock(block.id, null),
-                            onDuplicate: () => duplicateBlock(block.id),
-                            onMove: (dir) => moveBlock(block.id, dir),
-                            onDelete: () => deleteBlock(block.id),
-                            canMoveUp: index > 0,
-                            canMoveDown: index < blocks.length - 1,
-                            onAddChild: () =>
-                              openPickerForContainer({ blockId: block.id }),
-                            onEditChild: (childId) =>
-                              handleEditBlock(childId, { blockId: block.id }),
-                            onDuplicateChild: (childId) =>
-                              duplicateChild({ blockId: block.id }, childId),
-                            onMoveChild: (childId, dir) =>
-                              moveChild({ blockId: block.id }, childId, dir),
-                            onReorderChildren: (from, to) =>
-                              reorderChildren({ blockId: block.id }, from, to),
-                            onDeleteChild: (childId) =>
-                              deleteChild({ blockId: block.id }, childId),
-                          }}
-                        />
-                      )}
-                    </SortableBlock>
-                  );
-                }
-
-                if (definition.container && isColumnsData(block.data)) {
-                  const columnsData = block.data;
-                  return (
-                    <SortableBlock key={block.id} id={block.id}>
-                      {(dragHandle) => (
-                        <ColumnsCanvas
-                          data={columnsData}
-                          dragHandle={dragHandle}
-                          actions={{
-                            onEdit: () => handleEditBlock(block.id, null),
-                            onDuplicate: () => duplicateBlock(block.id),
-                            onMove: (dir) => moveBlock(block.id, dir),
-                            onDelete: () => deleteBlock(block.id),
-                            canMoveUp: index > 0,
-                            canMoveDown: index < blocks.length - 1,
-                            onAddChild: (columnIndex) =>
-                              openPickerForContainer({
-                                blockId: block.id,
-                                columnIndex,
-                              }),
-                            onEditChild: (columnIndex, childId) =>
-                              handleEditBlock(childId, {
-                                blockId: block.id,
-                                columnIndex,
-                              }),
-                            onDuplicateChild: (columnIndex, childId) =>
-                              duplicateChild(
-                                { blockId: block.id, columnIndex },
-                                childId,
-                              ),
-                            onMoveChild: (columnIndex, childId, dir) =>
-                              moveChild(
-                                { blockId: block.id, columnIndex },
-                                childId,
-                                dir,
-                              ),
-                            onReorderChildren: (columnIndex, from, to) =>
-                              reorderChildren(
-                                { blockId: block.id, columnIndex },
-                                from,
-                                to,
-                              ),
-                            onDeleteChild: (columnIndex, childId) =>
-                              deleteChild(
-                                { blockId: block.id, columnIndex },
-                                childId,
-                              ),
-                          }}
-                        />
-                      )}
-                    </SortableBlock>
-                  );
-                }
-
-                const { Renderer } = definition;
-                return (
+              {blocks.map((block, index) =>
+                BLOCK_REGISTRY[block.type] ? (
                   <SortableBlock key={block.id} id={block.id}>
-                    {({ setActivatorNodeRef, attributes, listeners }) => (
-                      <div className="group relative">
-                        <button
-                          type="button"
-                          ref={setActivatorNodeRef}
-                          {...attributes}
-                          {...(listeners ?? {})}
-                          aria-label="Trage pentru reordonare"
-                          className="absolute left-1 top-1 z-10 cursor-grab touch-none rounded-md bg-white/90 p-1 text-[#94a3b8] opacity-0 shadow-sm transition-opacity hover:text-[#64748b] group-hover:opacity-100"
-                        >
-                          <GripVertical size={16} aria-hidden="true" />
-                        </button>
-                        <div
-                          className={
-                            definition.bare
-                              ? undefined
-                              : "overflow-hidden rounded-2xl border border-border bg-white"
-                          }
-                        >
-                          <Renderer data={block.data} />
-                        </div>
-                      </div>
-                    )}
+                    {(dragHandle) => renderBlockNode(block, index, dragHandle)}
                   </SortableBlock>
-                );
-              })}
+                ) : null,
+              )}
             </div>
           </SortableContext>
+          <DragOverlay>
+            {activeBlock ? (
+              <div className="cursor-grabbing">
+                {renderBlockNode(activeBlock, activeIndex, null)}
+              </div>
+            ) : null}
+          </DragOverlay>
         </DndContext>
       )}
 

@@ -40,8 +40,14 @@ export function SortableBlock({
   return (
     <div
       ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={isDragging ? "relative z-10 opacity-80" : undefined}
+      style={{
+        // Translate only — `CSS.Transform` also emits a no-op `scaleX/scaleY`.
+        transform: CSS.Translate.toString(transform),
+        // The dragged copy lives in the <DragOverlay>; the in-flow original is
+        // hidden and must not lag the pointer with a transform transition.
+        transition: isDragging ? undefined : transition,
+      }}
+      className={isDragging ? "opacity-0" : undefined}
     >
       {children({ setActivatorNodeRef, attributes, listeners, isDragging })}
     </div>
