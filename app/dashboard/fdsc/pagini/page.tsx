@@ -1,5 +1,5 @@
-import { UnimplementedPage } from "@/components/features/dashboard/UnimplementedPage";
+import { PageBuilder } from "@/components/features/page-builder/PageBuilder";
 
 export default function Page() {
-  return <UnimplementedPage title="Pagini" />;
+  return <PageBuilder />;
 }
