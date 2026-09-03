@@ -19,6 +19,7 @@ import { imageBlock } from "./blocks/image";
 import { imageCaptionBlock } from "./blocks/image-caption";
 import { imageTextBlock } from "./blocks/image-text";
 import { galleryBlock } from "./blocks/gallery";
+import { columnsBlock } from "./blocks/columns";
 import { sectionBlock } from "./blocks/section";
 import { sectionHeaderBlock } from "./blocks/section-header";
 import { timelineBlock } from "./blocks/timeline";
@@ -52,6 +53,7 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [imageCaptionBlock.type]: imageCaptionBlock,
   [imageTextBlock.type]: imageTextBlock,
   [galleryBlock.type]: galleryBlock,
+  [columnsBlock.type]: columnsBlock,
   [sectionBlock.type]: sectionBlock,
   [sectionHeaderBlock.type]: sectionHeaderBlock,
   [timelineBlock.type]: timelineBlock,
@@ -105,10 +107,6 @@ export const CATEGORY_ICON: Record<BlockCategory, { bg: string; fg: string }> = 
 /**
  * Blocks shown in the picker but not yet implemented — they render as disabled
  * cards ("în curând"). Copy matches the Figma design.
- *
- * `columns` is built (see `blocks/columns/`) but parked here: the client hasn't
- * decided how it should wrap other blocks. Re-enable by importing the block and
- * adding it to `BLOCK_REGISTRY`.
  */
 export interface UpcomingBlock {
   name: string;
@@ -116,10 +114,4 @@ export interface UpcomingBlock {
   category: BlockCategory;
 }
 
-export const UPCOMING_BLOCKS: UpcomingBlock[] = [
-  {
-    name: "Columns",
-    description: "Layout cu două sau trei coloane pentru combinarea blocurilor",
-    category: "structure",
-  },
-];
+export const UPCOMING_BLOCKS: UpcomingBlock[] = [];

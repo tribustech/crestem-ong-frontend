@@ -58,6 +58,12 @@ export interface BlockDefinition {
    * e.g. the hero blocks.
    */
   fullBleed: boolean;
+  /**
+   * This block wraps child blocks and is edited through a canvas shell instead
+   * of its `Renderer` — e.g. Section, Columns. Containers are offered only at
+   * the page's top level, never inside another container.
+   */
+  container: boolean;
   defaults: unknown;
   /** Validate raw block data, returning either parsed data or field errors. */
   parse: (data: unknown) => BlockParseResult;
@@ -86,6 +92,8 @@ interface DefineBlockConfig<TData> {
   bare?: boolean;
   /** See `BlockDefinition.fullBleed`. Defaults to `false`. */
   fullBleed?: boolean;
+  /** See `BlockDefinition.container`. Defaults to `false`. */
+  container?: boolean;
   schema: ZodType<TData>;
   defaults: TData;
   Editor: ComponentType<{
@@ -124,6 +132,7 @@ export function defineBlock<TData>(
     icon: config.icon,
     bare: config.bare ?? false,
     fullBleed: config.fullBleed ?? false,
+    container: config.container ?? false,
     defaults: config.defaults,
     parse: (data) => {
       const result = schema.safeParse(data);

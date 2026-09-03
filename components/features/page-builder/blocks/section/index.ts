@@ -10,6 +10,7 @@ export const sectionBlock = defineBlock({
   name: "Section",
   description: "Container de grupare pentru blocuri de conținut înrudite",
   icon: Layers,
+  container: true,
   schema: sectionSchema,
   defaults: SECTION_DEFAULTS,
   Editor: SectionEditor,

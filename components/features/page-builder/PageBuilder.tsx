@@ -23,13 +23,24 @@ import { BlockConfigDrawer } from "./BlockConfigDrawer";
 import { BLOCK_REGISTRY } from "./registry";
 import { SortableBlock } from "./SortableBlock";
 import { SectionCanvas } from "./blocks/section/SectionCanvas";
+import { ColumnsCanvas } from "./blocks/columns/ColumnsCanvas";
 import type { SectionData } from "./blocks/section/schema";
+import type { ColumnsData } from "./blocks/columns/schema";
 import type { BlockFieldErrors, BlockInstance } from "./types";
 
-/** Where a newly picked block should land. */
-type AddTarget = { sectionId: string } | null;
+/**
+ * Where a container child lives: `blockId` names the container; `columnIndex`
+ * picks the column for a Columns block and is left undefined for a Section
+ * (which has a single child list).
+ */
+type ChildPath = { blockId: string; columnIndex?: number };
+/** Where a newly picked block should land — a container child slot, or null for top level. */
+type AddTarget = ChildPath | null;
 /** Which existing block the drawer is editing. */
-type EditRef = { id: string; sectionId: string | null } | null;
+type EditRef = { id: string; parent: ChildPath | null } | null;
+
+/** Types that may never be nested inside a container (containers stay top-level). */
+const CONTAINER_TYPES = ["section", "columns"];
 
 function isSectionData(value: unknown): value is SectionData {
   return (
@@ -39,6 +50,48 @@ function isSectionData(value: unknown): value is SectionData {
   );
 }
 
+function isColumnsData(value: unknown): value is ColumnsData {
+  return (
+    !!value &&
+    typeof value === "object" &&
+    Array.isArray((value as { coloane?: unknown }).coloane)
+  );
+}
+
+/** Read the child list a `ChildPath` points at, or null if the shape doesn't match. */
+function readChildList(
+  data: unknown,
+  columnIndex: number | undefined,
+): BlockInstance[] | null {
+  if (columnIndex === undefined) {
+    return isSectionData(data) ? (data.blocuri as BlockInstance[]) : null;
+  }
+  if (isColumnsData(data)) {
+    return (data.coloane[columnIndex]?.blocuri as BlockInstance[]) ?? null;
+  }
+  return null;
+}
+
+/** Return a copy of `data` with the child list at `columnIndex` replaced. */
+function writeChildList(
+  data: unknown,
+  columnIndex: number | undefined,
+  list: BlockInstance[],
+): unknown {
+  if (columnIndex === undefined && isSectionData(data)) {
+    return { ...data, blocuri: list };
+  }
+  if (columnIndex !== undefined && isColumnsData(data)) {
+    return {
+      ...data,
+      coloane: data.coloane.map((column, index) =>
+        index === columnIndex ? { ...column, blocuri: list } : column,
+      ),
+    };
+  }
+  return data;
+}
+
 /** Deep-clone a block, assigning fresh ids to it and any nested children. */
 function cloneInstance(block: {
   id: string;
@@ -46,8 +99,13 @@ function cloneInstance(block: {
   data?: unknown;
 }): BlockInstance {
   const data = structuredClone(block.data);
-  if (block.type === "section" && isSectionData(data)) {
+  if (isSectionData(data)) {
     data.blocuri = data.blocuri.map(cloneInstance);
+  } else if (isColumnsData(data)) {
+    data.coloane = data.coloane.map((column) => ({
+      ...column,
+      blocuri: column.blocuri.map(cloneInstance),
+    }));
   }
   return { id: crypto.randomUUID(), type: block.type, data };
 }
@@ -90,17 +148,24 @@ export function PageBuilder() {
     setAddTarget(null);
   };
 
-  /** Replace one section's data via an updater, leaving every other block alone. */
-  const updateSection = (
-    sectionId: string,
-    updater: (data: SectionData) => SectionData,
+  /**
+   * Replace the child list a `ChildPath` points at via an updater, leaving every
+   * other block — and the container's other columns — alone.
+   */
+  const updateChildList = (
+    path: ChildPath,
+    updater: (list: BlockInstance[]) => BlockInstance[],
   ) => {
     setBlocks((current) =>
-      current.map((block) =>
-        block.id === sectionId && isSectionData(block.data)
-          ? { ...block, data: updater(block.data) }
-          : block,
-      ),
+      current.map((block) => {
+        if (block.id !== path.blockId) return block;
+        const list = readChildList(block.data, path.columnIndex);
+        if (!list) return block;
+        return {
+          ...block,
+          data: writeChildList(block.data, path.columnIndex, updater(list)),
+        };
+      }),
     );
   };
 
@@ -109,8 +174,8 @@ export function PageBuilder() {
     setPickerOpen(true);
   };
 
-  const openPickerForSection = (sectionId: string) => {
-    setAddTarget({ sectionId });
+  const openPickerForContainer = (path: ChildPath) => {
+    setAddTarget(path);
     setPickerOpen(true);
   };
 
@@ -124,19 +189,20 @@ export function PageBuilder() {
     setDraftErrors({});
   };
 
-  const handleEditBlock = (id: string, sectionId: string | null) => {
+  const handleEditBlock = (id: string, parent: ChildPath | null) => {
     let instance: { type: string; data?: unknown } | undefined;
-    if (sectionId) {
-      const section = blocks.find((b) => b.id === sectionId);
-      if (section && isSectionData(section.data)) {
-        instance = section.data.blocuri.find((c) => c.id === id);
-      }
+    if (parent) {
+      const container = blocks.find((b) => b.id === parent.blockId);
+      const list = container
+        ? readChildList(container.data, parent.columnIndex)
+        : null;
+      instance = list?.find((c) => c.id === id);
     } else {
       instance = blocks.find((b) => b.id === id);
     }
     if (!instance) return;
     setAddTarget(null);
-    setEditRef({ id, sectionId });
+    setEditRef({ id, parent });
     setDraftType(instance.type);
     setDraftData(structuredClone(instance.data));
     setDraftErrors({});
@@ -151,13 +217,12 @@ export function PageBuilder() {
     }
 
     if (editRef) {
-      if (editRef.sectionId) {
-        updateSection(editRef.sectionId, (data) => ({
-          ...data,
-          blocuri: data.blocuri.map((c) =>
+      if (editRef.parent) {
+        updateChildList(editRef.parent, (list) =>
+          list.map((c) =>
             c.id === editRef.id ? { ...c, data: result.data } : c,
           ),
-        }));
+        );
       } else {
         setBlocks((current) =>
           current.map((b) =>
@@ -171,10 +236,7 @@ export function PageBuilder() {
         type: draftType,
         data: result.data,
       };
-      updateSection(addTarget.sectionId, (data) => ({
-        ...data,
-        blocuri: [...data.blocuri, child],
-      }));
+      updateChildList(addTarget, (list) => [...list, child]);
     } else {
       setBlocks((current) => [
         ...current,
@@ -204,35 +266,27 @@ export function PageBuilder() {
     setBlocks((current) => current.filter((b) => b.id !== id));
   };
 
-  // --- section child ops ---
-  const duplicateChild = (sectionId: string, childId: string) => {
-    updateSection(sectionId, (data) => {
-      const index = data.blocuri.findIndex((c) => c.id === childId);
-      if (index === -1) return data;
-      const blocuri = [...data.blocuri];
-      blocuri.splice(index + 1, 0, cloneInstance(data.blocuri[index]));
-      return { ...data, blocuri };
+  // --- container child ops (Section: one list; Columns: one list per column) ---
+  const duplicateChild = (path: ChildPath, childId: string) => {
+    updateChildList(path, (list) => {
+      const index = list.findIndex((c) => c.id === childId);
+      if (index === -1) return list;
+      const next = [...list];
+      next.splice(index + 1, 0, cloneInstance(list[index]));
+      return next;
     });
   };
-  const moveChild = (sectionId: string, childId: string, dir: -1 | 1) => {
-    updateSection(sectionId, (data) => {
-      const index = data.blocuri.findIndex((c) => c.id === childId);
-      return index === -1
-        ? data
-        : { ...data, blocuri: moveInArray(data.blocuri, index, dir) };
+  const moveChild = (path: ChildPath, childId: string, dir: -1 | 1) => {
+    updateChildList(path, (list) => {
+      const index = list.findIndex((c) => c.id === childId);
+      return index === -1 ? list : moveInArray(list, index, dir);
     });
   };
-  const deleteChild = (sectionId: string, childId: string) => {
-    updateSection(sectionId, (data) => ({
-      ...data,
-      blocuri: data.blocuri.filter((c) => c.id !== childId),
-    }));
+  const deleteChild = (path: ChildPath, childId: string) => {
+    updateChildList(path, (list) => list.filter((c) => c.id !== childId));
   };
-  const reorderChildren = (sectionId: string, from: number, to: number) => {
-    updateSection(sectionId, (data) => ({
-      ...data,
-      blocuri: arrayMove(data.blocuri, from, to),
-    }));
+  const reorderChildren = (path: ChildPath, from: number, to: number) => {
+    updateChildList(path, (list) => arrayMove(list, from, to));
   };
 
   // --- drag-and-drop (reorder within a list) ---
@@ -308,7 +362,7 @@ export function PageBuilder() {
                 const definition = BLOCK_REGISTRY[block.type];
                 if (!definition) return null;
 
-                if (block.type === "section" && isSectionData(block.data)) {
+                if (definition.container && isSectionData(block.data)) {
                   const sectionData = block.data;
                   return (
                     <SortableBlock key={block.id} id={block.id}>
@@ -323,17 +377,72 @@ export function PageBuilder() {
                             onDelete: () => deleteBlock(block.id),
                             canMoveUp: index > 0,
                             canMoveDown: index < blocks.length - 1,
-                            onAddChild: () => openPickerForSection(block.id),
+                            onAddChild: () =>
+                              openPickerForContainer({ blockId: block.id }),
                             onEditChild: (childId) =>
-                              handleEditBlock(childId, block.id),
+                              handleEditBlock(childId, { blockId: block.id }),
                             onDuplicateChild: (childId) =>
-                              duplicateChild(block.id, childId),
+                              duplicateChild({ blockId: block.id }, childId),
                             onMoveChild: (childId, dir) =>
-                              moveChild(block.id, childId, dir),
+                              moveChild({ blockId: block.id }, childId, dir),
                             onReorderChildren: (from, to) =>
-                              reorderChildren(block.id, from, to),
+                              reorderChildren({ blockId: block.id }, from, to),
                             onDeleteChild: (childId) =>
-                              deleteChild(block.id, childId),
+                              deleteChild({ blockId: block.id }, childId),
+                          }}
+                        />
+                      )}
+                    </SortableBlock>
+                  );
+                }
+
+                if (definition.container && isColumnsData(block.data)) {
+                  const columnsData = block.data;
+                  return (
+                    <SortableBlock key={block.id} id={block.id}>
+                      {(dragHandle) => (
+                        <ColumnsCanvas
+                          data={columnsData}
+                          dragHandle={dragHandle}
+                          actions={{
+                            onEdit: () => handleEditBlock(block.id, null),
+                            onDuplicate: () => duplicateBlock(block.id),
+                            onMove: (dir) => moveBlock(block.id, dir),
+                            onDelete: () => deleteBlock(block.id),
+                            canMoveUp: index > 0,
+                            canMoveDown: index < blocks.length - 1,
+                            onAddChild: (columnIndex) =>
+                              openPickerForContainer({
+                                blockId: block.id,
+                                columnIndex,
+                              }),
+                            onEditChild: (columnIndex, childId) =>
+                              handleEditBlock(childId, {
+                                blockId: block.id,
+                                columnIndex,
+                              }),
+                            onDuplicateChild: (columnIndex, childId) =>
+                              duplicateChild(
+                                { blockId: block.id, columnIndex },
+                                childId,
+                              ),
+                            onMoveChild: (columnIndex, childId, dir) =>
+                              moveChild(
+                                { blockId: block.id, columnIndex },
+                                childId,
+                                dir,
+                              ),
+                            onReorderChildren: (columnIndex, from, to) =>
+                              reorderChildren(
+                                { blockId: block.id, columnIndex },
+                                from,
+                                to,
+                              ),
+                            onDeleteChild: (columnIndex, childId) =>
+                              deleteChild(
+                                { blockId: block.id, columnIndex },
+                                childId,
+                              ),
                           }}
                         />
                       )}
@@ -382,7 +491,7 @@ export function PageBuilder() {
             setPickerOpen(false);
             setAddTarget(null);
           }}
-          excludeTypes={addTarget ? ["section"] : undefined}
+          excludeTypes={addTarget ? CONTAINER_TYPES : undefined}
         />
       )}
 

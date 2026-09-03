@@ -57,8 +57,8 @@ export function AddBlockModal({
 }: {
   onSelect: (type: string) => void;
   onClose: () => void;
-  /** Block types to hide from the picker — e.g. `["section"]` when adding
-   *  inside a section, so a section can't nest another section. */
+  /** Block types to hide from the picker — e.g. the container types when adding
+   *  inside a container, so containers stay top-level and never nest. */
   excludeTypes?: string[];
 }) {
   const [activeCategory, setActiveCategory] = useState<BlockCategory>("hero");
