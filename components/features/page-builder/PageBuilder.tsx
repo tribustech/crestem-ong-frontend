@@ -157,8 +157,21 @@ function moveInArray<T>(items: T[], index: number, dir: -1 | 1): T[] {
   return next;
 }
 
-export function PageBuilder() {
-  const [blocks, setBlocks] = useState<BlockInstance[]>([]);
+export function PageBuilder({
+  value,
+  onChange,
+}: {
+  /** Controlled tree. Omit both props to keep the standalone behaviour. */
+  value?: BlockInstance[];
+  onChange?: (blocks: BlockInstance[]) => void;
+} = {}) {
+  const [ownBlocks, setOwnBlocks] = useState<BlockInstance[]>([]);
+  const blocks = value ?? ownBlocks;
+  const setBlocks = (next: BlockInstance[] | ((current: BlockInstance[]) => BlockInstance[])) => {
+    const resolved = typeof next === "function" ? next(blocks) : next;
+    if (onChange) onChange(resolved);
+    else setOwnBlocks(resolved);
+  };
   const [pickerOpen, setPickerOpen] = useState(false);
   const [addTarget, setAddTarget] = useState<AddTarget>(null);
   const [draftType, setDraftType] = useState<string | null>(null);
