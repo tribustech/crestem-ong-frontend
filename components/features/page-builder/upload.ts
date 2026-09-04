@@ -8,12 +8,20 @@ import {
 } from "@/lib/api/page-blocks-actions";
 
 /**
- * Client-side upload ceiling for page-block media. Kept below the Server Action
- * `bodySizeLimit` in `next.config.ts` (6mb) so multipart boundary/header
+ * Client-side upload ceiling for page-block images/video. Kept below the Server
+ * Action `bodySizeLimit` in `next.config.ts` so multipart boundary/header
  * overhead never pushes a passing file over the server cap.
  */
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 export const MAX_UPLOAD_LABEL = "5 MB";
+
+/**
+ * Higher ceiling for the Documents block — reports (PDF/DOCX/XLSX) routinely run
+ * larger than a page image. `bodySizeLimit` in `next.config.ts` is set above
+ * this for multipart overhead; Strapi/S3 accept far more still.
+ */
+export const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024;
+export const MAX_DOCUMENT_LABEL = "25 MB";
 
 /**
  * Shared image-upload logic for the page-builder editors (`image`,

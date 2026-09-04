@@ -15,6 +15,8 @@ import { richTextBlock } from "./blocks/rich-text";
 import { calloutBlock } from "./blocks/callout";
 import { quoteBlock } from "./blocks/quote";
 import { videoBlock } from "./blocks/video";
+import { documentsBlock } from "./blocks/documents";
+import { embedBlock } from "./blocks/embed";
 import { imageBlock } from "./blocks/image";
 import { imageCaptionBlock } from "./blocks/image-caption";
 import { imageTextBlock } from "./blocks/image-text";
@@ -49,6 +51,8 @@ export const BLOCK_REGISTRY: Record<string, BlockDefinition> = {
   [calloutBlock.type]: calloutBlock,
   [quoteBlock.type]: quoteBlock,
   [videoBlock.type]: videoBlock,
+  [documentsBlock.type]: documentsBlock,
+  [embedBlock.type]: embedBlock,
   [imageBlock.type]: imageBlock,
   [imageCaptionBlock.type]: imageCaptionBlock,
   [imageTextBlock.type]: imageTextBlock,
